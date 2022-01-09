@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./we-sopt-spark-firebase-adminsdk-emnjd-30d5170309');
+const serviceAccount = require('./we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json');
 const dotenv = require('dotenv');
 
 dotenv.config();
