@@ -1,11 +1,13 @@
 module.exports = {
   NULL_VALUE: '필요한 값이 없습니다',
   OUT_OF_VALUE: '파라미터 값이 잘못되었습니다',
+  PATH_ERROR: '요청 경로가 올바르지 않습니다',
+  INTERNAL_SERVER_ERROR: '서버 내부 오류',
 
   // 회원가입
   CREATED_USER: '회원 가입 성공',
   DELETE_USER: '회원 탈퇴 성공',
-  ALREADY_EMAIL: '이미 사용중인 이메일입니다.',
+  ALREADY_EMAIL: '이미 사용중인 이메일입니다',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
@@ -15,4 +17,8 @@ module.exports = {
 
   // 프로필 조회
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
+
+  // Room
+  CREATE_ROOM_SUCCESS: '습관 방 생성 성공',
+  CREATE_ROOM_FAIL: '습관 방 생성 실패',
 };
