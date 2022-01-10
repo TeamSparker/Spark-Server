@@ -14,6 +14,8 @@ const { userDB, roomDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { code } = req.params;
+
+  // @error 1. 참여 코드가 전달되지 않음
   if (!code) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
@@ -24,10 +26,13 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const room = await roomDB.getRoomByCode(client, code);
+
+    // 참여 코드에 일치하는 방이 없음
     if (!room) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
+    // 참여 코드에 해당하는 방은 이미 습관 시작한 방임
     if (room.isStarted) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_ALREADY));
     }
