@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// router.post('/signup', require('./userSignupPOST'));
+router.get('/', require('./roomListGET'));
 
 module.exports = router;
