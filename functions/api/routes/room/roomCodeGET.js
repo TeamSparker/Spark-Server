@@ -1,6 +1,6 @@
 /**
  *  @코드로_대기_방_정보_확인
- *  @route GET /room/code:code
+ *  @route GET /room/code/:code
  *  @error
  *      1. 참여 코드가 전달되지 않음
  */
