@@ -21,12 +21,7 @@ module.exports = async (req, res) => {
   console.log(roomName, fromStart);
 
   // error 2. 습관방 이름이 전달되지 않음
-  if (!roomName) {
-    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  }
-
-  // error 2. 습관방 타입이 전달되지 않음
-  if (typeof fromStart !== 'boolean') {
+  if (!roomName || typeof fromStart !== 'boolean') {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
