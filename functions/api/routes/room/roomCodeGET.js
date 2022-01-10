@@ -2,7 +2,8 @@
  *  @코드로_대기_방_정보_확인
  *  @route GET /room/code/:code
  *  @error
- *      1. 참여 코드가 전달되지 않음
+ *      1. 요청 권한이 없음 (회원가입 되지 않은 사용자이거나, 권한이 없는 회원)
+ *      2. 참여 코드가 전달되지 않음
  */
 
 const functions = require('firebase-functions');
@@ -15,7 +16,15 @@ const { userDB, roomDB } = require('../../../db');
 module.exports = async (req, res) => {
   const { code } = req.params;
 
-  // @error 1. 참여 코드가 전달되지 않음
+  // @FIXME: 실제 user는 AccessToken을 통해 파악된 사용자
+  const userId = 1;
+  // @error 1. 요청 권한이 없음 (등록되지 않은 사용쟈)
+  // let hasAuth = userDB.checkExistById(userId);
+  // if (!hasAuth) {
+  //   // 등록된 회원이 아니라는 Response
+  // }
+
+  // @error 2. 참여 코드가 전달되지 않음
   if (!code) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
@@ -29,12 +38,12 @@ module.exports = async (req, res) => {
 
     // 참여 코드에 일치하는 방이 없음
     if (!room) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_NULL));
+      return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
     // 참여 코드에 해당하는 방은 이미 습관 시작한 방임
     if (room.isStarted) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_ALREADY));
+      return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_STARTED));
     }
 
     const creator = await userDB.getUserById(client, room.creator);
@@ -42,13 +51,16 @@ module.exports = async (req, res) => {
     const imageNum = 3;
     let profileImgs = [];
 
-    for (let i = 0; i < imageNum; i++) {
-      if (i >= entries.length) {
-        break;
+    for (let i = 0; i < entries.length; i++) {
+      if (i < imageNum) {
+        let user = await userDB.getUserById(client, entries[i].userId);
+        profileImgs.push(user.profileImg);
       }
 
-      let user = await userDB.getUserById(client, entries[i].userId);
-      profileImgs.push(user.profileImg);
+      // 이미 해당 습관에 참여중인 사용자
+      if (userId == entries[i].userId) {
+        return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_ALREADY));
+      }
     }
 
     const data = {
