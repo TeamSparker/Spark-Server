@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   let client;
 
   try {
-    const client = await db.connect();
+    client = await db.connect();
     
     // @error 2. 이미 존재하는 socialIds
     const alreaySocialId = await userDB.getUserBySocialId(client, socialId);
