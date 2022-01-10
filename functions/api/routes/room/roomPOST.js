@@ -37,8 +37,14 @@ module.exports = async (req, res) => {
     creatorId = 1;
 
     const room = await roomDB.addRoom(client, roomName, code, creatorId, fromStart);
+    let data = {
+      roomId: room.roomId,
+      roomName: room.roomName,
+      code: room.code,
+    };
+    console.log(room.roomId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS, room));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
