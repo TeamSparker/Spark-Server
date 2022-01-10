@@ -28,6 +28,11 @@ module.exports = async (req, res) => {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
+  // @error 3. 닉네임 10자 초과
+  if (nickname.length > 10){
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.TOO_LONG_NICKNAME));
+  }
+
   let client;
 
   try {
