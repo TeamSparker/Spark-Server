@@ -30,5 +30,5 @@ module.exports = {
   GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
 
   // Notice
-  SERVICE_READ_FAIL: '서비스 알림 읽음처리 실패',
+  SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
 };

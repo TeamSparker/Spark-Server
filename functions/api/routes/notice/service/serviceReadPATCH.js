@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
     await noticeDB.serviceReadByUserId(client, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SERVICE_READ_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
