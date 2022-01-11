@@ -6,6 +6,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
+const slackAPI = require('../../../middlewares/slackAPI');
 
 /**
  *  @회원가입
@@ -60,7 +61,8 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.log(error);
     functions.logger.error(`[SIGNUP ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] socialId:${socialId} ${error}`);
-
+    const slackMessage = `[SIGNUP ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} [CONTENT] socialId:${socialId} ${error} ${JSON.stringify(error)}`;
+    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
