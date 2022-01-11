@@ -1,10 +1,20 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+const getAllUsers = async (client) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.user as u
+    WHERE is_deleted = FALSE
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getUserById = async (client, userId) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.user u
+    SELECT * FROM spark.user as u
     WHERE user_id = $1
       AND is_deleted = FALSE
     `,
@@ -39,4 +49,5 @@ const addUser = async (client, socialId, nickname, profileImg) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getUserById, getUserBySocialId, addUser };
+module.exports = { getAllUsers, getUserById, getUserBySocialId, addUser };
+
