@@ -2,8 +2,7 @@
  *  @코드로_대기_방_정보_확인
  *  @route GET /room/code/:code
  *  @error
- *      1. 요청 권한이 없음 (회원가입 되지 않은 사용자이거나, 권한이 없는 회원)
- *      2. 참여 코드가 전달되지 않음
+ *      1. 참여 코드가 전달되지 않음
  */
 
 const functions = require('firebase-functions');
@@ -15,16 +14,10 @@ const { userDB, roomDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { code } = req.params;
+  const user = req.user;
+  const userId = user.userId;
 
-  // @FIXME: 실제 user는 AccessToken을 통해 파악된 사용자
-  const userId = 1;
-  // @error 1. 요청 권한이 없음 (등록되지 않은 사용쟈)
-  // let hasAuth = userDB.checkExistById(userId);
-  // if (!hasAuth) {
-  //   // 등록된 회원이 아니라는 Response
-  // }
-
-  // @error 2. 참여 코드가 전달되지 않음
+  // @error 1. 참여 코드가 전달되지 않음
   if (!code) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
