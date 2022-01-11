@@ -31,4 +31,5 @@ module.exports = {
 
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
+  ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',
 };
