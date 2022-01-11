@@ -2,18 +2,18 @@ const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const getAllRooms = async (client, limit, offset) => {
-    const { rows } = await client.query(
+    const { rows } = await client.query( 
         /* 
          * 1. roomDB에서 모든 room에 대한 roomId, roomName, start_at, end_at, life 를 가져옴.
          * 2. start_at, end_at 을 계산해서 leftDay를 가져옴.
-         * 3. recordDB에서 모든 room에 대한 roomId, roomName, start_at, end_at, life 를 가져옴.
          */
       `
-      SELECT room_id, room_name, start_at, end_at, life
+      SELECT room_id, room_name, start_at, end_at, life, is_started
       FROM spark.room r
       WHERE is_deleted = FALSE
+      LIMIT $1 OFFSET $2
       `,
-      [limit, offset],
+      [limit, offset]
     );
     return convertSnakeToCamel.keysToCamel(rows);
   };
@@ -105,6 +105,18 @@ const getAllRooms = async (client, limit, offset) => {
     return convertSnakeToCamel.keysToCamel(rows);
   };
 
+  const getProfileImgByRoomId = async (client, roomId) => {
+    const { rows } = await client.query(
+      `
+      SELECT profile_img FROM spark.user u
+      WHERE id = $1
+        AND is_deleted = FALSE
+      `,
+      [roomId],
+    );
+    return convertSnakeToCamel.keysToCamel(rows[0]);
+  };
+
   // roomId, roomName, leftDay, profileImg, life, isDone, memberNum, doneMemberNum, isNotice, totalRoomNum
   // room r, record re, user u, entry e, notification n
-module.exports = { getAllRooms, entryCount, roomCount,getIsDoneFromRecord,getIsNoticeFromNotification, getProfileImg };
+module.exports = { getAllRooms, entryCount, roomCount,getIsDoneFromRecord,getIsNoticeFromNotification, getProfileImg, getProfileImgByRoomId };
