@@ -3,6 +3,10 @@
  *  @route GET /room/code/:code
  *  @error
  *      1. 참여 코드가 전달되지 않음
+ *      2. 참여코드에 일치하는 방이 없는 경우
+ *      3. 이미 시작된 습관방인 경우
+ *      4. 이미 참여중인 방인 경우
+ *      5. 한번 내보내진 사용자인 경우
  */
 
 const functions = require('firebase-functions');
@@ -29,14 +33,20 @@ module.exports = async (req, res) => {
 
     const room = await roomDB.getRoomByCode(client, code);
 
-    // 참여 코드에 일치하는 방이 없음
+    // @error 2. 참여 코드에 일치하는 방이 없음
     if (!room) {
-      return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_NULL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
-    // 참여 코드에 해당하는 방은 이미 습관 시작한 방임
+    // @error 3. 참여 코드에 해당하는 방은 이미 습관 시작한 방임
     if (room.isStarted) {
-      return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_STARTED));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
+    }
+
+    // @error 5. 한번 내보내진 사용자인 경우
+    const isKicked = await roomDB.checkKickedByRoomIdAndUserId(client, room.roomId, userId);
+    if (isKicked) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
     }
 
     const creator = await userDB.getUserById(client, room.creator);
@@ -50,9 +60,9 @@ module.exports = async (req, res) => {
         profileImgs.push(user.profileImg);
       }
 
-      // 이미 해당 습관에 참여중인 사용자
-      if (userId == entries[i].userId) {
-        return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.GET_WAITROOM_DATA_ALREADY));
+      // @error 4. 이미 해당 습관에 참여중인 사용자
+      if (userId === entries[i].userId) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_ALREADY));
       }
     }
 
