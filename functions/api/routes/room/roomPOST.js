@@ -3,8 +3,7 @@
  *  @route POST /room
  *  @body roomName:string, fromStart:boolean
  *  @error
- *      1. 요청 권한이 없음 (회원가입 되지 않은 사용자이거나, 권한이 없는 회원)
- *      2. 습관방 이름 / 습관방 타입이 전달되지 않음
+ *      1. 습관방 이름 / 습관방 타입이 전달되지 않음
  */
 
 const functions = require('firebase-functions');
@@ -17,10 +16,11 @@ const { nanoid } = require('nanoid');
 
 module.exports = async (req, res) => {
   const { roomName, fromStart } = req.body;
+  const user = req.user;
 
   console.log(roomName, fromStart);
 
-  // error 2. 습관방 이름 또는 타입이 전달되지 않음
+  // error 1. 습관방 이름 또는 타입이 전달되지 않음
   if (!roomName || typeof fromStart !== 'boolean') {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
@@ -35,14 +35,7 @@ module.exports = async (req, res) => {
       isCodeUnique = await roomDB.isCodeUnique(client, code);
     }
 
-    // @FIXME: 실제 creator는 AccessToken을 통해 파악된 사용자
-    creatorId = 1;
-
-    // error 1. 요청 권한이 없음 (회원가입 되지 않은 사용자)
-    // let hasAuth = userDB.checkExistById(userId);
-    // if (!hasAuth) {
-    //   // 등록된 회원이 아니라는 Response
-    // }
+    creatorId = user.userId;
 
     const room = await roomDB.addRoom(client, roomName, code, creatorId, fromStart);
     let data = {
