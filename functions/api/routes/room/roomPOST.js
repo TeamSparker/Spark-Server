@@ -3,7 +3,7 @@
  *  @route POST /room
  *  @body roomName:string, fromStart:boolean
  *  @error
- *      1. 습관방 이름이 전달되지 않음
+ *      1. 습관방 이름 / 습관방 타입이 전달되지 않음
  */
 
 const functions = require('firebase-functions');
@@ -16,10 +16,12 @@ const { nanoid } = require('nanoid');
 
 module.exports = async (req, res) => {
   const { roomName, fromStart } = req.body;
+  const user = req.user;
 
   console.log(roomName, fromStart);
 
-  if (!roomName) {
+  // error 1. 습관방 이름 또는 타입이 전달되지 않음
+  if (!roomName || typeof fromStart !== 'boolean') {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -33,8 +35,7 @@ module.exports = async (req, res) => {
       isCodeUnique = await roomDB.isCodeUnique(client, code);
     }
 
-    // @FIXME: 실제 creator는 AccessToken을 통해 파악된 사용자
-    creatorId = 1;
+    creatorId = user.userId;
 
     const room = await roomDB.addRoom(client, roomName, code, creatorId, fromStart);
     let data = {

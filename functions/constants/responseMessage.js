@@ -7,7 +7,8 @@ module.exports = {
   // 회원가입
   CREATED_USER: '회원 가입 성공',
   DELETE_USER: '회원 탈퇴 성공',
-  ALREADY_EMAIL: '이미 사용중인 이메일입니다',
+  ALREADY_SOCIALID: '이미 사용중인 소셜 아이디입니다.',
+  TOO_LONG_NICKNAME: '닉네임은 10자를 초과할 수 없습니다',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
