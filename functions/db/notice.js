@@ -33,4 +33,19 @@ const activeReadByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { serviceReadByUserId, activeReadByUserId };
+const getServicesByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_service = TRUE
+      AND created_at > current_timestamp + '-7 days'
+      ORDER BY created_at DESC
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { serviceReadByUserId, activeReadByUserId, getServicesByUserId };
