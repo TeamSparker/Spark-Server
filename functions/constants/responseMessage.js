@@ -22,4 +22,10 @@ module.exports = {
   // Room
   CREATE_ROOM_SUCCESS: '습관 방 생성 성공',
   CREATE_ROOM_FAIL: '습관 방 생성 실패',
+  GET_WAITROOM_DATA_SUCCESS: '대기방 정보 확인 완료',
+  GET_WAITROOM_DATA_NULL: '참여코드와 일치하는 습관 방이 존재하지 않습니다',
+  GET_WAITROOM_DATA_STARTED: '이미 습관 형성에 도전중인 방입니다',
+  GET_WAITROOM_DATA_ALREADY: '이미 사용자가 참가중인 방입니다',
+  GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
+  GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
 };
