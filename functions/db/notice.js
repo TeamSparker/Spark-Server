@@ -59,4 +59,38 @@ const deleteNoticeByNoticeId = async (client, noticeId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { serviceReadByUserId, activeReadByUserId, getNoticeByNoticeId, deleteNoticeByNoticeId };
+const getServicesByUserId = async (client, userId, lastid, size) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_service = TRUE
+      AND notification_id < $2
+      AND created_at > current_timestamp + '-7 days'
+      ORDER BY notification_id DESC
+      LIMIT $3
+    `,
+    [userId, lastid, size],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getActivesByUserId = async (client, userId, lastid, size) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_service = FALSE
+      AND notification_id < $2
+      AND created_at > current_timestamp + '-7 days'
+      ORDER BY notification_id DESC
+      LIMIT $3
+    `,
+    [userId, lastid, size],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { serviceReadByUserId, activeReadByUserId, getNoticeByNoticeId, deleteNoticeByNoticeId, getServicesByUserId, getActivesByUserId };
