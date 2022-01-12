@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -45,14 +46,15 @@ const getNoticeByNoticeId = async (client, noticeId) => {
 };
 
 const deleteNoticeByNoticeId = async (client, noticeId) => {
+  const now = dayjs().add(9, 'h');
   const { rows } = await client.query(
     `
     UPDATE spark.notification
-    SET is_deleted = TRUE, deleted_at = now(), updated_at = now()
+    SET is_deleted = TRUE, deleted_at = $2, updated_at = $2
     WHERE notification_id = $1
     RETURNING *
     `,
-    [noticeId],
+    [noticeId, now],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
