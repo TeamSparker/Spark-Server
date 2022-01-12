@@ -22,19 +22,16 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const services = await noticeDB.getServicesByUserId(client, userId, lastid, size);
-    const notices = [];
 
-    for (let i = 0; i < services.length; i++) {
-      const service = services[i];
-      const notice = {
-        noticeId: service.notificationId,
-        noticeTitle: service.title,
-        noticeImg: service.thumbnail,
-        noticeContent: service.content,
-        createdAt: service.createdAt.toISOString().split('T')[0].replace(/-/g, '/'),
-      };
-      notices.push(notice);
-    }
+    const notices = services.map((s) => {
+      const notice = {};
+      notice['noticeId'] = s.notificationId;
+      notice['noticeTitle'] = s.title;
+      notice['noticeImg'] = s.thumbnail;
+      notice['noticeContent'] = s.content;
+      notice['createdAt'] = s.createdAt.toISOString().split('T')[0].replace(/-/g, '/');
+      return notice;
+    });
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SERVICE_GET_SUCCESS, { notices }));
   } catch (error) {
