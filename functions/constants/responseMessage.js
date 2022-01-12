@@ -28,4 +28,7 @@ module.exports = {
   GET_WAITROOM_DATA_ALREADY: '이미 사용자가 참가중인 방입니다',
   GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
   GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
+  GET_ROOM_DATA_FAIL: '존재하지 않는 습관방입니다',
+  NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
+  NOT_MEMBER: '참여중인 습관방이 아닙니다',
 };
