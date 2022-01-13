@@ -30,6 +30,7 @@ module.exports = {
   GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
   GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
   PURPOSE_SET_SUCCESS: '목표 설정 성공',
+  ROOM_ID_NOT_FOUND: '유효하지 않은 roomId입니다',
 
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
