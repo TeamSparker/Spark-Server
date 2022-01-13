@@ -129,7 +129,7 @@ const getRecordsByDay = async (client, roomId, day) => {
       AND r.day = $2
     ORDER BY e.created_at
     `,
-    [roomId,day]
+    [roomId, day],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -197,4 +197,4 @@ const enterById = async (client, roomId, userId) => {
   }
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getRoomById, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay, checkEnteredById, enterById };
+module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay, checkEnteredById, enterById };
