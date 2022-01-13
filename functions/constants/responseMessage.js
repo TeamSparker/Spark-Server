@@ -37,3 +37,4 @@ module.exports = {
   RECORD_LIKE_SUCCESS: '인증 좋아요 성공',
   RECORD_UNLIKE_SUCCESS: '인증 좋아요 취소 성공',  
 };
+//aa
