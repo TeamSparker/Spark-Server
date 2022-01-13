@@ -43,6 +43,18 @@ const getRoomByCode = async (client, code) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getRoomById = async (client, roomId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.room
+    WHERE room_id = $1
+      AND is_deleted = FALSE
+    `,
+    [roomId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getEntriesByRoomId = async (client, roomId) => {
   const { rows } = await client.query(
     `
@@ -101,4 +113,25 @@ const updatePurposeByEntryId = async (client, entryId, moment, purpose) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomByCode, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId };
+const getRecordsByDay = async (client, roomId, day) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry e
+    INNER JOIN spark.record r
+    ON r.entry_id = e.entry_id
+    INNER JOIN spark.user u
+    ON e.user_id = u.user_id
+    WHERE e.room_id = $1
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      AND e.is_deleted = FALSE
+      AND r.is_deleted = FALSE
+      AND r.day = $2
+    ORDER BY e.created_at
+    `,
+    [roomId,day]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addRoom, isCodeUnique, getRoomByCode, getRoomById, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay };
