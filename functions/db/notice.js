@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -31,6 +32,31 @@ const activeReadByUserId = async (client, userId) => {
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getNoticeByNoticeId = async (client, noticeId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.notification
+    WHERE notification_id = $1
+    `,
+    [noticeId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteNoticeByNoticeId = async (client, noticeId) => {
+  const now = dayjs().add(9, 'h');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.notification
+    SET is_deleted = TRUE, deleted_at = $2, updated_at = $2
+    WHERE notification_id = $1
+    RETURNING *
+    `,
+    [noticeId, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
 const getServicesByUserId = async (client, userId, lastid, size) => {
@@ -67,4 +93,4 @@ const getActivesByUserId = async (client, userId, lastid, size) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { serviceReadByUserId, activeReadByUserId, getServicesByUserId, getActivesByUserId };
+module.exports = { serviceReadByUserId, activeReadByUserId, getNoticeByNoticeId, deleteNoticeByNoticeId, getServicesByUserId, getActivesByUserId };
