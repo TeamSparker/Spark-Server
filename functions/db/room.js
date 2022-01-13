@@ -70,16 +70,66 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const kickedHistoryByRoomIdAndUserId = async (client, roomId, userId) => {
+const kickedHistoryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.entry
     WHERE room_id = $1
       AND user_id = $2
-      AND is_kicked = TRUE
       AND is_deleted = FALSE
+      AND is_kicked = TRUE
     `,
     [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getEntryByIds = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry
+    WHERE room_id = $1
+      AND user_id = $2
+      AND is_deleted = FALSE
+      AND is_out = FALSE
+      AND is_kicked = FALSE
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updatePurposeByEntryId = async (client, entryId, moment, purpose) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.entry
+    SET moment = $2, purpose = $3, updated_at = $4
+    WHERE entry_id = $1
+    RETURNING *
+    `,
+    [entryId, moment, purpose, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const getRecordsByDay = async (client, roomId, day) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry e
+    INNER JOIN spark.record r
+    ON r.entry_id = e.entry_id
+    INNER JOIN spark.user u
+    ON e.user_id = u.user_id
+    WHERE e.room_id = $1
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      AND e.is_deleted = FALSE
+      AND r.is_deleted = FALSE
+      AND r.day = $2
+    ORDER BY e.created_at
+    `,
+    [roomId,day]
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -147,4 +197,4 @@ const enterById = async (client, roomId, userId) => {
   }
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getEntriesByRoomId, kickedHistoryByRoomIdAndUserId, checkEnteredById, enterById };
+module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getRoomById, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay, checkEnteredById, enterById };
