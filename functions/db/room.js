@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -57,18 +58,47 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const kickedHistoryByRoomIdAndUserId = async (client, roomId, userId) => {
+const kickedHistoryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.entry
     WHERE room_id = $1
       AND user_id = $2
-      AND is_kicked = TRUE
       AND is_deleted = FALSE
+      AND is_kicked = TRUE
     `,
     [roomId, userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomByCode, getEntriesByRoomId, kickedHistoryByRoomIdAndUserId };
+const getEntryByIds = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry
+    WHERE room_id = $1
+      AND user_id = $2
+      AND is_deleted = FALSE
+      AND is_out = FALSE
+      AND is_kicked = FALSE
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updatePurposeByEntryId = async (client, entryId, moment, purpose) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.entry
+    SET moment = $2, purpose = $3, updated_at = $4
+    WHERE entry_id = $1
+    RETURNING *
+    `,
+    [entryId, moment, purpose, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addRoom, isCodeUnique, getRoomByCode, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId };
