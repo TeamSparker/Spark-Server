@@ -26,31 +26,31 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-    
+
     const room = await roomDB.getRoomById(client, roomId);
 
     const startDate = dayjs(room.startAt);
     const endDate = dayjs(room.endAt);
-    const now = dayjs().add(9, "hour");
-    const today = dayjs(now.format("YYYY-MM-DD"));
-    const leftDay = endDate.diff(today, "day");
-    const day = today.diff(startDate,"day") + 1;
+    const now = dayjs().add(9, 'hour');
+    const today = dayjs(now.format('YYYY-MM-DD'));
+    const leftDay = endDate.diff(today, 'day');
+    const day = today.diff(startDate, 'day') + 1;
 
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
-        res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
+      res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
     }
     // @error 2. 진행중인 습관방이 아닌 경우
-    if (!room.isStarted || leftDay < 0) {
-        res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_ONGOING_ROOM));
+    if (room.status !== 'ONGOING' || leftDay < 0) {
+      res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_ONGOING_ROOM));
     }
     const entries = await roomDB.getEntriesByRoomId(client, roomId);
 
     // @error 3. 접근 권한이 없는 유저인 경우
     const userEntry = entries.filter((entry) => entry.userId === user.userId);
-    
+
     if (!userEntry.length) {
-        res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
+      res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
 
     const records = await roomDB.getRecordsByDay(client, roomId, day);
@@ -59,49 +59,47 @@ module.exports = async (req, res) => {
 
     let otherRecords = [];
     records.map((record) => {
-        if (record.userId === user.userId) {
-            myRecord = {
-                recordId: record.recordId,
-                userId: record.userId,
-                profileImg: record.profileImg,
-                nickname: record.nickname,
-                status: record.status,
-                rest: record.rest
-            }
-        }
-        else{
-            otherRecords.push({
-                recordId: record.recordId,
-                userId: record.userId,
-                profileImg: record.profileImg,
-                nickname: record.nickname,
-                status: record.status
-            });
-        }
+      if (record.userId === user.userId) {
+        myRecord = {
+          recordId: record.recordId,
+          userId: record.userId,
+          profileImg: record.profileImg,
+          nickname: record.nickname,
+          status: record.status,
+          rest: record.rest,
+        };
+      } else {
+        otherRecords.push({
+          recordId: record.recordId,
+          userId: record.userId,
+          profileImg: record.profileImg,
+          nickname: record.nickname,
+          status: record.status,
+        });
+      }
     });
 
     const recievedSpark = await sparkDB.countSparkByRecordId(client, myRecord.recordId);
     myRecord.recievedSpark = parseInt(recievedSpark[0].count);
 
-    console.log("myRecrod", myRecord);
-    console.log("otherRecords", otherRecords);
+    console.log('myRecrod', myRecord);
+    console.log('otherRecords', otherRecords);
 
     const data = {
-        roomId,
-        roomName: room.roomName,
-        startDate: startDate.format('YYYY.MM.DD.'),
-        endDate: endDate.format('YYYY.MM.DD.'),
-        moment: userEntry.moment,
-        purpose: userEntry.purpose,
-        leftDay,
-        life: room.life,
-        fromStart: room.fromStart,
-        myRecord,
-        otherRecords
-    }
+      roomId,
+      roomName: room.roomName,
+      startDate: startDate.format('YYYY.MM.DD.'),
+      endDate: endDate.format('YYYY.MM.DD.'),
+      moment: userEntry.moment,
+      purpose: userEntry.purpose,
+      leftDay,
+      life: room.life,
+      fromStart: room.fromStart,
+      myRecord,
+      otherRecords,
+    };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_DETAIL_SUCCESS, data));
-
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

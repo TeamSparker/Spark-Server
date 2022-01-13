@@ -129,7 +129,7 @@ const getRecordsByDay = async (client, roomId, day) => {
       AND r.day = $2
     ORDER BY e.created_at
     `,
-    [roomId,day]
+    [roomId, day],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
