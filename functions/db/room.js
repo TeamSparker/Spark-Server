@@ -122,6 +122,7 @@ const getFriendsByIds = async (client, roomId, userId) => {
       AND is_deleted = FALSE
       AND is_out = FALSE
       AND is_kicked = FALSE
+      ORDER BY created_at
     `,
     [roomId, userId],
   );
