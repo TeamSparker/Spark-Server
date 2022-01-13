@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
     }
 
     // @error 3. 참여 코드에 해당하는 방은 이미 습관 시작한 방임
-    if (room.isStarted) {
+    if (room.status === 'ONGOING') {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
     }
 
