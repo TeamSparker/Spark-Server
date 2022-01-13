@@ -3,6 +3,7 @@ module.exports = {
   OUT_OF_VALUE: '파라미터 값이 잘못되었습니다',
   PATH_ERROR: '요청 경로가 올바르지 않습니다',
   INTERNAL_SERVER_ERROR: '서버 내부 오류',
+  PRIV_NOT_FOUND: '권한이 없는 요청입니다',
 
   // 회원가입
   CREATED_USER: '회원 가입 성공',
@@ -31,4 +32,11 @@ module.exports = {
   GET_ROOM_DATA_FAIL: '존재하지 않는 습관방입니다',
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
+
+  // Notice
+  SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
+  ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',
+  SERVICE_GET_SUCCESS: '서비스 알림 조회 완료',
+  ACTIVE_GET_SUCCESS: '활동 알림 조회 완료',
+
 };

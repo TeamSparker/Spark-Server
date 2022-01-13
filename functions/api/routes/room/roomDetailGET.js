@@ -8,9 +8,6 @@ const { userDB, roomDB, sparkDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
-const timezone = require('dayjs/plugin/timezone');
-const utc = require('dayjs/plugin/utc');
-
 
 /**
  *  @습관방_상세_조회
@@ -26,14 +23,11 @@ module.exports = async (req, res) => {
   const user = req.user;
 
   let client;
-  dayjs.extend(utc);
-  dayjs.extend(timezone);
 
   try {
     client = await db.connect(req);
     
     const room = await roomDB.getRoomById(client, roomId);
-    // console.log("room:", room);
 
     const startDate = dayjs(room.startAt);
     const endDate = dayjs(room.endAt);
@@ -41,12 +35,6 @@ module.exports = async (req, res) => {
     const today = dayjs(now.format("YYYY-MM-DD"));
     const leftDay = endDate.diff(today, "day");
     const day = today.diff(startDate,"day") + 1;
-    
-    // console.log("start\n", startDate);
-    // console.log("today\n", today, today.diff(startDate,"day"));
-    // console.log("now\n", now, now.diff(startDate,"day"));
-    // console.log("day\n", day);
-    // console.log("leftDay\n", leftDay);
 
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
@@ -60,7 +48,7 @@ module.exports = async (req, res) => {
 
     // @error 3. 접근 권한이 없는 유저인 경우
     const userEntry = entries.filter((entry) => entry.userId === user.userId);
-    // console.log(userEntry);
+    
     if (!userEntry.length) {
         res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }

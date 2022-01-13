@@ -69,8 +69,7 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-
-const checkKickedByRoomIdAndUserId = async (client, roomId, userId) => {
+const kickedHistoryByRoomIdAndUserId = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.entry
@@ -105,4 +104,4 @@ const getRecordsByDay = async (client, roomId, day) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getEntriesByRoomId, checkKickedByRoomIdAndUserId, getRecordsByDay };
+module.exports = { addRoom, isCodeUnique, getRoomByCode, getRoomById, getEntriesByRoomId, kickedHistoryByRoomIdAndUserId, getRecordsByDay };
