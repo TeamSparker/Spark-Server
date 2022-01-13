@@ -1,3 +1,10 @@
+const functions = require('firebase-functions');
+const util = require('../../../lib/util');
+const statusCode = require('../../../constants/statusCode');
+const responseMessage = require('../../../constants/responseMessage');
+const db = require('../../../db/db');
+const { userDB, roomDB } = require('../../../db');
+
 /**
  *  @코드로_대기_방_정보_확인
  *  @route GET /room/code/:code
@@ -8,13 +15,6 @@
  *      4. 이미 참여중인 방인 경우
  *      5. 한번 내보내진 사용자인 경우
  */
-
-const functions = require('firebase-functions');
-const util = require('../../../lib/util');
-const statusCode = require('../../../constants/statusCode');
-const responseMessage = require('../../../constants/responseMessage');
-const db = require('../../../db/db');
-const { userDB, roomDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { code } = req.params;
