@@ -6,7 +6,7 @@ const db = require('../../../db/db');
 const { userDB, roomDB } = require('../../../db');
 
 /**
- *  @코드로_대기_방_정보_확인
+ *  @대기_방_조회
  *  @route GET /room/:roomId/waiting
  *  @error
  *      1. 유효하지 않은 roomId
