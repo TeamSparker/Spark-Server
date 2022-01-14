@@ -12,7 +12,8 @@ const { roomDB } = require('../../../db');
  *  @error
  *      1. roomId가 올바르지 않음 (이미 삭제된 방이거나 존재하지 않은 방)
  *      2. 사용자가 이미 참여중인 방임
- *      3. 습관방 참여 실패
+ *      3. 정원이 가득찬 습관방
+ *      4. 습관방 참여 실패
  */
 
 module.exports = async (req, res) => {
@@ -38,8 +39,15 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ENTER_ROOM_ALREADY));
     }
 
+    // error 3. 정원이 가득찬 습관방
+    const entries = roomDB.getEntriesByRoomId(client, roomId);
+    if (entries.length > 9) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
+    }
+
     const enterEntry = await roomDB.enterById(client, roomId, userId);
-    // @error 3. 습관 방 참여 실패
+
+    // @error 4. 습관 방 참여 실패
     if (!enterEntry) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ENTER_ROOM_FAIL));
     }
