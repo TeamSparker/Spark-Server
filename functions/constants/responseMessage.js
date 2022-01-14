@@ -29,6 +29,7 @@ module.exports = {
   GET_WAITROOM_DATA_ALREADY: '이미 사용자가 참가중인 방입니다',
   GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
   GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
+  GET_WAITROOM_DATA_FULL: '정원이 가득찬 습관방입니다',
   ENTER_ROOM_SUCCESS: '습관 방 참여 완료',
   ENTER_ROOM_FAIL: '습관 방 참여 실패',
   ENTER_ROOM_ALREADY: '이미 참여중인 습관 방입니다',
