@@ -52,6 +52,8 @@ module.exports = async (req, res) => {
       await recordDB.insertRecordById(client, entries[i].entryId, room.startAt);
     }
 
+    // @TODO: Send Notification !!
+
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.START_ROOM_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
