@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
 
     let records = [];
     for(let i=0; i<recordIds.length; i++) {
-      const date = dayjs(responseRecords[i].date).format("YYYY-M-D");
+      const date = dayjs(responseRecords[i].date).format("YYYY-MM-DD");
       const day = convertDay.numToString[dayjs(responseRecords[i].date).day()];
       records.push({
           date,

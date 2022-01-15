@@ -51,7 +51,7 @@ const getRoomsByIds = async (client, roomIds) => {
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
 const getRoomByCode = async (client, code) => {
   const { rows } = await client.query(
@@ -113,7 +113,7 @@ const getUserProfilesByRoomIds = async (client, roomIds, today) => {
     AND u.is_deleted = FALSE
     ORDER BY e.created_at
     `,
-    [today]
+    [today],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -152,7 +152,6 @@ const kickedHistoryByIds = async (client, roomId, userId) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getEntryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -203,7 +202,6 @@ const getRecordsByDay = async (client, roomId, day) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getRecordById = async (client, recordId) => {
   const { rows } = await client.query(
@@ -292,16 +290,18 @@ module.exports = {
   isCodeUnique, 
   getRoomById, 
   getRoomsByIds,
-  getRoomByCode, 
-  getEntriesByRoomId, 
-  kickedHistoryByIds, 
-  getEntryByIds, 
-  updatePurposeByEntryId, 
-  getRecordsByDay, 
-  checkEnteredById, 
-  enterById, 
-  getUserProfilesByRoomIds, 
+  getRoomByCode,
+  getEntriesByRoomId,
   getRoomsByUserId,
+  getUserProfilesByRoomIds,
+  kickedHistoryByIds,
+  getEntryByIds,
+  updatePurposeByEntryId,
+  getRecordsByDay,
+  checkEnteredById,
+  enterById,
+  getFriendsByIds,
+  startRoomById,
   getRecordsByRoomIds,
   getRecordById,
 };
