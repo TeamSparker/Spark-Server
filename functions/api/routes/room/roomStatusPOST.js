@@ -5,7 +5,7 @@ const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const pushAlarm = require('../../../lib/pushAlarm');
-const { userDB, roomDB, recordDB } = require('../../../db');
+const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
 
 /**
  *  @쉴래요_고민중
@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
 
     await recordDB.updateStatusByRecordId(client, recentRecord.recordId, statusType);
 
-    // 고민중을 눌렀으면 PushAlarm 전송
+    // 고민중을 눌렀으면 Notification에 추가, PushAlarm 전송
     if (statusType === 'CONSIDER') {
       const sender = await userDB.getUserById(client, userId);
       const receivers = await roomDB.getFriendsByIds(client, roomId, userId);
@@ -65,9 +65,11 @@ module.exports = async (req, res) => {
       const { title, body, isService } = alarmMessage.STATUS_CONSIDERING(sender.nickname);
 
       for (let i = 0; i < receiversIds.length; i++) {
-        const receiver = await userDB.getUserById(client, receiversIds[i]);
+        const receiverId = receiversIds[i];
+        const receiver = await userDB.getUserById(client, receiverId);
         const receiverToken = receiver.deviceToken;
-        pushAlarm.send(req, res, receiverToken, 'Spark 🔥', body);
+        await noticeDB.addNotification(client, title, body, sender.profileImg, receiverId, isService);
+        pushAlarm.send(req, res, receiverToken, 'Spark ﹖', body);
       }
     }
 
