@@ -318,10 +318,10 @@ const startRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { 
-  addRoom, 
-  isCodeUnique, 
-  getRoomById, 
+module.exports = {
+  addRoom,
+  isCodeUnique,
+  getRoomById,
   getRoomsByIds,
   getRoomByCode,
   getEntriesByRoomId,

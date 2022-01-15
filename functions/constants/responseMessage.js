@@ -25,9 +25,10 @@ module.exports = {
   CREATE_ROOM_SUCCESS: '습관 방 생성 성공',
   CREATE_ROOM_FAIL: '습관 방 생성 실패',
   GET_WAITROOM_DATA_SUCCESS: '대기방 정보 확인 완료',
+  GET_WAITROOM_DATA_IMPOSSIBLE: '참여할 수 없는 코드에요.',
   GET_WAITROOM_DATA_NULL: '존재하지 않는 코드에요.',
   GET_WAITROOM_DATA_STARTED: '이미 습관 형성에 도전중인 방입니다',
-  GET_WAITROOM_DATA_ALREADY: '이미 사용자가 참가중인 방입니다',
+  GET_WAITROOM_DATA_ALREADY: '이미 참여 중인 코드에요.',
   GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
   GET_WAITROOM_DATA_KICKED: '습관 방 생성자에 의해 내보내진 방입니다',
   GET_WAITROOM_DATA_FULL: '정원이 가득찬 습관방입니다',
@@ -42,6 +43,7 @@ module.exports = {
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
   NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
+
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
@@ -54,7 +56,6 @@ module.exports = {
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
   SEND_SPARK_SUCCESS: '스파크 전송 선공',
   
-
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
   ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',
@@ -62,4 +63,5 @@ module.exports = {
   ACTIVE_GET_SUCCESS: '활동 알림 조회 완료',
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
+  PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
 };
