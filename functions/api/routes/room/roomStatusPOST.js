@@ -1,10 +1,11 @@
 const functions = require('firebase-functions');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
+const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const pushAlarm = require('../../../lib/pushAlarm');
-const { roomDB, recordDB } = require('../../../db');
+const { userDB, roomDB, recordDB } = require('../../../db');
 
 /**
  *  @쉴래요_고민중
@@ -58,7 +59,16 @@ module.exports = async (req, res) => {
 
     // 고민중을 눌렀으면 PushAlarm 전송
     if (statusType === 'CONSIDER') {
-      pushAlarm.send(req, res, 'Spark 🔥', '영권님이 고민중 버튼을 눌렀습니다.');
+      const sender = await userDB.getUserById(client, userId);
+      const receivers = await roomDB.getFriendsByIds(client, roomId, userId);
+      const receiversIds = receivers.map((r) => r.userId);
+      const { title, body, isService } = alarmMessage.STATUS_CONSIDERING(sender.nickname);
+
+      for (let i = 0; i < receiversIds.length; i++) {
+        const receiver = await userDB.getUserById(client, receiversIds[i]);
+        const receiverToken = receiver.deviceToken;
+        pushAlarm.send(req, res, receiverToken, 'Spark 🔥', body);
+      }
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
