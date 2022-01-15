@@ -19,7 +19,6 @@ const roomPOST = require('./roomPOST');
  *    1. 잘못된 lastid
  */
 
-
 module.exports = async (req, res) => {
   const lastid = Number(req.query.lastid);
   const size = Number(req.query.size);
@@ -110,31 +109,29 @@ module.exports = async (req, res) => {
       }
       roomProfileImg.push(profileImgs);
     });
-     
-  console.log("roomProfileImg", roomProfileImg);
-  
-  let rooms = [];
-  console.log("roomInfo", roomInfo);
-  for (let i=0; i<responseRoomIds.length ; i++) {
-    
-    const endDate = dayjs(roomInfo[i].endAt);
-    const leftDay = endDate.diff(today, 'day');
-    let isStarted = true;
-    if (roomInfo[i] === 'NONE') {
-      isStarted = false;
-    }
-    const room = {
-      "roomId": roomInfo[i].roomId,
-      "roomName": roomInfo[i].roomName,
-      leftDay,
-      "profileImg": roomProfileImg[i],
-      "life": roomInfo[i].life,
-      isStarted,
-      "isDone": roomUserStatus[i],
-      "memberNum": roomMemberNum[i],
-      "doneMemberNum": roomDoneMemberNum[i]
-    }
-    rooms.push(room);
+       
+    let rooms = [];
+    console.log("roomInfo", roomInfo);
+    for (let i=0; i<responseRoomIds.length ; i++) {
+      
+      const endDate = dayjs(roomInfo[i].endAt);
+      const leftDay = endDate.diff(today, 'day');
+      let isStarted = true;
+      if (roomInfo[i] === 'NONE') {
+        isStarted = false;
+      }
+      const room = {
+        "roomId": roomInfo[i].roomId,
+        "roomName": roomInfo[i].roomName,
+        leftDay,
+        "profileImg": roomProfileImg[i],
+        "life": roomInfo[i].life,
+        isStarted,
+        "isDone": roomUserStatus[i],
+        "memberNum": roomMemberNum[i],
+        "doneMemberNum": roomDoneMemberNum[i]
+      }
+      rooms.push(room);
   }
 
   res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms }));
