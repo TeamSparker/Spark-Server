@@ -51,7 +51,7 @@ const getRoomsByIds = async (client, roomIds) => {
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
 const getRoomByCode = async (client, code) => {
   const { rows } = await client.query(
@@ -113,7 +113,7 @@ const getUserProfilesByRoomIds = async (client, roomIds, today) => {
     AND u.is_deleted = FALSE
     ORDER BY e.created_at
     `,
-    [today]
+    [today],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -152,7 +152,6 @@ const kickedHistoryByIds = async (client, roomId, userId) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getEntryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -203,7 +202,6 @@ const getRecordsByDay = async (client, roomId, day) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getRecordById = async (client, recordId) => {
   const { rows } = await client.query(
@@ -286,22 +284,57 @@ const enterById = async (client, roomId, userId) => {
   }
 };
 
+const getFriendsByIds = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry
+    WHERE room_id = $1
+      AND user_id != $2
+      AND is_deleted = FALSE
+      AND is_out = FALSE
+      AND is_kicked = FALSE
+      ORDER BY created_at
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const startRoomById = async (client, roomId) => {
+  const now = dayjs().add(9, 'hour');
+  const startAt = now.startOf('d');
+  const endAt = now.add(66, 'day').startOf('d');
+  console.log(endAt.diff(startAt, 'd'));
+  const { rows } = await client.query(
+    `
+    UPDATE spark.room
+    SET status = 'ONGOING', updated_at = $2, start_at = $3, end_at = $4
+    WHERE room_id = $1
+    AND status != 'ONGOING'
+    RETURNING *
+    `,
+    [roomId, now, startAt, endAt],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
 
 module.exports = { 
   addRoom, 
   isCodeUnique, 
   getRoomById, 
   getRoomsByIds,
-  getRoomByCode, 
-  getEntriesByRoomId, 
-  kickedHistoryByIds, 
-  getEntryByIds, 
-  updatePurposeByEntryId, 
-  getRecordsByDay, 
-  checkEnteredById, 
-  enterById, 
-  getUserProfilesByRoomIds, 
+  getRoomByCode,
+  getEntriesByRoomId,
   getRoomsByUserId,
+  getUserProfilesByRoomIds,
+  kickedHistoryByIds,
+  getEntryByIds,
+  updatePurposeByEntryId,
+  getRecordsByDay,
+  checkEnteredById,
+  enterById,
+  getFriendsByIds,
+  startRoomById,
   getRecordsByRoomIds,
   getRecordById,
 };

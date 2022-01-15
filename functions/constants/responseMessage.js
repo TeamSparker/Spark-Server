@@ -45,6 +45,7 @@ module.exports = {
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
+  CERTIFY_SUCCESS: '습관인증 업로드 성공',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
@@ -53,6 +54,7 @@ module.exports = {
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
   SEND_SPARK_SUCCESS: '스파크 전송 선공',
   
+
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
   ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',

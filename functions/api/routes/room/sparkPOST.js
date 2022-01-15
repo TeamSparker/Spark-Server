@@ -4,7 +4,6 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { roomDB, recordDB, sparkDB } = require('../../../db');
-const { nanoid } = require('nanoid');
 
 /**
  *  @스파크_보내기
@@ -41,10 +40,10 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
 
-    const entryId = await roomDB.getEntryByIds(client, roomId, user.userId);
+    const entry = await roomDB.getEntryByIds(client, roomId, user.userId);
 
     // @error 3. 유저가 해당 습관방에 참여하지 않는 경우
-    if(!entryId) {
+    if(!entry) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MEMBER));
     }
 
