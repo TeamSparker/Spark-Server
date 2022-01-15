@@ -4,4 +4,5 @@ module.exports = {
   sparkDB: require('./spark'),
   likeDB: require('./like'),
   noticeDB: require('./notice'),
+  recordDB: require('./record'),
 };

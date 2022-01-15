@@ -36,11 +36,13 @@ module.exports = {
   ENTER_ROOM_ALREADY: '이미 참여중인 습관 방입니다',
   ROOM_ID_INVALID: '올바르지 않은 roomId입니다',
   PURPOSE_SET_SUCCESS: '목표 설정 성공',
+  ROOM_ID_NOT_FOUND: '유효하지 않은 roomId입니다',
   GET_ROOM_DATA_FAIL: '존재하지 않는 습관방입니다',
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
-  
+  START_ROOM_SUCCESS: '습관 방 시작 완료',
+  START_ROOM_ALREADY: '이미 시작된 방입니다',
 
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
