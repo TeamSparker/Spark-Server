@@ -3,6 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
+const pushAlarm = require('../../../lib/pushAlarm');
 const { roomDB, recordDB } = require('../../../db');
 
 /**
@@ -54,6 +55,11 @@ module.exports = async (req, res) => {
     }
 
     await recordDB.updateStatusByRecordId(client, recentRecord.recordId, statusType);
+
+    // 고민중을 눌렀으면 PushAlarm 전송
+    if (statusType === 'CONSIDER') {
+      pushAlarm.send(req, res, 'Spark 🔥', '영권님이 고민중 버튼을 눌렀습니다.');
+    }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
   } catch (error) {
