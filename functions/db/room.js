@@ -118,6 +118,27 @@ const getUserProfilesByRoomIds = async (client, roomIds, today) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getRecordsByRoomIds = async (client, roomIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT *
+    FROM spark.entry e
+    INNER JOIN spark.user u
+    ON u.user_id = e.user_id
+    LEFT JOIN spark.record r
+    ON e.entry_id = r.entry_id
+    WHERE e.room_id in (${roomIds.join()})
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
+    AND u.is_deleted = FALSE
+    AND NOT r.certified_at IS null
+    ORDER BY r.date DESC, r.certified_at DESC
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const kickedHistoryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
@@ -296,4 +317,5 @@ module.exports = {
   enterById,
   getFriendsByIds,
   startRoomById,
+  getRecordsByRoomIds,
 };
