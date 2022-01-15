@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
 
     // 마지막일 때 -> 빈 배열 return
     if(!responseRoomIds.length) {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { "rooms": [] }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { "rooms": [] }));
     }
 
     const roomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);

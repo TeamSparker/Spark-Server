@@ -19,20 +19,6 @@ const _ = require('lodash');
  *    1. 잘못된 lastid
  */
 
-//  {
-//     "date": "2021-1-7",
-//     "day": "월요일",
-//     "userId": "1",
-//     "recordId": "1",
-//     "nickname": "스파커들~~",
-//     "profileImg": "~~",
-//     "roomName": "아침 독서",
-//     "certifyingImg": "~~~",
-// "likeNum": 22,
-//     "sparkCount": 3,
-//     "isLiked": false,
-//     "timeRecord": "01:01:03"
-// }
 module.exports = async (req, res) => {
   const lastid = Number(req.query.lastid);
   const size = Number(req.query.size);
@@ -43,6 +29,10 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
+    
+    if(!rawRooms.length){
+        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { "records": [] }));
+    }
     const roomIds = [...new Set(rawRooms.filter(Boolean).map((room) => room.roomId))];
     const allRecords = await roomDB.getRecordsByRoomIds(client, roomIds);
     const allRecordIds = allRecords.map((record) => record.recordId);
@@ -62,6 +52,9 @@ module.exports = async (req, res) => {
     else {
       responseRecords = allRecords.slice(0, size);
       recordIds = allRecordIds.slice(0, size);
+    }
+    if(!recordIds.length) {
+        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { "records": [] }));
     }
     let likeNums = [];
     let sparkNums = [];
@@ -100,7 +93,7 @@ module.exports = async (req, res) => {
       });
     }
     
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { records }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records }));
 
   } catch (error) {
     console.log(error);

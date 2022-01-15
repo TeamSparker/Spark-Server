@@ -40,6 +40,9 @@ module.exports = {
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
+
+  //Feed
+  GET_FEED_SUCCES: '피드 조회 성공',
   
 
   // Notice
