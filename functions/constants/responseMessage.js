@@ -41,13 +41,12 @@ module.exports = {
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
-    
+
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
 
   //Feed
   GET_FEED_SUCCES: '피드 조회 성공',
-
 
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
@@ -56,4 +55,5 @@ module.exports = {
   ACTIVE_GET_SUCCESS: '활동 알림 조회 완료',
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
+  PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
 };
