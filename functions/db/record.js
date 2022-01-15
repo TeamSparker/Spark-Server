@@ -47,4 +47,22 @@ const updateStatusByRecordId = async (client, recordId, statusType) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { insertRecordById, getRecentRecordByEntryId, updateStatusByRecordId };
+const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.record
+    SET certifying_img = $2, timer_record = $3, status = 'DONE', updated_at = $4, certified_at = $4
+    WHERE record_id = $1
+    RETURNING *
+    `,
+    [recordId, certifyingImg,timerRecord, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+module.exports = { 
+  insertRecordById, 
+  getRecentRecordByEntryId, 
+  updateStatusByRecordId,
+  uploadRecord,
+};
