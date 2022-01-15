@@ -197,4 +197,21 @@ const enterById = async (client, roomId, userId) => {
   }
 };
 
-module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay, checkEnteredById, enterById };
+const getFriendsByIds = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry
+    WHERE room_id = $1
+      AND user_id != $2
+      AND is_deleted = FALSE
+      AND is_out = FALSE
+      AND is_kicked = FALSE
+      ORDER BY created_at
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+
+module.exports = { addRoom, isCodeUnique, getRoomById, getRoomByCode, getEntriesByRoomId, kickedHistoryByIds, getEntryByIds, updatePurposeByEntryId, getRecordsByDay, checkEnteredById, enterById, getFriendsByIds };
