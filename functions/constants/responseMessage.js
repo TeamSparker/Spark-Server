@@ -56,4 +56,5 @@ module.exports = {
   ACTIVE_GET_SUCCESS: '활동 알림 조회 완료',
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
+  PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
 };
