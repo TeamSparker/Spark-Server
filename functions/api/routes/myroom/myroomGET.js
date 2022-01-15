@@ -18,16 +18,7 @@ const _ = require('lodash');
  *    1. 잘못된 roomType
  *    2. 잘못된 lastid
  */
-//  {
-//     "roomId": 1,
-//     "roomName": "미라클 모닝",
-//     "leftDay": 63,
-//     "thumbnail": "dfj3i59fisdkfn",
-//     "totalRecievedSpark": "15",
-//     "startDate": "2021-12-26",
-//     "endDate": "2022-02-26",
-//     "failDay": null,
-// }, 
+
 module.exports = async (req, res) => {
   const lastid = Number(req.query.lastid);
   const size = Number(req.query.size);
@@ -43,7 +34,7 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-    const totalRooms = await roomDB.getRoomsByUserId(client, user.userId);
+    const totalRooms = await roomDB.getCardsByUserId(client, user.userId);
     let ongoingRooms = totalRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
     let completeRooms = totalRooms.filter((rawRoom) => rawRoom.status === "COMPLETE");
     let failRooms = totalRooms.filter((rawRoom) => rawRoom.status === "FAIL");
@@ -98,7 +89,7 @@ module.exports = async (req, res) => {
             roomName: room.roomName,
             leftDay, 
             thumbnail: room.thumbnail,
-            totalRecievedSpark: parseInt(sparkCount.count),
+            totalRecievedSpark: sparkCount.count? parseInt(sparkCount.count): 0,
             startDate: startDate.format('YYYY-MM-DD'),
             endDate: startDate.format('YYYY-MM-DD'),
             failDay: null,
@@ -111,8 +102,15 @@ module.exports = async (req, res) => {
         roomData.push(oneRoom);
     }
 
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms: roomData}));
+    const data = {
+        nickname: user.nickname,
+        totalRoomNum,
+        ongoingRoomNum,
+        completeRoomNum,
+        failRoomNum,
+        rooms: roomData
+    }
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_SUCCESS, data));
 
   } catch (error) {
     console.log(error);
