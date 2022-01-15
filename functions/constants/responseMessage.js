@@ -51,4 +51,9 @@ module.exports = {
   ACTIVE_GET_SUCCESS: '활동 알림 조회 완료',
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
+
+  // 인증
+  INVALID_USER_STATUS: '유효하지 않은 status type입니다',
+  CERTIFICATION_ALREADY_DONE: '이미 인증을 완료하였습니다',
+  UPDATE_STATUS_SUCCESS: '상태 변경 완료',
 };
