@@ -11,5 +11,6 @@ router.get('/:roomId', checkUser, require('./roomDetailGET'));
 router.get('', checkUser, require('./roomListGET'));
 router.get('/:roomId/waiting/member', checkUser, require('./roomWaitingMemberGET'));
 router.post('/:roomId/start', checkUser, require('./roomStartPOST'));
+router.post('/:roomId/spark', checkUser, require('./sparkPOST'));
 
 module.exports = router;

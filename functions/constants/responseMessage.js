@@ -41,14 +41,18 @@ module.exports = {
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
-    
+  NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
+  DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
 
-  //Feed
+  // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
 
-
+  // Spark
+  CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
+  SEND_SPARK_SUCCESS: '스파크 전송 선공',
+  
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
   ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',
