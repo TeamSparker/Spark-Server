@@ -1,42 +1,42 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
   const title = '인증 완료';
-  const content = `${who}님이 '${roomName}' 인증을 완료했습니다.`;
+  const body = `${who}님이 '${roomName}' 인증을 완료했습니다.`;
 
-  return [title, content, false];
+  return { title, body, isService: false };
 };
 
 const STATUS_CONSIDERING = (who) => {
   const title = '고민중';
-  const content = `${who}님이 고민중 버튼을 눌렀습니다.`;
+  const body = `${who}님이 고민중 버튼을 눌렀습니다.`;
 
-  return [title, content, false];
+  return { title, body, isService: false };
 };
 
 const ROOM_OUT = (who, roomName) => {
   const title = '습관방 퇴장';
-  const content = `${who}님이 '${roomName}' 습관방에서 퇴장했습니다.`;
+  const body = `${who}님이 '${roomName}' 습관방에서 퇴장했습니다.`;
 
-  return [title, content, false];
+  return { title, body, isService: false };
 };
 
-const SEND_SPARK = (who, content) => {
+const SEND_SPARK = (who, body) => {
   const title = `{who}님이 보낸 스파크`;
 
-  return [title, content, false];
+  return { title, body, isService: false };
 };
 
 const ROOM_HALF = (roomName) => {
   const title = '반이나 왔어!';
-  const content = `'${roomName}' 습관을 시작한지 33일이 지났습니다.`;
+  const body = `'${roomName}' 습관을 시작한지 33일이 지났습니다.`;
 
-  return [title, content];
+  return { title, body, isService: true };
 };
 
 const ROOM_NEW = (roomName) => {
   const title = '새로운 습관방 생성';
-  const content = `새로운 습관방 '${roomName}' 습관방이 생성되었습니다.`;
+  const body = `새로운 습관방 '${roomName}' 습관방이 생성되었습니다.`;
 
-  return [title, content];
+  return { title, body, isService: true };
 };
 
 module.exports = {
