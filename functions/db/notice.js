@@ -97,4 +97,11 @@ const getActivesByUserId = async (client, userId, lastid, size) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { serviceReadByUserId, activeReadByUserId, getNoticeByNoticeId, deleteNoticeByNoticeId, getServicesByUserId, getActivesByUserId };
+module.exports = { 
+  serviceReadByUserId, 
+  activeReadByUserId, 
+  getNoticeByNoticeId, 
+  deleteNoticeByNoticeId, 
+  getServicesByUserId, 
+  getActivesByUserId 
+};

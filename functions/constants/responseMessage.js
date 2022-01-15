@@ -4,6 +4,7 @@ module.exports = {
   PATH_ERROR: '요청 경로가 올바르지 않습니다',
   INTERNAL_SERVER_ERROR: '서버 내부 오류',
   PRIV_NOT_FOUND: '권한이 없는 요청입니다',
+  INVALID_LASTID: '잘못된 lastid 입니다',
 
   // 회원가입
   CREATED_USER: '회원 가입 성공',
@@ -39,6 +40,7 @@ module.exports = {
   GET_ROOM_DATA_FAIL: '존재하지 않는 습관방입니다',
   NOT_ONGOING_ROOM: '현재 진행중인 습관방이 아닙니다',
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
+  GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
 

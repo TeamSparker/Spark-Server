@@ -13,5 +13,7 @@ const countSparkByRecordId = async (client, recordId) => {
     return convertSnakeToCamel.keysToCamel(rows);
   };
 
-module.exports = { countSparkByRecordId };
+module.exports = { 
+  countSparkByRecordId 
+};
 
