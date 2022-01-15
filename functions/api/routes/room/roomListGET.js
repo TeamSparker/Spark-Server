@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const rawRooms = await roomDB.getRoomsByUserId(client, user.userId, ["NONE", "ONGOING"]);
+    const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
 
     const waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "NONE");
     const ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
@@ -121,15 +121,15 @@ module.exports = async (req, res) => {
         isStarted = false;
       }
       const room = {
-        "roomId": roomInfo[i].roomId,
-        "roomName": roomInfo[i].roomName,
+        roomId: roomInfo[i].roomId,
+        roomName: roomInfo[i].roomName,
         leftDay,
-        "profileImg": roomProfileImg[i],
-        "life": roomInfo[i].life,
+        profileImg: roomProfileImg[i],
+        life: roomInfo[i].life,
         isStarted,
-        "isDone": roomUserStatus[i],
-        "memberNum": roomMemberNum[i],
-        "doneMemberNum": roomDoneMemberNum[i]
+        isDone: roomUserStatus[i],
+        memberNum: roomMemberNum[i],
+        doneMemberNum: roomDoneMemberNum[i]
       }
       rooms.push(room);
   }
