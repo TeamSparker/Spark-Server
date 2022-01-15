@@ -49,5 +49,10 @@ const addUser = async (client, socialId, nickname, profileImg) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllUsers, getUserById, getUserBySocialId, addUser };
+module.exports = { 
+  getAllUsers,
+  getUserById, 
+  getUserBySocialId, 
+  addUser 
+};
 
