@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
     const today = dayjs(now.format('YYYY-MM-DD'));
     const leftDay = endDate.diff(today, 'day');
     const day = today.diff(startDate, 'day') + 1;
-
+    console.log(today);
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
       res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
@@ -52,12 +52,12 @@ module.exports = async (req, res) => {
     if (!userEntry.length) {
       res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
-
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
     let myRecord = null;
 
     let otherRecords = [];
+    
     records.map((record) => {
       if (record.userId === user.userId) {
         myRecord = {
