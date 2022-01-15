@@ -52,15 +52,16 @@ module.exports = async (req, res) => {
     // 요청을 보낸 사용자를 제외한 member list
     const friendsEntries = await roomDB.getFriendsByIds(client, roomId, userId);
     const friendsIds = friendsEntries.map((f) => f.userId);
+    const users = await userDB.getUsersByIds(client, friendsIds);
     let members = [];
-    for (let i = 0; i < friendsIds.length; i++) {
-      const userRow = await userDB.getUserById(client, friendsIds[i]);
+
+    users.map((u) =>
       members.push({
-        userId: userRow.userId,
-        nickname: userRow.nickname,
-        profileImg: userRow.profileImg,
-      });
-    }
+        userId: u.userId,
+        nickname: u.nickname,
+        profileImg: u.profileImg,
+      }),
+    );
 
     const data = {
       roomId,
