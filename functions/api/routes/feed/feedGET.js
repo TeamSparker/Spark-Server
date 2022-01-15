@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));
       }
       responseRecords = allRecords.slice(lastIndex+1, lastIndex+1+size);
-      recordIds = allRecordIds.slize(lastIndex+1, lastIndex+1+size);
+      recordIds = allRecordIds.slice(lastIndex+1, lastIndex+1+size);
     }
     else {
       responseRecords = allRecords.slice(0, size);
