@@ -14,6 +14,7 @@ const { userDB, roomDB } = require('../../../db');
  *      3. 이미 시작된 습관방인 경우
  *      4. 이미 참여중인 방인 경우
  *      5. 한번 내보내진 사용자인 경우
+ *      6. 정원이 가득찬 습관방
  */
 
 module.exports = async (req, res) => {
@@ -64,6 +65,11 @@ module.exports = async (req, res) => {
       if (userId === entries[i].userId) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_ALREADY));
       }
+    }
+
+    // @error 6. 정원이 가득찬 습관방
+    if (entries.length > 9) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
     }
 
     const data = {
