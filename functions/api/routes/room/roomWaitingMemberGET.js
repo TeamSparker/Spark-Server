@@ -6,8 +6,8 @@ const db = require('../../../db/db');
 const { userDB, roomDB } = require('../../../db');
 
 /**
- *  @대기_방_조회
- *  @route GET /room/:roomId/waiting
+ *  @대기_방_인원_조회
+ *  @route GET /room/:roomId/waiting/member
  *  @error
  *      1. 유효하지 않은 roomId
  *      2. 권한이 없는 사용자로부터의 요청
@@ -16,7 +16,6 @@ const { userDB, roomDB } = require('../../../db');
 module.exports = async (req, res) => {
   const { roomId } = req.params;
   const user = req.user;
-  console.log(user);
   const userId = user.userId;
 
   let client;
@@ -38,17 +37,6 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.PRIV_NOT_FOUND));
     }
 
-    // 요청을 보낸 사용자 본인 data
-    const reqUser = {
-      userId,
-      nickname: user.nickname,
-      profileImg: user.profileImg,
-      isPurposeSet: selfEntry.moment !== null && selfEntry.purpose !== null,
-      moment: selfEntry.moment,
-      purpose: selfEntry.purpose,
-      isHost: room.creator === userId,
-    };
-
     // 요청을 보낸 사용자를 제외한 member list
     const friendsEntries = await roomDB.getFriendsByIds(client, roomId, userId);
     const friendsIds = friendsEntries.map((f) => f.userId);
@@ -63,16 +51,7 @@ module.exports = async (req, res) => {
       }),
     );
 
-    const data = {
-      roomId,
-      roomName: room.roomName,
-      roomCode: room.code,
-      fromStart: room.fromStart,
-      reqUser,
-      members,
-    };
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_SUCCESS, data));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_SUCCESS, { members }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
