@@ -9,5 +9,6 @@ router.patch('/:roomId/purpose', checkUser, require('./roomPurposePATCH'));
 router.get('/:roomId/waiting', checkUser, require('./roomWaitingGET'));
 router.get('/:roomId', checkUser, require('./roomDetailGET'));
 router.get('/:roomId/waiting/member', checkUser, require('./roomWaitingMemberGET'));
+router.post('/:roomId/start', checkUser, require('./roomStartPOST'));
 
 module.exports = router;

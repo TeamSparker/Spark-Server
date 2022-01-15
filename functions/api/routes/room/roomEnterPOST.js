@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
     }
 
     // error 3. 정원이 가득찬 습관방
-    const entries = roomDB.getEntriesByRoomId(client, roomId);
+    const entries = await roomDB.getEntriesByRoomId(client, roomId);
     if (entries.length > 9) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
     }
