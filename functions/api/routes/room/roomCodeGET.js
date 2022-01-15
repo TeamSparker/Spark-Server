@@ -36,18 +36,21 @@ module.exports = async (req, res) => {
 
     // @error 2. 참여 코드에 일치하는 방이 없음
     if (!room) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
     // @error 3. 참여 코드에 해당하는 방은 이미 습관 시작한 방임
     if (room.status === 'ONGOING') {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
     }
 
     // @error 5. 한번 내보내진 사용자인 경우
     const kickedHistory = await roomDB.kickedHistoryByIds(client, room.roomId, userId);
     if (kickedHistory.length !== 0) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
     }
 
     const creator = await userDB.getUserById(client, room.creator);
@@ -69,7 +72,8 @@ module.exports = async (req, res) => {
 
     // @error 6. 정원이 가득찬 습관방
     if (entries.length > 9) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
     }
 
     const data = {
