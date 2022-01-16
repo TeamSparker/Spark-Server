@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
