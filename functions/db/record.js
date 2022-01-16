@@ -60,9 +60,24 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
+
+const getRecordsByEntryId = async (client, entryId) => {
+  const { rows } = await client.query(
+    `
+    SELECT *
+    FROM spark.record r
+    WHERE r.entry_id = $1
+    ORDER BY r.date DESC
+    `,
+    [entryId]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = { 
   insertRecordById, 
   getRecentRecordByEntryId, 
   updateStatusByRecordId,
   uploadRecord,
+  getRecordsByEntryId
 };
