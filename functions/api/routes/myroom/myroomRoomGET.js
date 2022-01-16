@@ -91,8 +91,6 @@ module.exports = async (req, res) => {
         records
     };
 
-    console.log(records);
-
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
 
 
