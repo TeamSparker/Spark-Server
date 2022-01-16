@@ -12,6 +12,7 @@ router.get('/:roomId', checkUser, require('./roomDetailGET'));
 router.get('', checkUser, require('./roomListGET'));
 router.get('/:roomId/waiting/member', checkUser, require('./roomWaitingMemberGET'));
 router.post('/:roomId/start', checkUser, require('./roomStartPOST'));
+router.post('/:roomId/status', checkUser, require('./roomStatusPOST'));
 router.post('/:roomId/spark', checkUser, require('./sparkPOST'));
 router.post('/:roomId/record', checkUser, uploadImage, require('./roomRecordPOST'));
 
