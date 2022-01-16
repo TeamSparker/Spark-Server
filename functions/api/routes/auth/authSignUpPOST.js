@@ -21,42 +21,31 @@ const slackAPI = require('../../../middlewares/slackAPI');
 module.exports = async (req, res) => {
   const { socialId, nickname } = req.body;
   const profileImg = req.imageUrls;
-
   console.log(socialId, nickname, profileImg);
-
   // @error 1. socialId/nickname이 전달되지 않음
   if (!socialId || !nickname) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
-
   // @error 3. 닉네임 10자 초과
-  if (nickname.length > 10){
+  if (nickname.length > 10) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.TOO_LONG_NICKNAME));
   }
-
   let client;
-
   try {
     client = await db.connect();
-    
     // @error 2. 이미 존재하는 socialIds
     const alreaySocialId = await userDB.getUserBySocialId(client, socialId);
-    if(alreaySocialId) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_SOCIALID));
+    if (alreaySocialId) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_SOCIALID));
     }
-    
     let user;
-
     if (profileImg.length) {
-        user = await userDB.addUser(client, socialId, nickname, profileImg[0]);
+      user = await userDB.addUser(client, socialId, nickname, profileImg[0]);
     } else {
-        user = await userDB.addUser(client, socialId, nickname, null);
+      user = await userDB.addUser(client, socialId, nickname, null);
     }
-    
     const { accesstoken } = jwtHandlers.sign(user);
-
     console.log(user);
-
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATED_USER, { user, accesstoken }));
   } catch (error) {
     console.log(error);
