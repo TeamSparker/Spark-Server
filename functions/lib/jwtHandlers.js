@@ -5,7 +5,7 @@ const secretKey = process.env.JWT_SECRET;
 const options = {
   algorithm: 'HS256',
   expiresIn: '30d',
-  issuer: 'wesopt',
+  issuer: 'spark',
 };
 
 const sign = (user) => {

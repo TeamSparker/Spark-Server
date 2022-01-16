@@ -4,45 +4,43 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { roomDB } = require('../../../db');
-const { nanoid } = require('nanoid');
 
 /**
- *  @습관방_생성
- *  @route POST /room
- *  @body roomName:string, fromStart:boolean
+ *  @나의_목표_설정하기
+ *  @route PATCH /room/:roomId/purpose
+ *  @body moment:string, purpose:boolean
  *  @error
- *      1. 습관방 이름 / 습관방 타입이 전달되지 않음
+ *      1. moment 또는 purpose가 전달되지 않음
+ *      2. 권한이 없는 사용자로부터의 요청
  */
 
 module.exports = async (req, res) => {
-  const { roomName, fromStart } = req.body;
+  const { moment, purpose } = req.body;
+  const { roomId } = req.params;
   const user = req.user;
   const userId = user.userId;
 
-  console.log(roomName, fromStart);
-
-  // error 1. 습관방 이름 또는 타입이 전달되지 않음
-  if (!roomName || typeof fromStart !== 'boolean') {
+  // error 1. moment 또는 purpose가 전달되지 않음
+  if (!moment || !purpose) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
-  let client, code;
-  let isCodeUnique = false;
+  let client;
 
   try {
     client = await db.connect(req);
-    while (!isCodeUnique) {
-      code = nanoid(7);
-      isCodeUnique = await roomDB.isCodeUnique(client, code);
+
+    let entry = await roomDB.getEntryByIds(client, roomId, userId);
+
+    // error 2. 권한이 없는 사용자로부터의 요청
+    if (!entry) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.PRIV_NOT_FOUND));
     }
 
-    // 습관 방 생성
-    const room = await roomDB.addRoom(client, roomName, code, userId, fromStart);
+    const entryId = entry.entryId;
+    entry = await roomDB.updatePurposeByEntryId(client, entryId, moment, purpose);
 
-    // 생성한 방에 입장
-    await roomDB.enterById(client, room.roomId, userId);
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.PURPOSE_SET_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

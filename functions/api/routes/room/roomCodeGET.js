@@ -1,3 +1,10 @@
+const functions = require('firebase-functions');
+const util = require('../../../lib/util');
+const statusCode = require('../../../constants/statusCode');
+const responseMessage = require('../../../constants/responseMessage');
+const db = require('../../../db/db');
+const { userDB, roomDB } = require('../../../db');
+
 /**
  *  @코드로_대기_방_정보_확인
  *  @route GET /room/code/:code
@@ -7,14 +14,8 @@
  *      3. 이미 시작된 습관방인 경우
  *      4. 이미 참여중인 방인 경우
  *      5. 한번 내보내진 사용자인 경우
+ *      6. 정원이 가득찬 습관방
  */
-
-const functions = require('firebase-functions');
-const util = require('../../../lib/util');
-const statusCode = require('../../../constants/statusCode');
-const responseMessage = require('../../../constants/responseMessage');
-const db = require('../../../db/db');
-const { userDB, roomDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { code } = req.params;
@@ -35,18 +36,21 @@ module.exports = async (req, res) => {
 
     // @error 2. 참여 코드에 일치하는 방이 없음
     if (!room) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
     // @error 3. 참여 코드에 해당하는 방은 이미 습관 시작한 방임
-    if (room.isStarted) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
+    if (room.status === 'ONGOING') {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
     }
 
     // @error 5. 한번 내보내진 사용자인 경우
-    const isKicked = await roomDB.checkKickedByRoomIdAndUserId(client, room.roomId, userId);
-    if (isKicked) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
+    const kickedHistory = await roomDB.kickedHistoryByIds(client, room.roomId, userId);
+    if (kickedHistory.length !== 0) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
     }
 
     const creator = await userDB.getUserById(client, room.creator);
@@ -66,6 +70,12 @@ module.exports = async (req, res) => {
       }
     }
 
+    // @error 6. 정원이 가득찬 습관방
+    if (entries.length > 9) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
+      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_FULL));
+    }
+
     const data = {
       roomId: room.roomId,
       roomName: room.roomName,
@@ -75,7 +85,7 @@ module.exports = async (req, res) => {
       totalNums: entries.length,
     };
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_POST_SUCCESS, data));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

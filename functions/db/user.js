@@ -21,7 +21,18 @@ const getUserById = async (client, userId) => {
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
-}
+};
+
+const getUsersByIds = async (client, userIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.user
+    WHERE user_id in (${userIds.join()})
+      AND is_deleted = FALSE
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
 
 const getUserBySocialId = async (client, socialId) => {
   const { rows } = await client.query(
@@ -49,5 +60,10 @@ const addUser = async (client, socialId, nickname, profileImg) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllUsers, getUserById, getUserBySocialId, addUser };
-
+module.exports = {
+  getAllUsers,
+  getUserById,
+  getUsersByIds,
+  getUserBySocialId,
+  addUser,
+};
