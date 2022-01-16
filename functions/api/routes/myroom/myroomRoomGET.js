@@ -66,8 +66,6 @@ module.exports = async (req, res) => {
     const records = pagedRecords.map((record) => {
         const sparkCount = _.find(sparkNums, {'recordId': record.recordId});
         const sparkNum = sparkCount? Number(sparkCount.sparkNum): 0;
-
-        console.log(sparkNum);
         return {
             recordId: record.recordId,
             leftDay: 66-record.dayjs,
