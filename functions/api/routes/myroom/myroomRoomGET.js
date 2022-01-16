@@ -31,7 +31,7 @@ const _ = require('lodash');
 //      },
 
 module.exports = async (req, res) => {
-  const lastid = Number(req.query.lastid);
+  let lastId = Number(req.query.lastid);
   const size = Number(req.query.size);
   const user = req.user;
   const { roomId } = req.params;
@@ -57,11 +57,22 @@ module.exports = async (req, res) => {
       res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
 
-    const rawRecords = await recordDB.getRecordsByEntryId(client, entry.entryId);
-    const recordIds = rawRecords.map((o) => o.recordId);
+    const pagedRecords = await recordDB.getPagedRecordsByEntryId(client, entry.entryId, lastId, size);
+    
+    // 해당하는 record가 없을 경우
+    if (!pagedRecords.length) {
+        const data = {
+            roomName: room.roomName,
+            records: []
+        };
+        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
+    }
+
+    const recordIds = pagedRecords.map((o) => o.recordId);
+
     const sparkNums = await sparkDB.countSparkByRecordIds(client, recordIds);
 
-    const records = rawRecords.map((record) => {
+    const records = pagedRecords.map((record) => {
         const sparkCount = _.find(sparkNums, {'recordId': record.recordId});
         const sparkNum = sparkCount? Number(sparkCount.sparkNum): 0;
 
@@ -82,7 +93,7 @@ module.exports = async (req, res) => {
 
     console.log(records);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_SUCCESS, data));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
 
 
   } catch (error) {
