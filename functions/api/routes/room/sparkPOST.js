@@ -40,10 +40,10 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
 
-    const entryId = await roomDB.getEntryByIds(client, roomId, userId);
+    const entry = await roomDB.getEntryByIds(client, roomId, user.userId);
 
     // @error 3. 유저가 해당 습관방에 참여하지 않는 경우
-    if (!entryId) {
+    if(!entry) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MEMBER));
     }
 
