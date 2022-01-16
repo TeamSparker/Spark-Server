@@ -12,8 +12,28 @@ const send = async (req, res, receiverToken, title, body) => {
     client = await db.connect(req);
 
     const deviceToken = receiverToken;
-    let message = {
-      data: { title, body },
+    // let message = {
+    //   data: { title, body },
+    //   token: deviceToken,
+    // };
+
+    const message = {
+      android: {
+        data: {
+          title,
+          body,
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            alert: {
+              title,
+              body,
+            },
+          },
+        },
+      },
       token: deviceToken,
     };
 

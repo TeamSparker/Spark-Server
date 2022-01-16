@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
         const receiver = await userDB.getUserById(client, receiverId);
         const receiverToken = receiver.deviceToken;
         await noticeDB.addNotification(client, title, body, sender.profileImg, receiverId, isService);
-        pushAlarm.send(req, res, receiverToken, 'Spark ﹖', body);
+        pushAlarm.send(req, res, receiverToken, 'Spark', body);
       }
     }
 
