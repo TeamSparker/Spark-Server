@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
 
     const roomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);
 
-    const today = dayjs(dayjs().add(9, 'hour').format('YYYY-MM-DD'));
+    const today = dayjs(dayjs().add(9, 'hour').format('YYYY-M-D'));
 
     // roomIds 빈 배열일 때 처리
     const profiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);

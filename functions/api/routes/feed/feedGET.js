@@ -49,6 +49,7 @@ module.exports = async (req, res) => {
       responseRecords = allRecords.slice(lastIndex+1, lastIndex+1+size);
       recordIds = allRecordIds.slice(lastIndex+1, lastIndex+1+size);
     }
+    // 최초 요청시
     else {
       responseRecords = allRecords.slice(0, size);
       recordIds = allRecordIds.slice(0, size);
@@ -70,12 +71,12 @@ module.exports = async (req, res) => {
           isLikes.push(false);
       }
       const spark = await sparkDB.countSparkByRecordId(client, recordIds[i]);
-      sparkNums.push(Number(spark[0].count));
+      sparkNums.push(Number(spark.count));
     }
 
     let records = [];
     for(let i=0; i<recordIds.length; i++) {
-      const date = dayjs(responseRecords[i].date).format("YYYY-MM-DD");
+      const date = dayjs(responseRecords[i].date).format("YYYY-M-D");
       const day = convertDay.numToString[dayjs(responseRecords[i].date).day()];
       records.push({
           date,
