@@ -20,15 +20,6 @@ const _ = require('lodash');
  *    3. 접근 권한이 없는 유저인 경우
  */
 
-//  "roomName": "아침마다 요거트 먹기",
-//  "records": [
-//      {
-//          "recordId": 121,
-//          "leftDay": 0,
-//          "certifyingImg": "https://www.어쩌구~~",
-//          "sparkNum": 12,
-//          "status": "DONE",
-//      },
 
 module.exports = async (req, res) => {
   let lastId = Number(req.query.lastid);
@@ -92,8 +83,6 @@ module.exports = async (req, res) => {
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
-
-
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
