@@ -1,14 +1,10 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { userDB, roomDB, sparkDB, recordDB } = require('../../../db');
-const jwtHandlers = require('../../../lib/jwtHandlers');
+const { roomDB, sparkDB, recordDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const dayjs = require('dayjs');
-const { filter } = require('lodash');
 const _ = require('lodash');
 
 /**
