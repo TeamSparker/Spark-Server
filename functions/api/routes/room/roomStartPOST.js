@@ -31,8 +31,6 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_NOT_FOUND));
     }
 
-    console.log('why?');
-
     let room = await roomDB.getRoomById(client, roomId);
 
     // @error 2. 유효하지 않은 roomId
