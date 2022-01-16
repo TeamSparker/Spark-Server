@@ -60,6 +60,7 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
+
 module.exports = { 
   insertRecordById, 
   getRecentRecordByEntryId, 

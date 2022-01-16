@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, recordDB, sparkDB } = require('../../../db');
+const { roomDB, sparkDB } = require('../../../db');
 
 /**
  *  @스파크_보내기
@@ -20,7 +20,7 @@ const { roomDB, recordDB, sparkDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { recordId, content } = req.body;
-  const { roomId } = req.params
+  const { roomId } = req.params;
   const user = req.user;
   const userId = user.userId;
 
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
 
     const room = await roomDB.getRoomById(client, roomId);
     // @error 2. 존재하지 않는 습관방
-    if(!room) {
+    if (!room) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
 
@@ -50,21 +50,21 @@ module.exports = async (req, res) => {
     // @error 6. 해당 습관방의 record가 아닐 때
     const record = await roomDB.getRecordById(client, recordId);
 
-    if(record.roomId !== Number(roomId)) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MATCH_ROOM_AND_RECORD));
+    if (record.roomId !== Number(roomId)) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MATCH_ROOM_AND_RECORD));
     }
 
     // @error 4. 쉴래요 습관완료한 사람한테 스파크 보내려함
-    if(record.status === "DONE" || record.status === "REST") {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DONE_OR_REST_MEMBER));
+    if (record.status === 'DONE' || record.status === 'REST') {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DONE_OR_REST_MEMBER));
     }
 
     // @error 5. 자신에게 스파크를 보내려 할 때
-    if(record.userId === user.userId){
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.CANNOT_SEND_SPARK_SELF));
+    if (record.userId === userId) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.CANNOT_SEND_SPARK_SELF));
     }
 
-    const spark = await sparkDB.insertSpark(client, recordId, user.userId, content);
+    const spark = await sparkDB.insertSpark(client, recordId, userId, content);
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
