@@ -51,6 +51,9 @@ module.exports = {
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
+  RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',
+  SEND_LIKE_SUCCESS: '좋아요 성공',
+  CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
 
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
@@ -59,7 +62,7 @@ module.exports = {
   // Myroom
   GET_MYROOM_SUCCESS: '보관함 리스트 불러오기 성공',
   GET_MYROOM_DETAIL_SUCCESS: '인증사진 모아보기 성공',
-  
+
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
   ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',
