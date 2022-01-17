@@ -11,6 +11,7 @@ const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 const { filter } = require('lodash');
 const _ = require('lodash');
+const { GET_WAITROOM_DATA_ALREADY } = require('../../../constants/responseMessage');
 
 /**
  *  @피드_조회
@@ -36,7 +37,7 @@ module.exports = async (req, res) => {
     const roomIds = [...new Set(rawRooms.filter(Boolean).map((room) => room.roomId))];
     const allRecords = await roomDB.getRecordsByRoomIds(client, roomIds);
     const allRecordIds = allRecords.map((record) => record.recordId);
-
+    
     let responseRecords = [];
     let recordIds = [];
     // 최초 요청이 아닐시
@@ -78,6 +79,7 @@ module.exports = async (req, res) => {
     for(let i=0; i<recordIds.length; i++) {
       const date = dayjs(responseRecords[i].date).format("YYYY-M-D");
       const day = convertDay.numToString[dayjs(responseRecords[i].date).day()];
+      const roomName = _.find(rawRooms, { roomId: responseRecords[i].roomId }).roomName;
       records.push({
           date,
           day,
@@ -85,7 +87,7 @@ module.exports = async (req, res) => {
           recordId: recordIds[i], 
           nickname: responseRecords[i].nickname,
           profileImg: responseRecords[i].profileImg,
-          roomName: responseRecords[i].roomName,
+          roomName,
           certifyingImg: responseRecords[i].certifyingImg,
           likeNum: likeNums[i],
           sparkCount: sparkNums[i],
@@ -93,6 +95,7 @@ module.exports = async (req, res) => {
           timerRecord: responseRecords[i].timerRecord
       });
     }
+
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records }));
 
