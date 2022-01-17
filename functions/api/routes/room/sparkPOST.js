@@ -1,9 +1,11 @@
 const functions = require('firebase-functions');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
+const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, sparkDB } = require('../../../db');
+const pushAlarm = require('../../../lib/pushAlarm');
+const { userDB, roomDB, sparkDB, noticeDB } = require('../../../db');
 
 /**
  *  @스파크_보내기
@@ -43,7 +45,7 @@ module.exports = async (req, res) => {
     const entry = await roomDB.getEntryByIds(client, roomId, user.userId);
 
     // @error 3. 유저가 해당 습관방에 참여하지 않는 경우
-    if(!entry) {
+    if (!entry) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MEMBER));
     }
 
@@ -65,6 +67,13 @@ module.exports = async (req, res) => {
     }
 
     const spark = await sparkDB.insertSpark(client, recordId, userId, content);
+
+    // 스파크를 보내면 받는 사람에게 알림 및 푸시알림 보내기
+    const { title, body, isService } = alarmMessage.SEND_SPARK(user.nickname, content);
+    const receiver = await userDB.getUserById(client, record.userId);
+    await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService);
+    pushAlarm.send(req, res, receiver.deviceToken, title, body);
+
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
