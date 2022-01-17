@@ -360,19 +360,42 @@ const getFailRecords = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 }
 
-const updateLife = async(client, rooms) => {
-    const roomIds = Object.keys(rooms);
-    const lifes = Object.values(rooms);
+const updateLife = async(client, failCount, roomIds) => {
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
     const { rows } = await client.query(
       `
       UPDATE spark.room
-      SET life = 
+      SET end_at =
       CASE
-      WHEN room_id = THEN 
+      WHEN life > $1 THEN end_at
+      ELSE $2
+      END,
+      status =
+      CASE
+      WHEN life > $1 THEN status
+      ELSE 'FAIL'
+      END,
+      life =
+      CASE
+      WHEN life > $1 THEN life - $1
+      ELSE 0
+      END
+      WHERE room_id IN (${roomIds.join()}) 
+      RETURNING room_id, life
       `,
+      [failCount, yesterday]
     );
+    return convertSnakeToCamel.keysToCamel(rows);
 }
-
+// UPDATE spark.room
+// SET (life, end_at, status) =
+// CASE
+// WHEN life > $1 THEN (life - $1, end_at, status)
+// ELSE (0, $2, 'FAIL')
+// END
+// WHERE room_id IN (${roomIds.join()}) 
+// RETURNING room_id, life
 module.exports = { 
   addRoom, 
   isCodeUnique, 
