@@ -25,8 +25,8 @@ module.exports = {
   CREATE_ROOM_SUCCESS: '습관 방 생성 성공',
   CREATE_ROOM_FAIL: '습관 방 생성 실패',
   GET_WAITROOM_DATA_SUCCESS: '대기방 정보 확인 완료',
-  GET_WAITROOM_DATA_IMPOSSIBLE: '참여할 수 없는 코드에요.',
-  GET_WAITROOM_DATA_NULL: '존재하지 않는 코드에요.',
+  GET_WAITROOM_DATA_IMPOSSIBLE: '참여할 수 없는 코드예요.',
+  GET_WAITROOM_DATA_NULL: '존재하지 않는 코드예요.',
   GET_WAITROOM_DATA_STARTED: '이미 습관 형성에 도전중인 방입니다',
   GET_WAITROOM_DATA_ALREADY: '이미 참여 중인 코드에요.',
   GET_WAITROOM_DATA_FAIL: '대기방 정보 확인 실패',
@@ -43,6 +43,7 @@ module.exports = {
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
   NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
+  NOT_STARTED_ROOM: '아직 대기중인 방입니다',
 
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
@@ -51,6 +52,9 @@ module.exports = {
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
+  RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',
+  SEND_LIKE_SUCCESS: '좋아요 성공',
+  CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
 
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
@@ -59,7 +63,7 @@ module.exports = {
   // Myroom
   GET_MYROOM_SUCCESS: '보관함 리스트 불러오기 성공',
   GET_MYROOM_DETAIL_SUCCESS: '인증사진 모아보기 성공',
-  
+
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
   ACTIVE_READ_SUCCESS: '활동 알림 읽음처리 완료',

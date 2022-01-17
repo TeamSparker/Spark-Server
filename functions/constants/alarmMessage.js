@@ -20,7 +20,7 @@ const ROOM_OUT = (who, roomName) => {
 };
 
 const SEND_SPARK = (who, body) => {
-  const title = `{who}님이 보낸 스파크`;
+  const title = `${who}님이 보낸 스파크`;
 
   return { title, body, isService: false };
 };
@@ -34,7 +34,7 @@ const ROOM_HALF = (roomName) => {
 
 const ROOM_NEW = (roomName) => {
   const title = '새로운 습관방 생성';
-  const body = `새로운 습관방 '${roomName}' 습관방이 생성되었습니다.`;
+  const body = `새로운 '${roomName}' 습관방이 생성되었습니다.`;
 
   return { title, body, isService: true };
 };
