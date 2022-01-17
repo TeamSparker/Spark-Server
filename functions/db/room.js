@@ -336,6 +336,16 @@ const startRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getAllOngoingRooms = async (client) => {
+  const { rows } = await client.query(
+    `
+    SELECT r.room_id FROM spark.room r
+    WHERE r.status = 'ONGOING'
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -356,4 +366,5 @@ module.exports = {
   getRecordsByRoomIds,
   getRecordById,
   getCardsByUserId,
+  getAllOngoingRooms,
 };
