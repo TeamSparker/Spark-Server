@@ -346,6 +346,27 @@ const getAllOngoingRooms = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 }
 
+const getFailRecordsByRoomId = async (client, roomIds) => {
+  console.log("???");
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
+  const { rows } = await client.query(
+    `
+    SELECT e.room_id, e.entry_id, r.record_id, r.status
+    FROM spark.entry e
+    LEFT JOIN spark.record r
+    ON e.entry_id = r.entry_id
+    WHERE e.room_id IN (${roomIds.join()})
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
+    AND r.status IN ('NONE', 'CONSIDER')
+    AND r.date = $1
+    `,
+    [yesterday]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -367,4 +388,5 @@ module.exports = {
   getRecordById,
   getCardsByUserId,
   getAllOngoingRooms,
+  getFailRecordsByRoomId,
 };
