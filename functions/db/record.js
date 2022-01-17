@@ -20,6 +20,17 @@ const insertRecordById = async (client, entryId, roomStartAt) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getRecordById = async (client, recordId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.record
+    WHERE record_id = $1
+    `,
+    [recordId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getRecentRecordByEntryId = async (client, entryId) => {
   const { rows } = await client.query(
     `
@@ -92,6 +103,7 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
 
 module.exports = {
   insertRecordById,
+  getRecordById,
   getRecentRecordByEntryId,
   updateStatusByRecordId,
   uploadRecord,
