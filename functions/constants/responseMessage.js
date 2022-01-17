@@ -43,6 +43,7 @@ module.exports = {
   NOT_MEMBER: '참여중인 습관방이 아닙니다',
   GET_ROOM_LIST_SUCCESS: '참여중인 습관방 조회 완료',
   NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
+  NOT_STARTED_ROOM: '아직 대기중인 방입니다',
 
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
