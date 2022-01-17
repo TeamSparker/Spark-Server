@@ -336,17 +336,7 @@ const startRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getAllOngoingRooms = async (client) => {
-  const { rows } = await client.query(
-    `
-    SELECT r.room_id, r.life FROM spark.room r
-    WHERE r.status = 'ONGOING'
-    `,
-  );
-  return convertSnakeToCamel.keysToCamel(rows);
-}
-
-const getFailRecordsByRoomId = async (client, roomIds) => {
+const getFailRecords = async (client) => {
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
@@ -355,7 +345,9 @@ const getFailRecordsByRoomId = async (client, roomIds) => {
     FROM spark.entry e
     LEFT JOIN spark.record r
     ON e.entry_id = r.entry_id
-    WHERE e.room_id IN (${roomIds.join()})
+    LEFT JOIN spark.room room
+    ON e.room_id = room.room_id
+    WHERE room.status = 'ONGOING'
     AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
@@ -401,7 +393,6 @@ module.exports = {
   getRecordsByRoomIds,
   getRecordById,
   getCardsByUserId,
-  getAllOngoingRooms,
-  getFailRecordsByRoomId,
   updateLife,
+  getFailRecords,
 };
