@@ -48,24 +48,7 @@ const checkLife = async() => {
       }
 }
 
-// const addRecords = async() => {
-//     let client;
-//     try {
-//         client = await db.connect();
-//         const ongoingRooms = await roomDB.getAllOngoingRooms(client);
-//         const ongoingRoomIds = ongoingRooms.map((o) => o.roomId);
-//         // console.log("ongoingRoomIds", ongoingRoomIds);
-//         const entries = await roomDB.getFailrecordsByRoomId(client, ongoingRoomIds);
-//         console.log("entries", entries);
-        
-//       } catch (error) {
-        
-//       } finally {
-
-//       }
-// }
 
 module.exports = {
     checkLife,
-    // addRecords,
 }
