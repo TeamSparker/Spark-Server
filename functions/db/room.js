@@ -339,7 +339,7 @@ const startRoomById = async (client, roomId) => {
 const getAllOngoingRooms = async (client) => {
   const { rows } = await client.query(
     `
-    SELECT r.room_id FROM spark.room r
+    SELECT r.room_id, r.life FROM spark.room r
     WHERE r.status = 'ONGOING'
     `,
   );
@@ -347,12 +347,11 @@ const getAllOngoingRooms = async (client) => {
 }
 
 const getFailRecordsByRoomId = async (client, roomIds) => {
-  console.log("???");
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
     `
-    SELECT e.room_id, e.entry_id, r.record_id, r.status
+    SELECT e.room_id, COUNT(r.record_id) AS fail_count
     FROM spark.entry e
     LEFT JOIN spark.record r
     ON e.entry_id = r.entry_id
@@ -362,11 +361,26 @@ const getFailRecordsByRoomId = async (client, roomIds) => {
     AND e.is_deleted = FALSE
     AND r.status IN ('NONE', 'CONSIDER')
     AND r.date = $1
+    GROUP BY e.room_id
     `,
     [yesterday]
   );
   return convertSnakeToCamel.keysToCamel(rows);
 }
+
+const updateLife = async(client, rooms) => {
+    const roomIds = Object.keys(rooms);
+    const lifes = Object.values(rooms);
+    const { rows } = await client.query(
+      `
+      UPDATE spark.room
+      SET life = 
+      CASE
+      WHEN room_id = THEN 
+      `,
+    );
+}
+
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -389,4 +403,5 @@ module.exports = {
   getCardsByUserId,
   getAllOngoingRooms,
   getFailRecordsByRoomId,
+  updateLife,
 };
