@@ -115,7 +115,7 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getEntryIdsByRoomIds = async (client, roomIds) => {
+const getEntriesByRoomIds = async (client, roomIds) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.entry e
@@ -426,5 +426,5 @@ module.exports = {
   getCardsByUserId,
   updateLife,
   getFailRecords,
-  getEntryIdsByRoomIds,
+  getEntriesByRoomIds,
 };
