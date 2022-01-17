@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
       const endDate = dayjs(roomInfo[i].endAt);
       const leftDay = endDate.diff(today, 'day');
       let isStarted = true;
-      if (roomInfo[i] === 'NONE') {
+      if (roomInfo[i].status === 'NONE') {
         isStarted = false;
       }
       const room = {
