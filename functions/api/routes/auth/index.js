@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const uploadImage = require('../../../middlewares/uploadImage');
+const uploadImageIntoSubDir = require('../../../middlewares/uploadImage');
 
-router.post('/signup', uploadImage, require('./authSignUpPOST'));
+router.post('/signup', uploadImageIntoSubDir('users'), require('./authSignUpPOST'));
 
 module.exports = router;
