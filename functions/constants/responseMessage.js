@@ -55,6 +55,10 @@ module.exports = {
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
   SEND_SPARK_SUCCESS: '스파크 전송 선공',
+
+  // Myroom
+  GET_MYROOM_SUCCESS: '보관함 리스트 불러오기 성공',
+  GET_MYROOM_DETAIL_SUCCESS: '인증사진 모아보기 성공',
   
   // Notice
   SERVICE_READ_SUCCESS: '서비스 알림 읽음처리 완료',
@@ -64,9 +68,4 @@ module.exports = {
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
   PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
-
-  // 인증
-  INVALID_USER_STATUS: '유효하지 않은 status type입니다',
-  CERTIFICATION_ALREADY_DONE: '이미 인증을 완료하였습니다',
-  UPDATE_STATUS_SUCCESS: '상태 변경 완료',
 };

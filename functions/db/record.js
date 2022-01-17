@@ -61,9 +61,41 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
+  if (lastId === -1) {
+    const { rows } = await client.query(
+      `
+      SELECT *
+      FROM spark.record r
+      WHERE r.entry_id = $1
+      ORDER BY r.day DESC
+      LIMIT $2
+      `,
+      [entryId, size]
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+  }
+  else {
+    const { rows } = await client.query(
+      `
+      SELECT *
+      FROM spark.record r
+      WHERE r.entry_id = $1
+      AND r.record_id < $2
+      ORDER BY r.day DESC
+      LIMIT $3
+      `,
+      [entryId, lastId, size]
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+
+  }
+};
+
 module.exports = { 
   insertRecordById, 
   getRecentRecordByEntryId, 
   updateStatusByRecordId,
   uploadRecord,
+  getPagedRecordsByEntryId
 };

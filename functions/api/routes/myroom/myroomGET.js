@@ -22,8 +22,8 @@ const _ = require('lodash');
 module.exports = async (req, res) => {
   const lastid = Number(req.query.lastid);
   const size = Number(req.query.size);
+  const roomType = req.query.type;
   const user = req.user;
-  const { roomType } = req.params;
 
   let client;
 
