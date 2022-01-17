@@ -38,11 +38,12 @@ module.exports = async (req, res) => {
 
     // 습관 방 생성
     const room = await roomDB.addRoom(client, roomName, code, userId, fromStart);
+    const roomId = room.roomId;
 
     // 생성한 방에 입장
-    await roomDB.enterById(client, room.roomId, userId);
+    await roomDB.enterById(client, roomId, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATE_ROOM_SUCCESS, { roomId }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
