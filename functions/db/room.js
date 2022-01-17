@@ -118,12 +118,13 @@ const getEntriesByRoomId = async (client, roomId) => {
 const getEntryIdsByRoomIds = async (client, roomIds) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.entry
-    WHERE room_id IN (${roomIds.join()})
-      AND is_out = FALSE
-      AND is_kicked = FALSE
-      AND is_deleted = FALSE
-      ORDER BY created_at
+    SELECT * FROM spark.entry e
+    LEFT JOIN spark.room r
+    ON r.room_id = e.room_id
+    WHERE e.room_id IN (${roomIds.join()})
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      AND e.is_deleted = FALSE
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
