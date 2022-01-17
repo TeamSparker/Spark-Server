@@ -15,7 +15,8 @@ const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
  *      1. 유효하지 않은 statusType
  *      2. 유효하지 않은 roomId
  *      3. 권한이 없는 사용자로부터의 요청
- *      4. 이미 인증을 완료한 사용자로부터의 요청
+ *      4. 습관 시작하지 않은 방에서의 요청
+ *      5. 이미 인증을 완료한 사용자로부터의 요청
  */
 
 module.exports = async (req, res) => {
@@ -50,7 +51,12 @@ module.exports = async (req, res) => {
 
     const recentRecord = await recordDB.getRecentRecordByEntryId(client, entry.entryId);
 
-    // @error 4. 이미 인증을 완료한 사용자로부터의 요청
+    // @error 4. 습관 시작하지 않은 방에서의 요청
+    if (!recentRecord) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_STARTED_ROOM));
+    }
+
+    // @error 5. 이미 인증을 완료한 사용자로부터의 요청
     if (recentRecord.status === 'DONE') {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.CERTIFICATION_ALREADY_DONE));
     }
@@ -69,16 +75,16 @@ module.exports = async (req, res) => {
         const receiver = await userDB.getUserById(client, receiverId);
         const receiverToken = receiver.deviceToken;
         await noticeDB.addNotification(client, title, body, sender.profileImg, receiverId, isService);
-        pushAlarm.send(req, res, receiverToken, 'Spark ﹖', body);
+        pushAlarm.send(req, res, receiverToken, 'Spark', body);
       }
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
 
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    // res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }

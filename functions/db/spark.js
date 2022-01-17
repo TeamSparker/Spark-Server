@@ -43,9 +43,22 @@ const countSparkByEntryId = async (client, entryId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 }
 
+const countSparkByRecordIds = async (client, recordIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT s.record_id, COUNT(record_id) AS spark_num
+    FROM spark.spark s
+    WHERE record_id in (${recordIds.join()})
+    GROUP BY record_id
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
 module.exports = { 
   countSparkByRecordId,
   insertSpark,
   countSparkByEntryId,
+  countSparkByRecordIds
 };
 

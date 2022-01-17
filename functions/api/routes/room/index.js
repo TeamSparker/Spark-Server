@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const uploadImage = require('../../../middlewares/uploadImage');
+const uploadImageIntoSubDir = require('../../../middlewares/uploadImage');
 const { checkUser } = require('../../../middlewares/auth');
 
 router.get('/code/:code', checkUser, require('./roomCodeGET'));
@@ -14,6 +14,6 @@ router.get('/:roomId/waiting/member', checkUser, require('./roomWaitingMemberGET
 router.post('/:roomId/start', checkUser, require('./roomStartPOST'));
 router.post('/:roomId/status', checkUser, require('./roomStatusPOST'));
 router.post('/:roomId/spark', checkUser, require('./sparkPOST'));
-router.post('/:roomId/record', checkUser, uploadImage, require('./roomRecordPOST'));
+router.post('/:roomId/record', checkUser, uploadImageIntoSubDir('certification'), require('./roomRecordPOST'));
 
 module.exports = router;

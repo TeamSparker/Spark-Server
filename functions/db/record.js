@@ -20,12 +20,23 @@ const insertRecordById = async (client, entryId, roomStartAt) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getRecordById = async (client, recordId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.record
+    WHERE record_id = $1
+    `,
+    [recordId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getRecentRecordByEntryId = async (client, entryId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.record
     WHERE entry_id = $1
-    ORDER BY day desc
+    ORDER BY date desc
     LIMIT 1
     `,
     [entryId],
@@ -56,14 +67,45 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
     WHERE record_id = $1
     RETURNING *
     `,
-    [recordId, certifyingImg,timerRecord, now],
+    [recordId, certifyingImg, timerRecord, now],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { 
-  insertRecordById, 
-  getRecentRecordByEntryId, 
+const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
+  if (lastId === -1) {
+    const { rows } = await client.query(
+      `
+      SELECT *
+      FROM spark.record r
+      WHERE r.entry_id = $1
+      ORDER BY r.day DESC
+      LIMIT $2
+      `,
+      [entryId, size],
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+  } else {
+    const { rows } = await client.query(
+      `
+      SELECT *
+      FROM spark.record r
+      WHERE r.entry_id = $1
+      AND r.record_id < $2
+      ORDER BY r.day DESC
+      LIMIT $3
+      `,
+      [entryId, lastId, size],
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+  }
+};
+
+module.exports = {
+  insertRecordById,
+  getRecordById,
+  getRecentRecordByEntryId,
   updateStatusByRecordId,
   uploadRecord,
+  getPagedRecordsByEntryId,
 };
