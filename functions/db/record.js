@@ -25,7 +25,7 @@ const getRecentRecordByEntryId = async (client, entryId) => {
     `
     SELECT * FROM spark.record
     WHERE entry_id = $1
-    ORDER BY day desc
+    ORDER BY date desc
     LIMIT 1
     `,
     [entryId],
@@ -56,14 +56,14 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
     WHERE record_id = $1
     RETURNING *
     `,
-    [recordId, certifyingImg,timerRecord, now],
+    [recordId, certifyingImg, timerRecord, now],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { 
-  insertRecordById, 
-  getRecentRecordByEntryId, 
+module.exports = {
+  insertRecordById,
+  getRecentRecordByEntryId,
   updateStatusByRecordId,
   uploadRecord,
 };
