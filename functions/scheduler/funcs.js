@@ -1,12 +1,14 @@
 const db = require('../db/db');
-const { roomDB } = require('../db');
+const { roomDB, recordDB } = require('../db');
 const _ = require('lodash');
-
+const dayjs = require('dayjs');
 const checkLife = async() => { 
     let client;
     try {
         client = await db.connect();
         const failRecords = await roomDB.getFailRecords(client);
+        console.log("@@", failRecords.map((o) => o.roomId));
+
         const roomGroupByFailCount = _.groupBy(failRecords, "failCount");
         const failCountList = [... new Set(failRecords.map((o) => Number(o.failCount)))];
         const roomIdsByFailCount = {'1':[], '2':[], '3':[]};
@@ -24,15 +26,23 @@ const checkLife = async() => {
         for(let i=1; i<=3; i++) {
             if(roomIdsByFailCount[i].length) {
                 afterLife = afterLife.concat(await roomDB.updateLife(client, i, roomIdsByFailCount[i]));
-                console.log("!!!");
-                console.log(afterLife);
             }
         }
         const failRoomIds = _.filter(afterLife, {life: 0}).map((o) => o.roomId);
         const successRoomIds = _.difference(failRecords.map((o) => o.roomId), failRoomIds);
-        
-        // 실패한 방 -> FAIL
-        // 성공한 방 -> record 추가
+        console.log(successRoomIds);
+        const successEntries = await roomDB.getEntryIdsByRoomIds(client, successRoomIds);
+        const now = dayjs().add(9, 'hour');
+        const today = dayjs(now.format('YYYY-MM-DD')).format('YYYY-MM-DD');
+        const insertEntries = successEntries.map((o) => {
+            const str = "(" + o.entryId + ",'" + today + "')"
+            return str;
+        });
+        console.log(today);
+        const resultRecords = await recordDB.insertRecords(client, insertEntries);
+
+        // const resultRecords = await recordDB.insertRecords(client);
+        console.log("???", resultRecords);
       } catch (error) {
         
       } finally {

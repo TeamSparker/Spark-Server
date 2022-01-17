@@ -115,6 +115,20 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getEntryIdsByRoomIds = async (client, roomIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry
+    WHERE room_id IN (${roomIds.join()})
+      AND is_out = FALSE
+      AND is_kicked = FALSE
+      AND is_deleted = FALSE
+      ORDER BY created_at
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getUserProfilesByRoomIds = async (client, roomIds, today) => {
   const { rows } = await client.query(
     `
@@ -388,14 +402,7 @@ const updateLife = async(client, failCount, roomIds) => {
     );
     return convertSnakeToCamel.keysToCamel(rows);
 }
-// UPDATE spark.room
-// SET (life, end_at, status) =
-// CASE
-// WHEN life > $1 THEN (life - $1, end_at, status)
-// ELSE (0, $2, 'FAIL')
-// END
-// WHERE room_id IN (${roomIds.join()}) 
-// RETURNING room_id, life
+
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -418,4 +425,5 @@ module.exports = {
   getCardsByUserId,
   updateLife,
   getFailRecords,
+  getEntryIdsByRoomIds,
 };
