@@ -29,7 +29,6 @@ const checkLife = async() => {
         }
         const failRoomIds = _.filter(afterLife, {life: 0}).map((o) => o.roomId);
         const successRoomIds = _.difference(failRecords.map((o) => o.roomId), failRoomIds);
-        console.log(successRoomIds);
         const successEntries = await roomDB.getEntryIdsByRoomIds(client, successRoomIds);
         const now = dayjs().add(9, 'hour');
         const today = now.format('YYYY-MM-DD');
