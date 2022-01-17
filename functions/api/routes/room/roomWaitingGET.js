@@ -51,17 +51,22 @@ module.exports = async (req, res) => {
 
     // 요청을 보낸 사용자를 제외한 member list
     const friendsEntries = await roomDB.getFriendsByIds(client, roomId, userId);
+    console.log('line 55');
     const friendsIds = friendsEntries.map((f) => f.userId);
-    const users = await userDB.getUsersByIds(client, friendsIds);
+
     let members = [];
 
-    users.map((u) =>
-      members.push({
-        userId: u.userId,
-        nickname: u.nickname,
-        profileImg: u.profileImg,
-      }),
-    );
+    // 대기방에 참여중인 친구가 없는 경우
+    if (friendsIds.length !== 0) {
+      const users = await userDB.getUsersByIds(client, friendsIds);
+      users.map((u) =>
+        members.push({
+          userId: u.userId,
+          nickname: u.nickname,
+          profileImg: u.profileImg,
+        }),
+      );
+    }
 
     const data = {
       roomId,
