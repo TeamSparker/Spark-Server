@@ -32,6 +32,7 @@
     "lodash": "^4.17.21",
     "multer": "^1.4.3",
     "nanoid": "^3.1.30",
+    "node-schedule": "^2.1.0",
     "pg": "^8.7.1"
   },
   "devDependencies": {

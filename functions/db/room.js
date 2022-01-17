@@ -115,6 +115,21 @@ const getEntriesByRoomId = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getEntryIdsByRoomIds = async (client, roomIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry e
+    LEFT JOIN spark.room r
+    ON r.room_id = e.room_id
+    WHERE e.room_id IN (${roomIds.join()})
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      AND e.is_deleted = FALSE
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getUserProfilesByRoomIds = async (client, roomIds, today) => {
   const { rows } = await client.query(
     `
@@ -336,6 +351,59 @@ const startRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getFailRecords = async (client) => {
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
+  const { rows } = await client.query(
+    `
+    SELECT e.room_id, COUNT(r.record_id) AS fail_count
+    FROM spark.entry e
+    LEFT JOIN spark.record r
+    ON e.entry_id = r.entry_id
+    LEFT JOIN spark.room room
+    ON e.room_id = room.room_id
+    WHERE room.status = 'ONGOING'
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
+    AND r.status IN ('NONE', 'CONSIDER')
+    AND r.date = $1
+    GROUP BY e.room_id
+    `,
+    [yesterday]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
+const updateLife = async(client, failCount, roomIds) => {
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
+    const { rows } = await client.query(
+      `
+      UPDATE spark.room
+      SET end_at =
+      CASE
+      WHEN life > $1 THEN end_at
+      ELSE $2
+      END,
+      status =
+      CASE
+      WHEN life > $1 THEN status
+      ELSE 'FAIL'
+      END,
+      life =
+      CASE
+      WHEN life > $1 THEN life - $1
+      ELSE 0
+      END
+      WHERE room_id IN (${roomIds.join()}) 
+      RETURNING room_id, life
+      `,
+      [failCount, yesterday]
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+}
+
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -356,4 +424,7 @@ module.exports = {
   getRecordsByRoomIds,
   getRecordById,
   getCardsByUserId,
+  updateLife,
+  getFailRecords,
+  getEntryIdsByRoomIds,
 };

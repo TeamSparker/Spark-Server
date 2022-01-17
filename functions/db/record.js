@@ -101,6 +101,20 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
   }
 };
 
+const insertRecords = async (client, insertEntries) => {
+  const { rows } = await client.query(
+    `
+    INSERT INTO spark.record
+    (entry_id, date, day)
+    VALUES
+    ${insertEntries.join(',')}
+    RETURNING *
+    `,
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
 module.exports = {
   insertRecordById,
   getRecordById,
@@ -108,4 +122,5 @@ module.exports = {
   updateStatusByRecordId,
   uploadRecord,
   getPagedRecordsByEntryId,
+  insertRecords,
 };
