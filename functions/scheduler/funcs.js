@@ -3,6 +3,7 @@ const { roomDB, recordDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const { result } = require('lodash');
+const { fail } = require('../lib/util');
 const checkLife = async() => { 
     let client;
     try {
@@ -29,6 +30,10 @@ const checkLife = async() => {
         }
         const failRoomIds = _.filter(afterLife, {life: 0}).map((o) => o.roomId);
         const successRoomIds = _.difference(failRecords.map((o) => o.roomId), failRoomIds);
+
+        if(!successRoomIds.length) {
+            return;
+        }
         const successEntries = await roomDB.getEntryIdsByRoomIds(client, successRoomIds);
         const now = dayjs().add(9, 'hour');
         const today = now.format('YYYY-MM-DD');
@@ -41,9 +46,9 @@ const checkLife = async() => {
         const resultRecords = await recordDB.insertRecords(client, insertEntries);
         console.log(resultRecords);
       } catch (error) {
-        
       } finally {
-
+          console.log("relase");
+          client.release();
       }
 }
 
