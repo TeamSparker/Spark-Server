@@ -60,6 +60,10 @@ module.exports = async (req, res) => {
     }
 
     const uploadedRecord = await recordDB.uploadRecord(client, record.recordId, certifyingImg[0], timerRecord);
+    if (!entry.thumbnail) {
+      await roomDB.updateThumbnail(client, entry.entryId, certifyingImg[0]);
+      // @TODO 첫번째 습관 인증 축하 알림
+    }
 
     const data = {
       userId: user.userId,
