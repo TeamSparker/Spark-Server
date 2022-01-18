@@ -18,11 +18,11 @@ const slackAPI = require('../../../middlewares/slackAPI');
  */
 
 module.exports = async (req, res) => {
-  const { socialId, nickname } = req.body;
+  const { socialId, nickname, fcmToken } = req.body;
   const profileImg = req.imageUrls;
   console.log(socialId, nickname, profileImg);
   // @error 1. socialId/nickname이 전달되지 않음
-  if (!socialId || !nickname) {
+  if (!socialId || !nickname || !fcmToken) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
   // @error 3. 닉네임 10자 초과
@@ -39,9 +39,10 @@ module.exports = async (req, res) => {
     }
     let user;
     if (profileImg.length) {
-      user = await userDB.addUser(client, socialId, nickname, profileImg[0]);
+      user = await userDB.addUser(client, socialId, nickname, profileImg[0], fcmToken);
     } else {
-      user = await userDB.addUser(client, socialId, nickname, null);
+      const defaultProfile = 'https://firebasestorage.googleapis.com/v0/b/we-sopt-spark.appspot.com/o/common%2Fprofile_empty.png?alt=media&token=194cf154-6a1b-4ffe-9e51-6f07b3c45490';
+      user = await userDB.addUser(client, socialId, nickname, defaultProfile, fcmToken);
     }
     const { accesstoken } = jwtHandlers.sign(user);
     console.log(user);

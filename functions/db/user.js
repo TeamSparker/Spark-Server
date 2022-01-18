@@ -46,16 +46,16 @@ const getUserBySocialId = async (client, socialId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addUser = async (client, socialId, nickname, profileImg) => {
+const addUser = async (client, socialId, nickname, profileImg, fcmToken) => {
   const { rows } = await client.query(
     `
     INSERT INTO spark.user
-    (social_id, nickname, profile_img)
+    (social_id, nickname, profile_img, device_token)
     VALUES
-    ($1, $2, $3)
+    ($1, $2, $3, $4)
     RETURNING user_id, nickname, profile_img
     `,
-    [socialId, nickname, profileImg],
+    [socialId, nickname, profileImg, fcmToken],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
