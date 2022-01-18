@@ -51,7 +51,6 @@ module.exports = {
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
   CERTIFY_SUCCESS: '습관인증 업로드 성공',
-  CERTIFICATION_ALREADY_DONE: '상태 변경 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
@@ -75,4 +74,10 @@ module.exports = {
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
   PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
+
+  // Status
+  INVALID_USER_STATUS: '유효하지 않은 status type입니다',
+  CERTIFICATION_ALREADY_DONE: '이미 인증을 완료하였습니다',
+  REST_ALREADY_DONE: '이미 쉴래요를 사용한 사용자입니다',
+  UPDATE_STATUS_SUCCESS: '상태 변경 완료',
 };
