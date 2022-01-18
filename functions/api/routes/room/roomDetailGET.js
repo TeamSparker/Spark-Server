@@ -29,17 +29,19 @@ module.exports = async (req, res) => {
 
     const room = await roomDB.getRoomById(client, roomId);
 
+    // @error 1. 존재하지 않는 습관방인 경우
+    if (!room) {
+      console.log('no room');
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
+    }
+
     const startDate = dayjs(room.startAt);
     const endDate = dayjs(room.endAt);
     const now = dayjs().add(9, 'hour');
     const today = dayjs(now.format('YYYY-MM-DD'));
     const leftDay = endDate.diff(today, 'day');
     const day = today.diff(startDate, 'day') + 1;
-    console.log(today);
-    // @error 1. 존재하지 않는 습관방인 경우
-    if (!room) {
-      res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
-    }
+
     // @error 2. 진행중인 습관방이 아닌 경우
     if (room.status !== 'ONGOING' || leftDay < 0) {
       res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_ONGOING_ROOM));
@@ -57,7 +59,7 @@ module.exports = async (req, res) => {
     let myRecord = null;
 
     let otherRecords = [];
-    
+
     records.map((record) => {
       if (record.userId === user.userId) {
         myRecord = {
