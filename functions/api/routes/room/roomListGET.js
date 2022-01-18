@@ -33,9 +33,12 @@ module.exports = async (req, res) => {
 
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
 
-    const waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "NONE");
-    const ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
-    
+    let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "NONE");
+    waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse();
+    let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
+    ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse();
+    console.log("waitingRooms", waitingRooms);
+    console.log("ongoingRooms", ongoingRooms);
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(ongoingRoomIds);
@@ -116,17 +119,17 @@ module.exports = async (req, res) => {
       
       const endDate = dayjs(roomInfo[i].endAt);
       const leftDay = endDate.diff(today, 'day');
-      let isStarted = true;
-      if (roomInfo[i].status === 'NONE') {
-        isStarted = false;
-      }
+      // let isStarted = true;
+      // if (roomInfo[i].status === 'NONE') {
+      //   isStarted = false;
+      // }
       const room = {
         roomId: roomInfo[i].roomId,
         roomName: roomInfo[i].roomName,
         leftDay,
         profileImg: roomProfileImg[i],
         life: roomInfo[i].life,
-        isStarted,
+        isStarted: roomInfo[i].status==='NONE'?false:true,
         isDone: roomUserStatus[i],
         memberNum: roomMemberNum[i],
         doneMemberNum: roomDoneMemberNum[i]
