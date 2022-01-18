@@ -31,7 +31,6 @@ module.exports = async (req, res) => {
 
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
-      console.log('no room');
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
 
