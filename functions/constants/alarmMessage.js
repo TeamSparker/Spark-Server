@@ -20,7 +20,7 @@ const ROOM_OUT = (who, roomName) => {
 };
 
 const SEND_SPARK = (who, body) => {
-  const title = `${who}님이 보낸 스파크`;
+  const title = `${who}님이 보낸 스파크🔥`;
 
   return { title, body, isService: false };
 };

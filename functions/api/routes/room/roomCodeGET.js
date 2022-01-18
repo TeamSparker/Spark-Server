@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
       roomId: room.roomId,
       roomName: room.roomName,
       creatorName: creator.nickname,
-      createrImg: creator.profileImg,
+      creatorImg: creator.profileImg,
       profileImgs,
       totalNums: entries.length,
     };
