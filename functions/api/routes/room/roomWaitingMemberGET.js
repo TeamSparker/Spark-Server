@@ -39,6 +39,9 @@ module.exports = async (req, res) => {
 
     // 요청을 보낸 사용자를 제외한 member list
     const friendsEntries = await roomDB.getFriendsByIds(client, roomId, userId);
+    if(!friendsEntries.length) {
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_WAITROOM_DATA_SUCCESS, { members: [] }));
+    }
     const friendsIds = friendsEntries.map((f) => f.userId);
     const users = await userDB.getUsersByIds(client, friendsIds);
     let members = [];
