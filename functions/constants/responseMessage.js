@@ -11,6 +11,8 @@ module.exports = {
   DELETE_USER: '회원 탈퇴 성공',
   ALREADY_SOCIALID: '이미 사용중인 소셜 아이디입니다.',
   TOO_LONG_NICKNAME: '닉네임은 10자를 초과할 수 없습니다',
+  NOT_SIGNED_UP: '회원가입을 하지 않은 사용자입니다',
+  ALREADY_SIGNED_UP: '회원 정보를 불러왔습니다',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
@@ -49,6 +51,7 @@ module.exports = {
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
   CERTIFY_SUCCESS: '습관인증 업로드 성공',
+  CERTIFICATION_ALREADY_DONE: '상태 변경 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
