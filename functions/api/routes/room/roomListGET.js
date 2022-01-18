@@ -34,9 +34,9 @@ module.exports = async (req, res) => {
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
 
     let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "NONE");
-    waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse();
+    waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생선된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
-    ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse();
+    ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
     console.log("waitingRooms", waitingRooms);
     console.log("ongoingRooms", ongoingRooms);
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
