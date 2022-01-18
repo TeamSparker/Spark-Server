@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -60,10 +61,25 @@ const addUser = async (client, socialId, nickname, profileImg, fcmToken) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const updateFCMByUserId = async (client, userId, fcmToken) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.user
+    SET device_token = $2, updated_at = $3
+    WHERE user_id = $1
+    RETURNING *
+    `,
+    [userId, fcmToken, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
   getUsersByIds,
   getUserBySocialId,
   addUser,
+  updateFCMByUserId,
 };
