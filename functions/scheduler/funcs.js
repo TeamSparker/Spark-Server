@@ -2,6 +2,7 @@ const db = require('../db/db');
 const { roomDB, recordDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
+const slackAPI = require('../../../middlewares/slackAPI');
 
 const checkLife = async() => { 
     let client;
@@ -46,6 +47,8 @@ const checkLife = async() => {
         const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
         console.log(resultRecords);
       } catch (error) {
+        const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
+        slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       } finally {
           console.log("relase");
           client.release();
