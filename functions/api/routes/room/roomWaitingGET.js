@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
     }
 
     const data = {
-      roomId,
+      roomId: parseInt(roomId),
       roomName: room.roomName,
       roomCode: room.code,
       fromStart: room.fromStart,
