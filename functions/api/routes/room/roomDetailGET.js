@@ -41,7 +41,10 @@ module.exports = async (req, res) => {
     const leftDay = endDate.diff(today, 'day');
     const day = today.diff(startDate, 'day');
 
-    console.log(day);
+    // @error 1. 존재하지 않는 습관방인 경우
+    if (!room) {
+      res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
+    }
 
     // @error 2. 진행중인 습관방이 아닌 경우
     if (room.status !== 'ONGOING' || leftDay < 0) {
