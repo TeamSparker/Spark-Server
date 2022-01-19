@@ -46,8 +46,8 @@ const checkLife = async() => {
             return queryParameter;
         });
         console.log(insertEntries);
-        // const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-        // console.log(resultRecords);
+        const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
+        console.log(resultRecords);
         const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${successRoomIds}`;
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       } catch (error) {
