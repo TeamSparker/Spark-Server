@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
     console.log('otherRecords', otherRecords);
 
     const data = {
-      roomId,
+      roomId: room.roomId,
       roomName: room.roomName,
       startDate: startDate.format('YYYY.MM.DD.'),
       endDate: endDate.format('YYYY.MM.DD.'),
