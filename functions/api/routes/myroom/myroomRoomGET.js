@@ -17,7 +17,7 @@ const _ = require('lodash');
  */
 
 module.exports = async (req, res) => {
-  let lastId = Number(req.query.lastId);
+  let lastId = Number(req.query.lastid);
   const size = Number(req.query.size);
   const user = req.user;
   const { roomId } = req.params;
