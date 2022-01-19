@@ -16,12 +16,12 @@ const _ = require('lodash');
  *    3. 접근 권한이 없는 유저인 경우
  */
 
-
 module.exports = async (req, res) => {
-  let lastId = Number(req.query.lastid);
+  let lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
   const user = req.user;
   const { roomId } = req.params;
+
   let client;
 
   // @error 1. roomId가 없음
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     if (!room) {
       res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
     }
-    
+
     // @error 3. 접근 권한이 없는 유저인 경우
     const entry = await roomDB.checkEnteredById(client, roomId, user.userId);
     if (!entry) {
@@ -45,14 +45,14 @@ module.exports = async (req, res) => {
     }
 
     const pagedRecords = await recordDB.getPagedRecordsByEntryId(client, entry.entryId, lastId, size);
-    
+
     // 해당하는 record가 없을 경우
     if (!pagedRecords.length) {
-        const data = {
-            roomName: room.roomName,
-            records: []
-        };
-        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
+      const data = {
+        roomName: room.roomName,
+        records: [],
+      };
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
     }
 
     const recordIds = pagedRecords.map((o) => o.recordId);
@@ -60,20 +60,20 @@ module.exports = async (req, res) => {
     const sparkNums = await sparkDB.countSparkByRecordIds(client, recordIds);
 
     const records = pagedRecords.map((record) => {
-        const sparkCount = _.find(sparkNums, {'recordId': record.recordId});
-        const sparkNum = sparkCount? Number(sparkCount.sparkNum): 0;
-        return {
-            recordId: record.recordId,
-            leftDay: 66-record.dayjs,
-            certifyingImg: record.certifyingImg,
-            sparkNum,
-            status: record.status
-        }
+      const sparkCount = _.find(sparkNums, { recordId: record.recordId });
+      const sparkNum = sparkCount ? Number(sparkCount.sparkNum) : 0;
+      return {
+        recordId: record.recordId,
+        leftDay: 66 - record.dayjs,
+        certifyingImg: record.certifyingImg,
+        sparkNum,
+        status: record.status,
+      };
     });
 
     const data = {
-        roomName: room.roomName,
-        records
+      roomName: room.roomName,
+      records,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_MYROOM_DETAIL_SUCCESS, data));
