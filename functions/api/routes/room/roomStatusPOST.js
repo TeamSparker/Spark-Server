@@ -17,6 +17,7 @@ const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
  *      3. 권한이 없는 사용자로부터의 요청
  *      4. 습관 시작하지 않은 방에서의 요청
  *      5. 이미 인증을 완료한 사용자로부터의 요청
+ *      6. 이미 쉴래요를 사용한 사용자로부터의 요청
  */
 
 module.exports = async (req, res) => {
@@ -61,6 +62,11 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.CERTIFICATION_ALREADY_DONE));
     }
 
+    // @error 6. 이미 인증을 완료한 사용자로부터의 요청
+    if (recentRecord.status === 'REST') {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.REST_ALREADY_DONE));
+    }
+
     await recordDB.updateStatusByRecordId(client, recentRecord.recordId, statusType);
 
     // 고민중을 눌렀으면 Notification에 추가, PushAlarm 전송
@@ -84,7 +90,7 @@ module.exports = async (req, res) => {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
 
-    // res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }

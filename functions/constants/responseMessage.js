@@ -11,6 +11,8 @@ module.exports = {
   DELETE_USER: '회원 탈퇴 성공',
   ALREADY_SOCIALID: '이미 사용중인 소셜 아이디입니다.',
   TOO_LONG_NICKNAME: '닉네임은 10자를 초과할 수 없습니다',
+  NOT_SIGNED_UP: '회원가입을 하지 않은 사용자입니다',
+  ALREADY_SIGNED_UP: '회원 정보를 불러왔습니다',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
@@ -72,4 +74,10 @@ module.exports = {
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
   PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
+
+  // Status
+  INVALID_USER_STATUS: '유효하지 않은 status type입니다',
+  CERTIFICATION_ALREADY_DONE: '이미 인증을 완료하였습니다',
+  REST_ALREADY_DONE: '이미 쉴래요를 사용한 사용자입니다',
+  UPDATE_STATUS_SUCCESS: '상태 변경 완료',
 };
