@@ -31,10 +31,12 @@ module.exports = async (req, res) => {
 
     // 회원가입 한적 없는 사용자
     if (!user) {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NOT_SIGNED_UP));
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NOT_SIGNED_UP, { isNew: true }));
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, { accesstoken: jwtHandlers.sign(user) }));
+    let data = jwtHandlers.sign(user);
+    data.isNew = false;
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, data));
     await userDB.updateFCMByUserId(client, user.userId, fcmToken);
   } catch (error) {
     console.log(error);
