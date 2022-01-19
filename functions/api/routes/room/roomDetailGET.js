@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
     const now = dayjs().add(9, 'hour');
     const today = dayjs(now.format('YYYY-MM-DD'));
     const leftDay = endDate.diff(today, 'day');
-    const day = today.diff(startDate, 'day') + 1;
+    const day = today.diff(startDate, 'day');
 
     // @error 2. 진행중인 습관방이 아닌 경우
     if (room.status !== 'ONGOING' || leftDay < 0) {
