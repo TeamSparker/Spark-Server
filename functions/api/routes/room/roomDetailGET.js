@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
     const now = dayjs().add(9, 'hour');
     const today = dayjs(now.format('YYYY-MM-DD'));
     const leftDay = endDate.diff(today, 'day');
-    const day = today.diff(startDate, 'day') + 1;
+    const day = today.diff(startDate, 'day');
     console.log(today);
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {

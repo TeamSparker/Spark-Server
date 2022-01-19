@@ -2,13 +2,14 @@ const db = require('../db/db');
 const { roomDB, recordDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../middlewares/slackAPI');
 
 const checkLife = async() => { 
     let client;
     try {
         client = await db.connect();
         const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
+        console.log(failRecords);
         const roomGroupByFailCount = _.groupBy(failRecords, "failCount"); // failCount별 roomId 묶어주기 (ex. [{"failCount": 1, "roomId": [1,2,3]}, {"failCount":2, "roomId": [4,5,6]}])
         const failCountList = [... new Set(failRecords.map((o) => Number(o.failCount)))]; // failCount 뭐뭐있는지~ (ex. [1,2,3])
         const roomIdsByFailCount = {'1':[], '2':[], '3':[]};
@@ -40,12 +41,13 @@ const checkLife = async() => {
     
         const insertEntries = successEntries.map((o) => { // 추가해줄 record들의 속성들 빚어주기
             const startDate = dayjs(o.startAt);
-            const day = dayjs(today).diff(startDate, 'day') + 1;
+            const day = dayjs(today).diff(startDate, 'day');
             const queryParameter = "(" + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ")";
             return queryParameter;
         });
-        const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-        console.log(resultRecords);
+        console.log(insertEntries);
+        // const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
+        // console.log(resultRecords);
         const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${successRoomIds}`;
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       } catch (error) {
