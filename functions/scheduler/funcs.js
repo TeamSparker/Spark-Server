@@ -8,8 +8,10 @@ const checkLife = async() => {
     let client;
     try {
         client = await db.connect();
+        const allRooms = await roomDB.getAllRoomIds(client);
+        const allRoomIds = allRooms.map((o) => o.roomId);
         const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
-        console.log(failRecords);
+        console.log("failRecords", failRecords);
         const roomGroupByFailCount = _.groupBy(failRecords, "failCount"); // failCount별 roomId 묶어주기 (ex. [{"failCount": 1, "roomId": [1,2,3]}, {"failCount":2, "roomId": [4,5,6]}])
         const failCountList = [... new Set(failRecords.map((o) => Number(o.failCount)))]; // failCount 뭐뭐있는지~ (ex. [1,2,3])
         const roomIdsByFailCount = {'1':[], '2':[], '3':[]};
@@ -22,15 +24,16 @@ const checkLife = async() => {
                 roomIdsByFailCount[3] = roomIdsByFailCount[3].concat(roomIds);
             }
         });
-        
+        console.log("roomIdsByFailCount", roomIdsByFailCount);
         let afterLife = []; // 수명 깎아 준 후 습관방별 수명들
         for(let i=1; i<=3; i++) { // 수명 깎아주기! - 3번 진행 (수명 1개깎이는 방 / 2개 깎이는 방 / 3개 깎이는 방)
             if(roomIdsByFailCount[i].length) {
                 afterLife = afterLife.concat(await roomDB.updateLife(client, i, roomIdsByFailCount[i]));
             }
         }
+        console.log("afterLife", afterLife);
         const failRoomIds = _.filter(afterLife, {life: 0}).map((o) => o.roomId); // 수명 깎아주고 나서 {life: 0} 이면 폭파된 방
-        const successRoomIds = _.difference(failRecords.map((o) => o.roomId), failRoomIds); // 살아남은 방들
+        const successRoomIds = _.difference(allRoomIds, failRoomIds); // 살아남은 방들
 
         if(!successRoomIds.length) { // 살아남은 방 없으면 return
             return;
@@ -45,9 +48,8 @@ const checkLife = async() => {
             const queryParameter = "(" + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ")";
             return queryParameter;
         });
-        console.log(insertEntries);
         const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-        console.log(resultRecords);
+        console.log("failRoomIds", failRoomIds); console.log("successRoomIds", successRoomIds);
         const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${successRoomIds}`;
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       } catch (error) {
