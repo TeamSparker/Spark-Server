@@ -366,6 +366,7 @@ const getFailRecords = async (client) => {
     AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
+    AND r.day != 0
     AND r.status IN ('NONE', 'CONSIDER')
     AND r.date = $1
     GROUP BY e.room_id
