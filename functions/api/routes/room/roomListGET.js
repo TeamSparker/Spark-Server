@@ -37,11 +37,14 @@ module.exports = async (req, res) => {
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
-    console.log("waitingRooms", waitingRooms);
-    console.log("ongoingRooms", ongoingRooms);
+    // console.log("waitingRooms", waitingRooms);
+    // console.log("ongoingRooms", ongoingRooms);
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(ongoingRoomIds);
+    console.log("waitingRoomIds", waitingRoomIds);
+    console.log("ongoingRoomIds", ongoingRoomIds);
+    console.log("roomIds", roomIds);
     let responseRoomIds = [];
     
     // 최초 요청이 아닐시
@@ -65,18 +68,20 @@ module.exports = async (req, res) => {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { "rooms": [] }));
     }
 
-    const roomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);
-
+    const rawRoomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);
+    const roomInfo = rawRoomInfo.sort((a,b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
     const today = dayjs(dayjs().add(9, 'hour').format('YYYY-M-D'));
 
     // roomIds 빈 배열일 때 처리
-    const profiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
+    const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
+    const profiles = rawProfiles.sort((a,b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
+    console.log("profiles", profiles.map((o) => o.roomId));
 
-    // console.log(profiles);
     let roomProfileImg = [];
     let roomMemberNum = [];
     let roomUserStatus = [];
     let roomDoneMemberNum = [];
+
     responseRoomIds.map((roomId) => {
       const userStatus = profiles.filter(Boolean).filter((o) => {
         if (o.roomId === roomId && o.userId === user.userId) {
@@ -102,8 +107,10 @@ module.exports = async (req, res) => {
       let profileImgs = profiles.filter(Boolean).filter((o) => o.roomId === roomId).map((o) => o.profileImg);
       roomMemberNum.push(profileImgs.length);
       if(profileImgs.length < 3) {
-        console.log("length", profileImgs.length);
-        for(let i=0; i<3 - profileImgs.length; i++) {
+        let i = 0;
+        const length = profileImgs.length;
+
+        for(let i=0; i<3-length; i++) {
           profileImgs.push(null);
         }
       }
@@ -114,15 +121,11 @@ module.exports = async (req, res) => {
     });
        
     let rooms = [];
-    console.log("roomInfo", roomInfo);
+    // console.log("roomInfo", roomInfo);
     for (let i=0; i<responseRoomIds.length ; i++) {
       
       const endDate = dayjs(roomInfo[i].endAt);
       const leftDay = endDate.diff(today, 'day');
-      // let isStarted = true;
-      // if (roomInfo[i].status === 'NONE') {
-      //   isStarted = false;
-      // }
       const room = {
         roomId: roomInfo[i].roomId,
         roomName: roomInfo[i].roomName,
