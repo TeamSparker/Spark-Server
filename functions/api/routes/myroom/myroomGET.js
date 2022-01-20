@@ -37,10 +37,10 @@ module.exports = async (req, res) => {
     let completeRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'COMPLETE');
     let failRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'FAIL');
 
-    const totalRoomNum = totalRooms.length;
     const ongoingRoomNum = ongoingRooms.length;
     const completeRoomNum = completeRooms.length;
     const failRoomNum = failRooms.length;
+    const totalRoomNum = ongoingRoomNum + completeRoomNum + failRoomNum;
 
     let rooms = [];
     let roomIds = [];
@@ -93,9 +93,9 @@ module.exports = async (req, res) => {
       };
       if (roomType === 'FAIL') {
         const failDay = endDate.diff(startDate, 'day');
-        console.log("failDay", failDay);
-        console.log("startDate", startDate);
-        console.log("endDate", endDate);
+        console.log('failDay', failDay);
+        console.log('startDate', startDate);
+        console.log('endDate', endDate);
         oneRoom.failDay = failDay;
       }
       roomData.push(oneRoom);
