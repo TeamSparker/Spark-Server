@@ -79,6 +79,7 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
       SELECT *
       FROM spark.record r
       WHERE r.entry_id = $1
+      AND r.day != 0
       ORDER BY r.day DESC
       LIMIT $2
       `,
