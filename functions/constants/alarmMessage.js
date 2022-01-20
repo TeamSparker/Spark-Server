@@ -1,6 +1,6 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
-  const title = '인증 완료';
-  const body = `${who}님이 '${roomName}' 인증을 완료했습니다.`;
+  const title = `'${roomName}' 방`;
+  const body = `${who}님이 인증을 완료했습니다.`;
 
   return { title, body, isService: false };
 };
