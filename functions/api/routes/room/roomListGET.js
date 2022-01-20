@@ -33,49 +33,52 @@ module.exports = async (req, res) => {
 
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
 
-    let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "NONE");
+    let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'NONE');
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
-    let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === "ONGOING");
+    let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
     // console.log("waitingRooms", waitingRooms);
     // console.log("ongoingRooms", ongoingRooms);
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(ongoingRoomIds);
-    console.log("waitingRoomIds", waitingRoomIds);
-    console.log("ongoingRoomIds", ongoingRoomIds);
-    console.log("roomIds", roomIds);
+    console.log('waitingRoomIds', waitingRoomIds);
+    console.log('ongoingRoomIds', ongoingRoomIds);
+    console.log('roomIds', roomIds);
     let responseRoomIds = [];
-    
+
     // 최초 요청이 아닐시
-    if(lastid !== -1) {
+    if (lastid !== -1) {
       const lastIndex = _.indexOf(roomIds, lastid);
       // @error 1. 잘못된 last id
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));
       }
-      responseRoomIds = roomIds.slice(lastIndex+1, lastIndex+1+size);
+      responseRoomIds = roomIds.slice(lastIndex + 1, lastIndex + 1 + size);
     }
     // 최초 요청시
     else {
       responseRoomIds = roomIds.slice(0, size);
     }
 
-    console.log("responseRoomIds",responseRoomIds);
+    console.log('responseRoomIds', responseRoomIds);
 
     // 마지막일 때 -> 빈 배열 return
-    if(!responseRoomIds.length) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { "rooms": [] }));
+    if (!responseRoomIds.length) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms: [] }));
     }
 
     const rawRoomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);
-    const roomInfo = rawRoomInfo.sort((a,b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
+    const roomInfo = rawRoomInfo.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
     const today = dayjs(dayjs().add(9, 'hour').format('YYYY-M-D'));
 
     // roomIds 빈 배열일 때 처리
     const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
-    const profiles = rawProfiles.sort((a,b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
-    console.log("profiles", profiles.map((o) => o.roomId));
+    const profiles = rawProfiles.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
+    console.log(
+      'profiles',
+      profiles.map((o) => o.roomId),
+    );
 
     let roomProfileImg = [];
     let roomMemberNum = [];
@@ -89,41 +92,42 @@ module.exports = async (req, res) => {
         }
         return false;
       });
-      if (userStatus === 'DONE') {
+
+      if (userStatus[0].status === 'DONE') {
         roomUserStatus.push(true);
-      }
-      else {
+      } else {
         roomUserStatus.push(false);
       }
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
-        if (o.roomId === roomId && o.status === "DONE") {
+        if (o.roomId === roomId && o.status === 'DONE') {
           return true;
         }
         return false;
       });
       roomDoneMemberNum.push(doneMembers.length);
 
-      let profileImgs = profiles.filter(Boolean).filter((o) => o.roomId === roomId).map((o) => o.profileImg);
+      let profileImgs = profiles
+        .filter(Boolean)
+        .filter((o) => o.roomId === roomId)
+        .map((o) => o.profileImg);
       roomMemberNum.push(profileImgs.length);
-      if(profileImgs.length < 3) {
+      if (profileImgs.length < 3) {
         let i = 0;
         const length = profileImgs.length;
 
-        for(let i=0; i<3-length; i++) {
+        for (let i = 0; i < 3 - length; i++) {
           profileImgs.push(null);
         }
-      }
-      else {
-        profileImgs = profileImgs.slice(0,3);
+      } else {
+        profileImgs = profileImgs.slice(0, 3);
       }
       roomProfileImg.push(profileImgs);
     });
-       
+
     let rooms = [];
     // console.log("roomInfo", roomInfo);
-    for (let i=0; i<responseRoomIds.length ; i++) {
-      
+    for (let i = 0; i < responseRoomIds.length; i++) {
       const endDate = dayjs(roomInfo[i].endAt);
       const leftDay = endDate.diff(today, 'day');
       const room = {
@@ -132,16 +136,15 @@ module.exports = async (req, res) => {
         leftDay,
         profileImg: roomProfileImg[i],
         life: roomInfo[i].life,
-        isStarted: roomInfo[i].status==='NONE'?false:true,
+        isStarted: roomInfo[i].status === 'NONE' ? false : true,
         isDone: roomUserStatus[i],
         memberNum: roomMemberNum[i],
-        doneMemberNum: roomDoneMemberNum[i]
-      }
+        doneMemberNum: roomDoneMemberNum[i],
+      };
       rooms.push(room);
-  }
+    }
 
-  res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms }));
-
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms }));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
