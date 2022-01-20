@@ -5,8 +5,8 @@ const CERTIFICATION_COMPLETE = (who, roomName) => {
   return { title, body, isService: false };
 };
 
-const STATUS_CONSIDERING = (who) => {
-  const title = '고민중';
+const STATUS_CONSIDERING = (who, roomName) => {
+  const title = `'${roomName}' 방`;
   const body = `${who}님이 고민중 버튼을 눌렀습니다.`;
 
   return { title, body, isService: false };
