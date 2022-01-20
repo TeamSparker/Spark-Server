@@ -1,12 +1,12 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
-  const title = '인증 완료';
-  const body = `${who}님이 '${roomName}' 인증을 완료했습니다.`;
+  const title = `'${roomName}' 방`;
+  const body = `${who}님이 인증을 완료했습니다.`;
 
   return { title, body, isService: false };
 };
 
-const STATUS_CONSIDERING = (who) => {
-  const title = '고민중';
+const STATUS_CONSIDERING = (who, roomName) => {
+  const title = `'${roomName}' 방`;
   const body = `${who}님이 고민중 버튼을 눌렀습니다.`;
 
   return { title, body, isService: false };
@@ -20,7 +20,7 @@ const ROOM_OUT = (who, roomName) => {
 };
 
 const SEND_SPARK = (who, body) => {
-  const title = `${who}님이 보낸 스파크🔥`;
+  const title = `${who}님이 보낸 스파크`;
 
   return { title, body, isService: false };
 };
@@ -33,8 +33,8 @@ const ROOM_HALF = (roomName) => {
 };
 
 const ROOM_NEW = (roomName) => {
-  const title = '새로운 습관방 생성';
-  const body = `새로운 '${roomName}' 습관방이 생성되었습니다.`;
+  const title = 'Spark';
+  const body = `새로운 습관방 '${roomName}'이 생성되었습니다.`;
 
   return { title, body, isService: true };
 };

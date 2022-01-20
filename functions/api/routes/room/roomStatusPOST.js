@@ -75,14 +75,14 @@ module.exports = async (req, res) => {
       const sender = await userDB.getUserById(client, userId);
       const receivers = await roomDB.getFriendsByIds(client, roomId, userId);
       const receiversIds = receivers.map((r) => r.userId);
-      const { title, body, isService } = alarmMessage.STATUS_CONSIDERING(sender.nickname);
+      const { title, body, isService } = alarmMessage.STATUS_CONSIDERING(sender.nickname, room.roomName);
 
       for (let i = 0; i < receiversIds.length; i++) {
         const receiverId = receiversIds[i];
         const receiver = await userDB.getUserById(client, receiverId);
         const receiverToken = receiver.deviceToken;
         await noticeDB.addNotification(client, title, body, sender.profileImg, receiverId, isService);
-        pushAlarm.send(req, res, receiverToken, 'Spark', body);
+        pushAlarm.send(req, res, receiverToken, title, body);
       }
     }
 
