@@ -33,7 +33,7 @@ const ROOM_HALF = (roomName) => {
 };
 
 const ROOM_NEW = (roomName) => {
-  const title = '새로운 습관방 생성';
+  const title = 'Spark';
   const body = `새로운 '${roomName}' 습관방이 생성되었습니다.`;
 
   return { title, body, isService: true };
