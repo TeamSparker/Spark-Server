@@ -1,5 +1,5 @@
 const db = require('../db/db');
-const { roomDB, recordDB } = require('../db');
+const { roomDB, recordDB , scheduleDB} = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
@@ -8,6 +8,11 @@ const checkLife = async() => {
     let client;
     try {
         client = await db.connect();
+        const scheduleCheck = await scheduleDB.insertSchedule(client);
+        if (!scheduleCheck.length) {
+            return;
+        }
+
         const allRooms = await roomDB.getAllRoomIds(client);
         const allRoomIds = allRooms.map((o) => o.roomId);
         const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
@@ -44,7 +49,7 @@ const checkLife = async() => {
     
         const insertEntries = successEntries.map((o) => { // 추가해줄 record들의 속성들 빚어주기
             const startDate = dayjs(o.startAt);
-            const day = dayjs(today).diff(startDate, 'day');
+            const day = dayjs(today).diff(startDate, 'day'); //startDate랑 오늘 날짜랑.. 비교하기
             const queryParameter = "(" + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ")";
             return queryParameter;
         });
