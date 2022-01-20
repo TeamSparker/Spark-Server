@@ -5,4 +5,5 @@ module.exports = {
   likeDB: require('./like'),
   noticeDB: require('./notice'),
   recordDB: require('./record'),
+  scheduleDB: require('./schedule'),
 };
