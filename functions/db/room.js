@@ -417,6 +417,19 @@ const updateThumbnail = async(client, entryId, img) => {
     return convertSnakeToCamel.keysToCamel(rows[0]);
 }
 
+
+const getAllRoomIds = async(client) => {
+  const { rows } = await client.query(
+    `
+    SELECT r.room_id
+    FROM spark.room r
+    WHERE is_deleted=FALSE
+    AND status='ONGOING'
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
 module.exports = { 
   addRoom, 
   isCodeUnique, 
@@ -440,5 +453,6 @@ module.exports = {
   updateLife,
   getFailRecords,
   getEntriesByRoomIds,
-  updateThumbnail
+  updateThumbnail,
+  getAllRoomIds,
 };

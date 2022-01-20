@@ -87,12 +87,15 @@ module.exports = async (req, res) => {
         thumbnail: room.thumbnail,
         totalReceivedSpark: sparkCount.count ? parseInt(sparkCount.count) : 0,
         startDate: startDate.format('YYYY-MM-DD'),
-        endDate: startDate.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
         failDay: null,
         comment: room.comment,
       };
       if (roomType === 'FAIL') {
         const failDay = endDate.diff(startDate, 'day');
+        console.log("failDay", failDay);
+        console.log("startDate", startDate);
+        console.log("endDate", endDate);
         oneRoom.failDay = failDay;
       }
       roomData.push(oneRoom);
