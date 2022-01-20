@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
       const sparkNum = sparkCount ? Number(sparkCount.sparkNum) : 0;
       return {
         recordId: record.recordId,
-        leftDay: 66 - record.dayjs,
+        leftDay: 66 - record.day,
         certifyingImg: record.certifyingImg,
         sparkNum,
         status: record.status,
