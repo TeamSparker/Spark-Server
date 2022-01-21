@@ -73,6 +73,8 @@ const uploadRecord = async (client, recordId, certifyingImg, timerRecord) => {
 };
 
 const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
+  const now = dayjs().add(9, 'hour');
+  const today = dayjs(now).format('YYYY-MM-DD');
   if (lastId === -1) {
     const { rows } = await client.query(
       `
@@ -80,11 +82,11 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
       FROM spark.record r
       WHERE r.entry_id = $1
       AND r.day != 0
-      AND r.status in ('DONE', 'REST')
+      AND (r.status in ('DONE', 'REST') OR r.date != $3)
       ORDER BY r.day DESC
       LIMIT $2
       `,
-      [entryId, size],
+      [entryId, size, today],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   } else {
@@ -94,11 +96,11 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
       FROM spark.record r
       WHERE r.entry_id = $1
       AND r.record_id < $2
-      AND r.status in ('DONE', 'REST')
+      AND (r.status in ('DONE', 'REST') OR r.date != $4)
       ORDER BY r.day DESC
       LIMIT $3
       `,
-      [entryId, lastId, size],
+      [entryId, lastId, size, today],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   }
