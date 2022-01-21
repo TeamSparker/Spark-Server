@@ -4,10 +4,10 @@
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
 > 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22.
 
-![Spark](https://user-images.githubusercontent.com/71129059/150545379-186efec8-0cc6-4fbb-928f-909b209c8835.png)
-
+![banner](https://user-images.githubusercontent.com/39653584/150547366-5ff166d7-874d-4b4d-a507-7a387c348991.png)
 
 ---
+
 
 ## ❤️‍🔥 Server Sparkers
 
