@@ -81,4 +81,5 @@ module.exports = {
   CERTIFICATION_ALREADY_DONE: '이미 인증을 완료하였습니다',
   REST_ALREADY_DONE: '이미 쉴래요를 사용한 사용자입니다',
   UPDATE_STATUS_SUCCESS: '상태 변경 완료',
+  REST_COUNT_ZERO: '쉴래요 사용 가능 횟수가 0인 사용자입니다',
 };
