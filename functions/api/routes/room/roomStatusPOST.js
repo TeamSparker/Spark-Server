@@ -68,6 +68,17 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.REST_ALREADY_DONE));
     }
 
+    if (statusType === 'REST') {
+      // @error 7. 쉴래요 가능 횟수가 0인 사용쟈
+      const restCount = await roomDB.getRestCountByIds(client, roomId, userId);
+      if (restCount < 1) {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.REST_COUNT_ZERO));
+      }
+
+      const newRestCount = restCount - 1;
+      await roomDB.updateRestByIds(client, roomId, userId, newRestCount);
+    }
+
     await recordDB.updateStatusByRecordId(client, recentRecord.recordId, statusType);
 
     // 고민중을 눌렀으면 Notification에 추가, PushAlarm 전송

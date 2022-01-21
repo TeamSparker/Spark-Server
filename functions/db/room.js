@@ -371,16 +371,16 @@ const getFailRecords = async (client) => {
     AND r.date = $1
     GROUP BY e.room_id
     `,
-    [yesterday]
+    [yesterday],
   );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
-const updateLife = async(client, failCount, roomIds) => {
+const updateLife = async (client, failCount, roomIds) => {
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
-    const { rows } = await client.query(
-      `
+  const { rows } = await client.query(
+    `
       UPDATE spark.room
       SET end_at =
       CASE
@@ -400,40 +400,68 @@ const updateLife = async(client, failCount, roomIds) => {
       WHERE room_id IN (${roomIds.join()}) 
       RETURNING room_id, life
       `,
-      [failCount, yesterday]
-    );
-    return convertSnakeToCamel.keysToCamel(rows);
-}
+    [failCount, yesterday],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
 
-const updateThumbnail = async(client, entryId, img) => {
-    const { rows } = await client.query(
-      `
+const updateThumbnail = async (client, entryId, img) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
       UPDATE spark.entry e
-      SET thumbnail = $2
+      SET thumbnail = $2, updated_at = $3
       WHERE entry_id = $1
       `,
-      [entryId, img]
-    );
-    return convertSnakeToCamel.keysToCamel(rows[0]);
-}
+    [entryId, img, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
 
-
-const getAllRoomIds = async(client) => {
+const getAllRoomIds = async (client) => {
   const { rows } = await client.query(
     `
     SELECT r.room_id
     FROM spark.room r
-    WHERE is_deleted=FALSE
+    WHERE is_deleted = FALSE
     AND status='ONGOING'
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
-module.exports = { 
-  addRoom, 
-  isCodeUnique, 
-  getRoomById, 
+const getRestCountByIds = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT rest 
+      FROM spark.room 
+      WHERE room_id = $1
+      AND user_id = $2
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateRestByIds = async (client, roomId, userId, newRestCount) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.entry e
+      SET rest = $3, updated_at = $4
+      WHERE room_id = $1
+      AND user_id = $2
+      RETURNING *
+      `,
+    [roomId, userId, newRestCount, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = {
+  addRoom,
+  isCodeUnique,
+  getRoomById,
   getRoomsByIds,
   getRoomByCode,
   getEntriesByRoomId,
@@ -455,4 +483,6 @@ module.exports = {
   getEntriesByRoomIds,
   updateThumbnail,
   getAllRoomIds,
+  getRestCountByIds,
+  updateRestByIds,
 };
