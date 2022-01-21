@@ -70,7 +70,8 @@ module.exports = async (req, res) => {
 
     if (statusType === 'REST') {
       // @error 7. 쉴래요 가능 횟수가 0인 사용쟈
-      const restCount = await roomDB.getRestCountByIds(client, roomId, userId);
+      const rawRest = await roomDB.getRestCountByIds(client, roomId, userId);
+      const restCount = rawRest.rest;
       if (restCount < 1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.REST_COUNT_ZERO));
       }
