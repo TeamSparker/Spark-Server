@@ -4,7 +4,8 @@
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
 > 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22.
 
-![KakaoTalk_Photo_2022-01-20-14-51-19](https://user-images.githubusercontent.com/39653584/150315358-def388b9-9ed5-451c-abc8-678520ad1d09.png)
+![Spark](https://user-images.githubusercontent.com/71129059/150545379-186efec8-0cc6-4fbb-928f-909b209c8835.png)
+
 
 ---
 
