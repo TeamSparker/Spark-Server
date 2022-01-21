@@ -80,6 +80,7 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
       FROM spark.record r
       WHERE r.entry_id = $1
       AND r.day != 0
+      AND r.status in ('DONE', 'REST')
       ORDER BY r.day DESC
       LIMIT $2
       `,
@@ -93,6 +94,7 @@ const getPagedRecordsByEntryId = async (client, entryId, lastId, size) => {
       FROM spark.record r
       WHERE r.entry_id = $1
       AND r.record_id < $2
+      AND r.status in ('DONE', 'REST')
       ORDER BY r.day DESC
       LIMIT $3
       `,
