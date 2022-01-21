@@ -434,7 +434,7 @@ const getRestCountByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
       SELECT rest 
-      FROM spark.room 
+      FROM spark.entry 
       WHERE room_id = $1
       AND user_id = $2
     `,
