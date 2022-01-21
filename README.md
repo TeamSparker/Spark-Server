@@ -24,11 +24,18 @@
 
 ---
 
+## 📲 WorkFlow
+
+![workflow_final](https://user-images.githubusercontent.com/71129059/150520896-1880bb04-9ce5-40aa-b378-c7b4a9e291d9.png)
+
+---
+
 ## ⭐️ IA
 
 ![IA](https://user-images.githubusercontent.com/71129059/148944129-5fd8c834-699d-40e6-b129-bdb06eb21596.png)
 
 ---
+
 
 ## 📚 API Document
 
