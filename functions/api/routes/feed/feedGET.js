@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
         return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { "records": [] }));
     }
     const roomIds = [...new Set(rawRooms.filter(Boolean).map((room) => room.roomId))];
-    const allRecords = await roomDB.getRecordsByRoomIds(client, roomIds);
+    const allRecords = await roomDB.getFeedRecordsByRoomIds(client, roomIds);
     const allRecordIds = allRecords.map((record) => record.recordId);
     
     let responseRecords = [];

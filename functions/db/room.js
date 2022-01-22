@@ -1,4 +1,5 @@
 const dayjs = require('dayjs');
+const { last } = require('lodash');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -171,6 +172,33 @@ const getRecordsByRoomIds = async (client, roomIds) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
+
+
+const getFeedRecordsByRoomIds = async (client, roomIds) => {
+  const now = dayjs().add(9, 'hour');
+  const lastWeek = dayjs(now).subtract(7, 'day').format('YYYY-MM-DD');
+  const { rows } = await client.query(
+    `
+    SELECT *
+    FROM spark.entry e
+    INNER JOIN spark.user u
+    ON u.user_id = e.user_id
+    LEFT JOIN spark.record r
+    ON e.entry_id = r.entry_id
+    WHERE e.room_id in (${roomIds.join()})
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
+    AND u.is_deleted = FALSE
+    AND NOT r.certified_at IS null
+    AND r.date > $1
+    ORDER BY r.date DESC, r.certified_at DESC
+    `,
+    [lastWeek]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 
 const kickedHistoryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -485,4 +513,5 @@ module.exports = {
   getAllRoomIds,
   getRestCountByIds,
   updateRestByIds,
+  getFeedRecordsByRoomIds,
 };
