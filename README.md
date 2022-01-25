@@ -1,6 +1,6 @@
 ## 🔥 Spark Server, &nbsp;A large fire comes from small spark
 
-> WE SOPT 29th APPJAM <br>
+> 👑 WE SOPT 29th APPJAM 대상 👑 <br>
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
 > 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22.
 
