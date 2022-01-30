@@ -173,7 +173,6 @@ const getRecordsByRoomIds = async (client, roomIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-
 const getFeedRecordsByRoomIds = async (client, roomIds) => {
   const now = dayjs().add(9, 'hour');
   const lastWeek = dayjs(now).subtract(7, 'day').format('YYYY-MM-DD');
@@ -194,11 +193,10 @@ const getFeedRecordsByRoomIds = async (client, roomIds) => {
     AND r.date > $1
     ORDER BY r.date DESC, r.certified_at DESC
     `,
-    [lastWeek]
+    [lastWeek],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const kickedHistoryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -424,11 +422,12 @@ const updateLife = async (client, failCount, roomIds) => {
       CASE
       WHEN life > $1 THEN life - $1
       ELSE 0
-      END
+      END,
+      updated_at = $3 
       WHERE room_id IN (${roomIds.join()}) 
       RETURNING room_id, life
       `,
-    [failCount, yesterday],
+    [failCount, yesterday, now],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
