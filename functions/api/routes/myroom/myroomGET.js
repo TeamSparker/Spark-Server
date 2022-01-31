@@ -4,7 +4,6 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB, roomDB, sparkDB } = require('../../../db');
-const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 const _ = require('lodash');
