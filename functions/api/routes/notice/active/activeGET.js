@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const actives = await noticeDB.getActivesByUserId(client, userId, lastid, size);
+    const actives = await noticeDB.getActivesByUserId(client, userId, parseInt(lastid), parseInt(size));
 
     const notices = actives.map((a) => {
       const notice = {};

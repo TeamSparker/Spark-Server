@@ -81,20 +81,36 @@ const getServicesByUserId = async (client, userId, lastid, size) => {
 
 const getActivesByUserId = async (client, userId, lastid, size) => {
   const beforeAWeek = dayjs().subtract(7, 'day');
-  const { rows } = await client.query(
-    `
-      SELECT * FROM spark.notification
-      WHERE receiver_id = $1
-      AND is_deleted = FALSE
-      AND is_service = FALSE
-      AND notification_id < $2
-      AND created_at > $4
-      ORDER BY notification_id DESC
-      LIMIT $3
-    `,
-    [userId, lastid, size, beforeAWeek],
-  );
-  return convertSnakeToCamel.keysToCamel(rows);
+  if (lastid === -1) {
+    const { rows } = await client.query(
+      `
+        SELECT * FROM spark.notification
+        WHERE receiver_id = $1
+        AND is_deleted = FALSE
+        AND is_service = FALSE
+        AND created_at > $3
+        ORDER BY notification_id DESC
+        LIMIT $2
+      `,
+      [userId, size, beforeAWeek],
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+  } else {
+    const { rows } = await client.query(
+      `
+        SELECT * FROM spark.notification
+        WHERE receiver_id = $1
+        AND is_deleted = FALSE
+        AND is_service = FALSE
+        AND notification_id < $2
+        AND created_at > $4
+        ORDER BY notification_id DESC
+        LIMIT $3
+      `,
+      [userId, lastid, size, beforeAWeek],
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+  }
 };
 
 const addNotification = async (client, title, body, senderImg, receiverId, isService) => {

@@ -266,7 +266,7 @@ main → develop → feature/#3(issue num)
 
 ---
 
-### 📌 Dependencies Modules
+### 📌 Dependency Modules
 ```JSON
 {
   "name": "functions",
