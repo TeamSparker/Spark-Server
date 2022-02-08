@@ -20,8 +20,9 @@ module.exports = {
   NO_USER: '존재하지 않는 회원입니다.',
   MISS_MATCH_PW: '비밀번호가 맞지 않습니다.',
 
-  // 프로필 조회
+  // 사용자 프로필
   GET_USER_PROFILE_SUCCESS: '프로필 조회 성공',
+  PATCH_USER_PROFILE_SUCCESS: '프로필 변경 성공',
 
   // Room
   CREATE_ROOM_SUCCESS: '습관 방 생성 성공',
