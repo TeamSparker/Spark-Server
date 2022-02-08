@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     let data = jwtHandlers.sign(user);
     data.isNew = false;
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, data));
-    await userDB.updateFCMByUserId(client, user.userId, fcmToken);
+    await userDB.updateDeviceTokenById(client, user.userId, fcmToken);
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

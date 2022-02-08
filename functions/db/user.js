@@ -61,7 +61,7 @@ const addUser = async (client, socialId, nickname, profileImg, fcmToken) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updateFCMByUserId = async (client, userId, fcmToken) => {
+const updateDeviceTokenById = async (client, userId, fcmToken) => {
   const now = dayjs().add(9, 'hour');
   const { rows } = await client.query(
     `
@@ -95,6 +95,6 @@ module.exports = {
   getUsersByIds,
   getUserBySocialId,
   addUser,
-  updateFCMByUserId,
+  updateDeviceTokenById,
   updateProfileById,
 };
