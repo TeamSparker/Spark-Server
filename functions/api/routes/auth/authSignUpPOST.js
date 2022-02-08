@@ -4,6 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB } = require('../../../db');
+const { DEFAULT_PROFILE_IMG_URL } = require('../../../constants/defaultProfileImg');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../middlewares/slackAPI');
 
@@ -19,8 +20,7 @@ const slackAPI = require('../../../middlewares/slackAPI');
 
 module.exports = async (req, res) => {
   const { socialId, nickname, fcmToken } = req.body;
-  const profileImg = req.imageUrls;
-  console.log(socialId, nickname, profileImg);
+
   // @error 1. socialId/nickname이 전달되지 않음
   if (!socialId || !nickname || !fcmToken) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
@@ -32,20 +32,24 @@ module.exports = async (req, res) => {
   let client;
   try {
     client = await db.connect();
+
     // @error 2. 이미 존재하는 socialIds
     const alreaySocialId = await userDB.getUserBySocialId(client, socialId);
+
     if (alreaySocialId) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_SOCIALID));
     }
-    let user;
-    if (profileImg.length) {
-      user = await userDB.addUser(client, socialId, nickname, profileImg[0], fcmToken);
-    } else {
-      const defaultProfile = 'https://firebasestorage.googleapis.com/v0/b/we-sopt-spark.appspot.com/o/common%2Fprofile_empty.png?alt=media&token=194cf154-6a1b-4ffe-9e51-6f07b3c45490';
-      user = await userDB.addUser(client, socialId, nickname, defaultProfile, fcmToken);
+
+    let profileImg = req.imageUrls;
+
+    // 프로필 이미지가 넘어오지 않았으면, 기본 이미지로 설정
+    if (profileImg.length === 0) {
+      profileImg.push(DEFAULT_PROFILE_IMG_URL);
     }
+    const user = await userDB.addUser(client, socialId, nickname, profileImg[0], fcmToken);
+
     const { accesstoken } = jwtHandlers.sign(user);
-    console.log(user);
+
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATED_USER, { user, accesstoken }));
   } catch (error) {
     console.log(error);
