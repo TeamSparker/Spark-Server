@@ -21,7 +21,7 @@ module.exports = {
   MISS_MATCH_PW: '비밀번호가 맞지 않습니다.',
 
   // 프로필 조회
-  READ_PROFILE_SUCCESS: '프로필 조회 성공',
+  GET_USER_PROFILE_SUCCESS: '프로필 조회 성공',
 
   // Room
   CREATE_ROOM_SUCCESS: '습관 방 생성 성공',

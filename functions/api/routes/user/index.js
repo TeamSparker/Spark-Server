@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { checkUser } = require('../../../middlewares/auth');
 
-// '/user/signup'으로 오는 요청을 userSignupPOST 파일에서 처리
-// router.post('/signup', require('./userSignupPOST'));
+router.get('/profile', checkUser, require('./userProfileGET'));
 
 module.exports = router;
