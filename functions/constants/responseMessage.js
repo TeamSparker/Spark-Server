@@ -53,6 +53,7 @@ module.exports = {
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
   CERTIFY_SUCCESS: '습관인증 업로드 성공',
+  ROOM_OUT_SUCCESS: '습관 방 퇴장 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
