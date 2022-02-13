@@ -479,9 +479,25 @@ const updateRestByIds = async (client, roomId, userId, newRestCount) => {
       WHERE room_id = $1
       AND user_id = $2
       RETURNING *
-      `,
+    `,
     [roomId, userId, newRestCount, now],
   );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const outById = async (client, roomId, userId) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.entry e
+      SET is_out = TRUE, out_at = $3, updated_at = $3
+      WHERE room_id = $1 
+      AND user_id = $2 
+      RETURNING *
+    `,
+    [roomId, userId, now],
+  );
+
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
@@ -513,4 +529,5 @@ module.exports = {
   getRestCountByIds,
   updateRestByIds,
   getFeedRecordsByRoomIds,
+  outById,
 };
