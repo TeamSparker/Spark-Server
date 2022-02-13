@@ -75,6 +75,20 @@ const updateFCMByUserId = async (client, userId, fcmToken) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const updateProfileById = async (client, userId, nickname, profileImg) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.user
+    SET nickname = $2, profile_img = $3, updated_at = $4
+    WHERE user_id = $1
+    RETURNING *
+    `,
+    [userId, nickname, profileImg, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -82,4 +96,5 @@ module.exports = {
   getUserBySocialId,
   addUser,
   updateFCMByUserId,
+  updateProfileById,
 };
