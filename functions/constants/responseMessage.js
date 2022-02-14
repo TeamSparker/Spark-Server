@@ -84,4 +84,8 @@ module.exports = {
   REST_ALREADY_DONE: '이미 쉴래요를 사용한 사용자입니다',
   UPDATE_STATUS_SUCCESS: '상태 변경 완료',
   REST_COUNT_ZERO: '쉴래요 사용 가능 횟수가 0인 사용자입니다',
+
+  // Token
+  TOKEN_EXPIRED: '만료된 토큰입니다',
+  TOKEN_INVALID: '유효하지 않은 토큰입니다',
 };
