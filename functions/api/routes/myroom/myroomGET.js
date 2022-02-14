@@ -32,9 +32,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
     const totalRooms = await roomDB.getCardsByUserId(client, user.userId);
-    let ongoingRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
-    let completeRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'COMPLETE');
-    let failRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'FAIL');
+    let ongoingRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'ONGOING' && rawRoom.isOut === false);
+    let completeRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'COMPLETE' && rawRoom.isOut === false);
+    let failRooms = totalRooms.filter((rawRoom) => rawRoom.status === 'FAIL' || rawRoom.isOut === true);
 
     const ongoingRoomNum = ongoingRooms.length;
     const completeRoomNum = completeRooms.length;
@@ -53,6 +53,13 @@ module.exports = async (req, res) => {
     } else if (roomType === 'FAIL') {
       roomIds = failRooms.map((room) => room.roomId);
       rooms = failRooms;
+      // 중도 퇴장으로 인한 미완료일 경우, end_date 보정
+      for (let i = 0; i < rooms.length; i++) {
+        const room = rooms[i];
+        if (room.isOut) {
+          room.endAt = room.outAt;
+        }
+      }
     }
 
     if (lastid !== -1) {
