@@ -10,14 +10,14 @@ const _ = require('lodash');
 
 /**
  *  @보관함_리스트_불러오기
- *  @route GET /myroom/:roomType?lastid=&size=
+ *  @route GET /myroom/:roomType?lastId=&size=
  *  @error
  *    1. 잘못된 roomType
- *    2. 잘못된 lastid
+ *    2. 잘못된 lastId
  */
 
 module.exports = async (req, res) => {
-  const lastid = Number(req.query.lastid);
+  const lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
   const roomType = req.query.type;
   const user = req.user;
@@ -55,8 +55,8 @@ module.exports = async (req, res) => {
       rooms = failRooms;
     }
 
-    if (lastid !== -1) {
-      const lastIndex = _.indexOf(roomIds, lastid);
+    if (lastId !== -1) {
+      const lastIndex = _.indexOf(roomIds, lastId);
       // @error 1. 잘못된 last id
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));

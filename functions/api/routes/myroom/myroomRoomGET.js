@@ -9,7 +9,7 @@ const _ = require('lodash');
 
 /**
  *  @인증사진_모아보기
- *  @route GET /myroom/room/:roomId?lastid=&size=
+ *  @route GET /myroom/room/:roomId?lastId=&size=
  *  @error
  *    1. roomId가 없음
  *    2. 존재하지 않는 습관방인 경우
@@ -17,7 +17,7 @@ const _ = require('lodash');
  */
 
 module.exports = async (req, res) => {
-  let lastId = Number(req.query.lastid);
+  let lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
   const user = req.user;
   const { roomId } = req.params;

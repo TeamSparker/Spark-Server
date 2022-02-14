@@ -7,21 +7,21 @@ const { noticeDB } = require('../../../../db');
 
 /**
  *  @활동_알림_조회
- *  @route GET /notice/active?lastid=&size=
+ *  @route GET /notice/active?lastId=&size=
  *  @error
  */
 
 module.exports = async (req, res) => {
   const user = req.user;
   const userId = user.userId;
-  const { lastid, size } = req.query;
+  const { lastId, size } = req.query;
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const actives = await noticeDB.getActivesByUserId(client, userId, parseInt(lastid), parseInt(size));
+    const actives = await noticeDB.getActivesByUserId(client, userId, parseInt(lastId), parseInt(size));
 
     const notices = actives.map((a) => {
       const notice = {};

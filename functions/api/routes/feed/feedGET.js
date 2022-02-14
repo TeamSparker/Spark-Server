@@ -15,13 +15,13 @@ const { GET_WAITROOM_DATA_ALREADY } = require('../../../constants/responseMessag
 
 /**
  *  @피드_조회
- *  @route GET /feed?lastid=&size=
+ *  @route GET /feed?lastId=&size=
  *  @error
- *    1. 잘못된 lastid
+ *    1. 잘못된 lastId
  */
 
 module.exports = async (req, res) => {
-  const lastid = Number(req.query.lastid);
+  const lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
   const user = req.user;
 
@@ -41,8 +41,8 @@ module.exports = async (req, res) => {
     let responseRecords = [];
     let recordIds = [];
     // 최초 요청이 아닐시
-    if (lastid !== -1) {
-      const lastIndex = _.indexOf(allRecordIds, lastid);
+    if (lastId !== -1) {
+      const lastIndex = _.indexOf(allRecordIds, lastId);
       // @error 1. 잘못된 last id
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));

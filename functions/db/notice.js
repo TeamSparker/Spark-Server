@@ -61,9 +61,9 @@ const deleteNoticeByNoticeId = async (client, noticeId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getServicesByUserId = async (client, userId, lastid, size) => {
+const getServicesByUserId = async (client, userId, lastId, size) => {
   const beforeAWeek = dayjs().subtract(7, 'day');
-  if (lastid === -1) {
+  if (lastId === -1) {
     const { rows } = await client.query(
       `
       SELECT * FROM spark.notification
@@ -89,15 +89,15 @@ const getServicesByUserId = async (client, userId, lastid, size) => {
       ORDER BY notification_id DESC
       LIMIT $3
     `,
-      [userId, lastid, size, beforeAWeek],
+      [userId, lastId, size, beforeAWeek],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   }
 };
 
-const getActivesByUserId = async (client, userId, lastid, size) => {
+const getActivesByUserId = async (client, userId, lastId, size) => {
   const beforeAWeek = dayjs().subtract(7, 'day');
-  if (lastid === -1) {
+  if (lastId === -1) {
     const { rows } = await client.query(
       `
         SELECT * FROM spark.notification
@@ -123,7 +123,7 @@ const getActivesByUserId = async (client, userId, lastid, size) => {
         ORDER BY notification_id DESC
         LIMIT $3
       `,
-      [userId, lastid, size, beforeAWeek],
+      [userId, lastId, size, beforeAWeek],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   }
