@@ -33,6 +33,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const room = await roomDB.getRoomById(client, roomId);
+    console.log(room);
     // @error 2. 존재하지 않는 습관방인 경우
     if (!room) {
       res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
@@ -68,6 +69,7 @@ module.exports = async (req, res) => {
         certifyingImg: record.certifyingImg,
         sparkNum,
         status: record.status,
+        timerRecord: record.timerRecord,
       };
     });
 
