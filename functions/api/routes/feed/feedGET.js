@@ -1,17 +1,13 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const convertDay = require('../../../constants/day');
 const db = require('../../../db/db');
-const { userDB, roomDB, sparkDB, likeDB } = require('../../../db');
-const jwtHandlers = require('../../../lib/jwtHandlers');
+const { roomDB, sparkDB, likeDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
-const { filter } = require('lodash');
 const _ = require('lodash');
-const { GET_WAITROOM_DATA_ALREADY } = require('../../../constants/responseMessage');
 
 /**
  *  @피드_조회
@@ -30,14 +26,14 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
-    
-    if(!rawRooms.length){
-        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { "records": [] }));
+
+    if (!rawRooms.length) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records: [] }));
     }
     const roomIds = [...new Set(rawRooms.filter(Boolean).map((room) => room.roomId))];
     const allRecords = await roomDB.getFeedRecordsByRoomIds(client, roomIds);
     const allRecordIds = allRecords.map((record) => record.recordId);
-    
+
     let responseRecords = [];
     let recordIds = [];
     // 최초 요청이 아닐시
@@ -47,52 +43,51 @@ module.exports = async (req, res) => {
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));
       }
-      responseRecords = allRecords.slice(lastIndex+1, lastIndex+1+size);
-      recordIds = allRecordIds.slice(lastIndex+1, lastIndex+1+size);
+      responseRecords = allRecords.slice(lastIndex + 1, lastIndex + 1 + size);
+      recordIds = allRecordIds.slice(lastIndex + 1, lastIndex + 1 + size);
     }
     // 최초 요청시
     else {
       responseRecords = allRecords.slice(0, size);
       recordIds = allRecordIds.slice(0, size);
     }
-    if(!recordIds.length) {
-        return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { "records": [] }));
+    if (!recordIds.length) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records: [] }));
     }
     let likeNums = [];
     let sparkNums = [];
     let isLikes = [];
-    for(let i=0; i<recordIds.length; i++) {
+    for (let i = 0; i < recordIds.length; i++) {
       const like = await likeDB.countLikeByRecordId(client, recordIds[i]);
       const isLike = await likeDB.checkIsLike(client, recordIds[i], user.userId);
       likeNums.push(Number(like[0].count));
       if (isLike) {
-          isLikes.push(true);
-      }
-      else {
-          isLikes.push(false);
+        isLikes.push(true);
+      } else {
+        isLikes.push(false);
       }
       const spark = await sparkDB.countSparkByRecordId(client, recordIds[i]);
       sparkNums.push(Number(spark.count));
     }
 
     let records = [];
-    for(let i=0; i<recordIds.length; i++) {
-      const date = dayjs(responseRecords[i].date).format("YYYY-M-D");
+    for (let i = 0; i < recordIds.length; i++) {
+      const date = dayjs(responseRecords[i].date).format('YYYY-M-D');
       const day = convertDay.numToString[dayjs(responseRecords[i].date).day()];
       const roomName = _.find(rawRooms, { roomId: responseRecords[i].roomId }).roomName;
       records.push({
-          date,
-          day,
-          userId: responseRecords[i].userId,
-          recordId: recordIds[i], 
-          nickname: responseRecords[i].nickname,
-          profileImg: responseRecords[i].profileImg,
-          roomName,
-          certifyingImg: responseRecords[i].certifyingImg,
-          likeNum: likeNums[i],
-          sparkCount: sparkNums[i],
-          isLiked: isLikes[i],
-          timerRecord: responseRecords[i].timerRecord
+        date,
+        day,
+        userId: responseRecords[i].userId,
+        recordId: recordIds[i],
+        nickname: responseRecords[i].nickname,
+        profileImg: responseRecords[i].profileImg,
+        roomName,
+        certifyingImg: responseRecords[i].certifyingImg,
+        likeNum: likeNums[i],
+        sparkCount: sparkNums[i],
+        isLiked: isLikes[i],
+        timerRecord: responseRecords[i].timerRecord,
       });
     }
 

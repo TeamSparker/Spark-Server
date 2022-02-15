@@ -90,10 +90,9 @@ const getCardsByUserId = async (client, userId) => {
     INNER JOIN spark.room r
     ON r.room_id = e.room_id
     WHERE e.user_id = $1
-    AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
-    AND NOT e.thumbnail IS null
+    AND e.thumbnail IS NOT null
     ORDER BY r.start_at
     `,
     [userId],
