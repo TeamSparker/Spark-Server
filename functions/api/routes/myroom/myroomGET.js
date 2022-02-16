@@ -91,7 +91,7 @@ module.exports = async (req, res) => {
         roomName: room.roomName,
         leftDay,
         thumbnail: room.thumbnail,
-        totalReceivedSpark: sparkCount.count ? parseInt(sparkCount.count) : 0,
+        totalReceivedSpark: parseInt(sparkCount[0].count) ? parseInt(sparkCount[0].count) : 0,
         startDate: startDate.format('YYYY-MM-DD'),
         endDate: endDate.format('YYYY-MM-DD'),
         failDay: null,
