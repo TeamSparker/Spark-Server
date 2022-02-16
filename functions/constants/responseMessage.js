@@ -4,7 +4,7 @@ module.exports = {
   PATH_ERROR: '요청 경로가 올바르지 않습니다',
   INTERNAL_SERVER_ERROR: '서버 내부 오류',
   PRIV_NOT_FOUND: '권한이 없는 요청입니다',
-  INVALID_LASTID: '잘못된 lastid 입니다',
+  INVALID_LASTID: '잘못된 lastId 입니다',
 
   // 회원가입
   CREATED_USER: '회원 가입 성공',
