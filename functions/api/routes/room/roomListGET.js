@@ -95,7 +95,7 @@ module.exports = async (req, res) => {
       roomUserStatus.push(userStatus[0].status);
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
-        if (o.roomId === roomId && o.status === 'DONE') {
+        if (o.roomId === roomId && (o.status === 'REST' || o.status === 'DONE')) {
           return true;
         }
         return false;
