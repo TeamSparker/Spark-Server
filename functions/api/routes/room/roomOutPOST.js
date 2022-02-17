@@ -61,11 +61,8 @@ module.exports = async (req, res) => {
     const entries = await roomDB.getFriendsByIds(client, roomId, userId);
 
     for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-
-      const target = await userDB.getUserById(client, entry.userId);
+      const target = await userDB.getUserById(client, entries[i].userId);
       await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService);
-      pushAlarm.send(req, res, target.deviceToken, title, body);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
