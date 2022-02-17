@@ -1,30 +1,30 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { userDB, roomDB, sparkDB } = require('../../../db');
-const jwtHandlers = require('../../../lib/jwtHandlers');
+const { roomDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
-const { filter } = require('lodash');
 const _ = require('lodash');
-const roomPOST = require('./roomPOST');
 
 /**
  *  @습관방_리스트_조회
  *  @route GET /room?lastId=&size=
  *  @error
- *    1. 잘못된 lastId
+ *    1. lastId 또는 size 값이 전달되지 않음
+ *    2. 잘못된 lastId
  */
 
 module.exports = async (req, res) => {
   const lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
-  console.log(lastId, size);
   const user = req.user;
-  console.log(user.userId);
+
+  // @error 1. lastId 또는 size 값이 전달되지 않음
+  if (!lastId || !size) {
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  }
 
   let client;
 
@@ -37,8 +37,7 @@ module.exports = async (req, res) => {
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
-    // console.log("waitingRooms", waitingRooms);
-    // console.log("ongoingRooms", ongoingRooms);
+
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(ongoingRoomIds);
@@ -50,7 +49,7 @@ module.exports = async (req, res) => {
     // 최초 요청이 아닐시
     if (lastId !== -1) {
       const lastIndex = _.indexOf(roomIds, lastId);
-      // @error 1. 잘못된 last id
+      // @error 2. 잘못된 last Id
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));
       }
@@ -93,11 +92,7 @@ module.exports = async (req, res) => {
         return false;
       });
 
-      if (userStatus[0].status === 'DONE') {
-        roomUserStatus.push(true);
-      } else {
-        roomUserStatus.push(false);
-      }
+      roomUserStatus.push(userStatus[0].status);
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
         if (o.roomId === roomId && o.status === 'DONE') {
@@ -126,7 +121,6 @@ module.exports = async (req, res) => {
     });
 
     let rooms = [];
-    // console.log("roomInfo", roomInfo);
     for (let i = 0; i < responseRoomIds.length; i++) {
       const endDate = dayjs(roomInfo[i].endAt);
       const leftDay = endDate.diff(today, 'day');
@@ -137,7 +131,7 @@ module.exports = async (req, res) => {
         profileImg: roomProfileImg[i],
         life: roomInfo[i].life,
         isStarted: roomInfo[i].status === 'NONE' ? false : true,
-        isDone: roomUserStatus[i],
+        myStatus: roomUserStatus[i],
         memberNum: roomMemberNum[i],
         doneMemberNum: roomDoneMemberNum[i],
       };
