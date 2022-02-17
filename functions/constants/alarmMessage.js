@@ -16,7 +16,7 @@ const ROOM_OUT = (who, roomName) => {
   const title = '습관방 퇴장';
   const body = `${who}님이 '${roomName}' 습관방에서 퇴장했습니다.`;
 
-  return { title, body, isService: false };
+  return { title, body, isService: true };
 };
 
 const SEND_SPARK = (who, body) => {
