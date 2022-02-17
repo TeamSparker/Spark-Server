@@ -19,6 +19,8 @@ const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
  *      4. 습관 시작하지 않은 방에서의 요청
  *      5. 이미 인증을 완료한 사용자로부터의 요청
  *      6. 이미 쉴래요를 사용한 사용자로부터의 요청
+ *      7. 쉴래요 잔여횟수가 0인 사용쟈로부터의 요청
+ *      8. 이미 고민중 상태의 사용자로부터의 요청
  */
 
 module.exports = async (req, res) => {
@@ -69,7 +71,7 @@ module.exports = async (req, res) => {
     }
 
     if (statusType === 'REST') {
-      // @error 7. 쉴래요 가능 횟수가 0인 사용쟈
+      // @error 7. 쉴래요 잔여횟수가 0인 사용쟈로부터의 요청
       const rawRest = await roomDB.getRestCountByIds(client, roomId, userId);
       const restCount = rawRest.rest;
       if (restCount < 1) {
@@ -84,6 +86,10 @@ module.exports = async (req, res) => {
 
     // 고민중을 눌렀으면 Notification에 추가, PushAlarm 전송
     if (statusType === 'CONSIDER') {
+      // @error 8. 이미 고민중 상태의 사용자로부터의 요청
+      if (recentRecord.status === 'CONSIDER') {
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.CONSIDER_ALREADY_DONE));
+      }
       const sender = await userDB.getUserById(client, userId);
       const receivers = await roomDB.getFriendsByIds(client, roomId, userId);
       const receiversIds = receivers.map((r) => r.userId);
