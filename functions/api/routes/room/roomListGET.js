@@ -16,15 +16,19 @@ const roomPOST = require('./roomPOST');
  *  @습관방_리스트_조회
  *  @route GET /room?lastId=&size=
  *  @error
- *    1. 잘못된 lastId
+ *    1. lastId 또는 size 값이 전달되지 않음
+ *    2. 잘못된 lastId
  */
 
 module.exports = async (req, res) => {
   const lastId = Number(req.query.lastId);
   const size = Number(req.query.size);
-  console.log(lastId, size);
   const user = req.user;
-  console.log(user.userId);
+
+  // @error 1. lastId 또는 size 값이 전달되지 않음
+  if (!lastId || !size) {
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  }
 
   let client;
 
@@ -49,7 +53,7 @@ module.exports = async (req, res) => {
     // 최초 요청이 아닐시
     if (lastId !== -1) {
       const lastIndex = _.indexOf(roomIds, lastId);
-      // @error 1. 잘못된 last Id
+      // @error 2. 잘못된 last Id
       if (lastIndex === -1) {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.INVALID_LASTID));
       }
