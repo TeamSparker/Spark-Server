@@ -60,7 +60,10 @@ module.exports = async (req, res) => {
 
     let myRecord = null;
 
-    let otherRecords = [];
+    let considerRecords = [];
+    let noneRecords = [];
+    let restRecords = [];
+    let doneRecords = [];
 
     records.map((record) => {
       if (record.userId === user.userId) {
@@ -73,21 +76,46 @@ module.exports = async (req, res) => {
           rest: record.rest,
         };
       } else {
-        otherRecords.push({
-          recordId: record.recordId,
-          userId: record.userId,
-          profileImg: record.profileImg,
-          nickname: record.nickname,
-          status: record.status,
-        });
+        if (record.status === 'CONSIDER') {
+          considerRecords.push({
+            recordId: record.recordId,
+            userId: record.userId,
+            profileImg: record.profileImg,
+            nickname: record.nickname,
+            status: record.status,
+          });
+        } else if (record.status === 'NONE') {
+          noneRecords.push({
+            recordId: record.recordId,
+            userId: record.userId,
+            profileImg: record.profileImg,
+            nickname: record.nickname,
+            status: record.status,
+          });
+        } else if (record.status === 'REST') {
+          restRecords.push({
+            recordId: record.recordId,
+            userId: record.userId,
+            profileImg: record.profileImg,
+            nickname: record.nickname,
+            status: record.status,
+          });
+        } else {
+          doneRecords.push({
+            recordId: record.recordId,
+            userId: record.userId,
+            profileImg: record.profileImg,
+            nickname: record.nickname,
+            status: record.status,
+          });
+        }
       }
     });
 
+    const otherRecords = [...considerRecords, ...noneRecords, ...restRecords, ...doneRecords];
+
     const receivedSpark = await sparkDB.countSparkByRecordId(client, myRecord.recordId);
     myRecord.receivedSpark = parseInt(receivedSpark.count);
-
-    console.log('myRecrod', myRecord);
-    console.log('otherRecords', otherRecords);
 
     const data = {
       roomId: room.roomId,
