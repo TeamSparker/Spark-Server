@@ -486,18 +486,34 @@ const updateRestByIds = async (client, roomId, userId, newRestCount) => {
 
 const outById = async (client, roomId, userId) => {
   const now = dayjs().add(9, 'hour');
-  const { rows } = await client.query(
-    `
-      UPDATE spark.entry e
-      SET is_out = TRUE, out_at = $3, updated_at = $3
-      WHERE room_id = $1 
-      AND user_id = $2 
-      RETURNING *
-    `,
-    [roomId, userId, now],
-  );
+  const room = await getRoomById(client, roomId);
 
-  return convertSnakeToCamel.keysToCamel(rows[0]);
+  if (room.status === 'NONE') {
+    // 대기방을 나갈경우 데이터 hard delete
+    const { rows } = await client.query(
+      `
+        DELETE FROM spark.entry e
+        WHERE room_id = $1 
+        AND user_id = $2 
+        RETURNING *
+      `,
+      [roomId, userId],
+    );
+    return convertSnakeToCamel.keysToCamel(rows[0]);
+  } else if (room.status === 'ONGOING') {
+    // 습관방을 나갈경우 데이터 soft delete
+    const { rows } = await client.query(
+      `
+        UPDATE spark.entry e
+        SET is_out = TRUE, out_at = $3, updated_at = $3
+        WHERE room_id = $1 
+        AND user_id = $2 
+        RETURNING *
+      `,
+      [roomId, userId, now],
+    );
+    return convertSnakeToCamel.keysToCamel(rows[0]);
+  }
 };
 
 module.exports = {
