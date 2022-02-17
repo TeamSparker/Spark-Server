@@ -16,6 +16,7 @@ const { userDB, roomDB, sparkDB, noticeDB } = require('../../../db');
  *      1. roomId가 전달되지 않음
  *      2. 존재하지 않는 습관방
  *      3. 유저가 해당 습관방에 참여하지 않는 경우
+ *      4. 본인이 host인데 대기방 나가기 요청을 보낸 경우
  */
 
 module.exports = async (req, res) => {
@@ -44,6 +45,11 @@ module.exports = async (req, res) => {
     // @error 3. 유저가 해당 습관방에 참여하지 않는 경우
     if (!entry) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MEMBER));
+    }
+
+    // @error 4. 본인이 host인데 대기방 나가기 요청을 보낸 경우
+    if (room.status === 'NONE' && userId === room.creator) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.HOST_WAITROOM_OUT_FAIL));
     }
 
     // 대기방 또는 습관방 나가기
