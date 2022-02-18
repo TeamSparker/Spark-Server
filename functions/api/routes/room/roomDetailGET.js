@@ -112,7 +112,7 @@ module.exports = async (req, res) => {
       }
     });
 
-    const otherRecords = [...considerRecords, ...noneRecords, ...restRecords, ...doneRecords];
+    const otherRecords = [...considerRecords, ...noneRecords, ...doneRecords, ...restRecords];
 
     const receivedSpark = await sparkDB.countSparkByRecordId(client, myRecord.recordId);
     myRecord.receivedSpark = parseInt(receivedSpark.count);
