@@ -84,7 +84,13 @@ module.exports = async (req, res) => {
         return false;
       });
 
-      roomUserStatus.push(userStatus[0].status);
+      // myStatus가 CONSIDER인 경우, NONE으로 전달
+      const myStatus = userStatus[0].status;
+      if (myStatus !== 'CONSIDER') {
+        roomUserStatus.push(myStatus);
+      } else {
+        roomUserStatus.push('NONE');
+      }
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
         if (o.roomId === roomId && (o.status === 'REST' || o.status === 'DONE')) {
