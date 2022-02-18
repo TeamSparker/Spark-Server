@@ -49,7 +49,6 @@ const getRoomsByIds = async (client, roomIds) => {
     `
     SELECT * FROM spark.room
     WHERE room_id IN (${roomIds.join()})
-    AND is_deleted = FALSE
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -77,6 +76,7 @@ const getRoomsByUserId = async (client, userId) => {
     AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
+    AND r.is_deleted = FALSE
     ORDER BY r.start_at
     `,
     [userId],
