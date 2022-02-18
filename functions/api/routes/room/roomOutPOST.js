@@ -16,6 +16,7 @@ const { userDB, roomDB, sparkDB, noticeDB } = require('../../../db');
  *      1. roomId가 전달되지 않음
  *      2. 존재하지 않는 습관방
  *      3. 유저가 해당 습관방에 참여하지 않는 경우
+ *      4. 본인이 host인데 대기방 나가기 요청을 보낸 경우
  */
 
 module.exports = async (req, res) => {
@@ -46,20 +47,22 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_MEMBER));
     }
 
+    // @error 4. 본인이 host인데 대기방 나가기 요청을 보낸 경우
+    if (room.status === 'NONE' && userId === room.creator) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.HOST_WAITROOM_OUT_FAIL));
+    }
+
     // 대기방 또는 습관방 나가기
     await roomDB.outById(client, roomId, userId);
 
-    // 본인을 제외한 참여자들에게 활동 알림 및 푸시알림 보내기
+    // 본인을 제외한 참여자들에게 서비스 알림 및 푸시알림 보내기
     const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
 
     const entries = await roomDB.getFriendsByIds(client, roomId, userId);
 
     for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-
-      const target = await userDB.getUserById(client, entry.userId);
+      const target = await userDB.getUserById(client, entries[i].userId);
       await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService);
-      pushAlarm.send(req, res, target.deviceToken, title, body);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
