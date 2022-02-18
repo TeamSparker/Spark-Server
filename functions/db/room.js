@@ -362,7 +362,6 @@ const startRoomById = async (client, roomId) => {
   const now = dayjs().add(9, 'hour');
   const startAt = now.startOf('d');
   const endAt = now.add(65, 'day').startOf('d');
-  console.log(endAt.diff(startAt, 'd'));
   const { rows } = await client.query(
     `
     UPDATE spark.room
