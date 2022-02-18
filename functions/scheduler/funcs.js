@@ -54,8 +54,9 @@ const checkLife = async () => {
     const insertEntries = successEntries.map((o) => {
       // 추가해줄 record들의 속성들 빚어주기
       const startDate = dayjs(o.startAt);
-      const day = dayjs(today).diff(startDate, 'day'); //startDate랑 오늘 날짜랑.. 비교하기
+      const day = dayjs(today).diff(startDate, 'day') + 1;
       const queryParameter = '(' + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+
       return queryParameter;
     });
     const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
