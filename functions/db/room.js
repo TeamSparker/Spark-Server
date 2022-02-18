@@ -49,6 +49,7 @@ const getRoomsByIds = async (client, roomIds) => {
     `
     SELECT * FROM spark.room
     WHERE room_id IN (${roomIds.join()})
+    AND is_deleted = FALSE
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
