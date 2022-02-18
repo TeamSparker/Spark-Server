@@ -5,6 +5,7 @@ const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const pushAlarm = require('../../../lib/pushAlarm');
+const dayjs = require('dayjs');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
 
@@ -54,7 +55,22 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.START_ROOM_ALREADY));
     }
 
-    const entries = await roomDB.getEntriesByRoomId(client, roomId);
+    const entries = await roomDB.getEntriesByRoomIds(client, [roomId]);
+
+    const insertEntries = entries.map((o) => {
+      // 추가해줄 record들의 속성들 빚어주기
+      const startDate = dayjs(o.startAt);
+      const now = dayjs().add(9, 'hour');
+      const today = now.format('YYYY-MM-DD');
+      const day = dayjs(today).diff(startDate, 'day') + 1;
+      const queryParameter = '(' + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+
+      return queryParameter;
+    });
+
+    // 참여자들의 1일차 record 생성
+    await recordDB.insertRecords(client, insertEntries);
+
     const { title, body, isService } = alarmMessage.ROOM_NEW(room.roomName);
 
     for (let i = 0; i < entries.length; i++) {
@@ -62,9 +78,6 @@ module.exports = async (req, res) => {
       const targetId = entry.userId;
       const target = await userDB.getUserById(client, targetId);
       const receiverToken = target.deviceToken;
-
-      // 참여자들의 0일차 record 생성
-      await recordDB.insertRecordById(client, entry.entryId, room.startAt);
 
       // 방이 시작되면, 참여자들에게 알림 및 푸시알림 보내기
       await noticeDB.addNotification(client, title, body, 'Spark_IMG_URL', targetId, isService);
