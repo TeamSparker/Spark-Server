@@ -41,9 +41,7 @@ module.exports = async (req, res) => {
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(ongoingRoomIds);
-    console.log('waitingRoomIds', waitingRoomIds);
-    console.log('ongoingRoomIds', ongoingRoomIds);
-    console.log('roomIds', roomIds);
+
     let responseRoomIds = [];
 
     // 최초 요청이 아닐시
@@ -60,8 +58,6 @@ module.exports = async (req, res) => {
       responseRoomIds = roomIds.slice(0, size);
     }
 
-    console.log('responseRoomIds', responseRoomIds);
-
     // 마지막일 때 -> 빈 배열 return
     if (!responseRoomIds.length) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms: [] }));
@@ -74,10 +70,6 @@ module.exports = async (req, res) => {
     // roomIds 빈 배열일 때 처리
     const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
     const profiles = rawProfiles.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
-    console.log(
-      'profiles',
-      profiles.map((o) => o.roomId),
-    );
 
     let roomProfileImg = [];
     let roomMemberNum = [];
@@ -92,7 +84,13 @@ module.exports = async (req, res) => {
         return false;
       });
 
-      roomUserStatus.push(userStatus[0].status);
+      // myStatus가 CONSIDER인 경우, NONE으로 전달
+      const myStatus = userStatus[0].status;
+      if (myStatus !== 'CONSIDER') {
+        roomUserStatus.push(myStatus);
+      } else {
+        roomUserStatus.push('NONE');
+      }
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
         if (o.roomId === roomId && (o.status === 'REST' || o.status === 'DONE')) {
