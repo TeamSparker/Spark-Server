@@ -86,5 +86,5 @@ const sendMulticastByTokens = async (req, res, receiverTokens, title, body) => {
 
 module.exports = {
   send,
-  sendAll,
+  sendMulticastByTokens,
 };
