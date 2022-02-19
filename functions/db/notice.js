@@ -143,6 +143,19 @@ const addNotification = async (client, title, body, senderImg, receiverId, isSer
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const addNotifications = async (client, notifications) => {
+  const { rows } = await client.query(
+    `
+    INSERT INTO spark.notification
+    (title, content, thumbnail, receiver_id, is_service)
+    VALUES
+    ${notifications.join()}
+    RETURNING *
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   serviceReadByUserId,
   activeReadByUserId,
@@ -151,4 +164,5 @@ module.exports = {
   getServicesByUserId,
   getActivesByUserId,
   addNotification,
+  addNotifications,
 };
