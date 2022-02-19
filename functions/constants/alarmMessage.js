@@ -1,12 +1,12 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
-  const title = `'${roomName}' 방`;
+  const title = `"${roomName}" 방`;
   const body = `${who}님이 인증을 완료했습니다.`;
 
   return { title, body, isService: false };
 };
 
 const STATUS_CONSIDERING = (who, roomName) => {
-  const title = `'${roomName}' 방`;
+  const title = `"${roomName}" 방`;
   const body = `${who}님이 고민중 버튼을 눌렀습니다.`;
 
   return { title, body, isService: false };
@@ -27,14 +27,14 @@ const SEND_SPARK = (who, body) => {
 
 const ROOM_HALF = (roomName) => {
   const title = '반이나 왔어!';
-  const body = `'${roomName}' 습관을 시작한지 33일이 지났습니다.`;
+  const body = `"${roomName}" 습관을 시작한지 33일이 지났습니다.`;
 
   return { title, body, isService: true };
 };
 
 const ROOM_NEW = (roomName) => {
   const title = 'Spark';
-  const body = `새로운 습관방 '${roomName}'이 생성되었습니다.`;
+  const body = `새로운 습관방 "${roomName}"이 생성되었습니다.`;
 
   return { title, body, isService: true };
 };
