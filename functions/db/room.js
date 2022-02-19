@@ -346,13 +346,15 @@ const enterById = async (client, roomId, userId) => {
 const getFriendsByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.entry
-    WHERE room_id = $1
-      AND user_id != $2
-      AND is_deleted = FALSE
-      AND is_out = FALSE
-      AND is_kicked = FALSE
-      ORDER BY created_at
+    SELECT * FROM spark.entry as e
+    INNER JOIN spark.user as u
+    ON e.user_id = u.user_id
+    WHERE e.room_id = $1
+      AND e.user_id != $2
+      AND e.is_deleted = FALSE
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      ORDER BY e.created_at
     `,
     [roomId, userId],
   );
