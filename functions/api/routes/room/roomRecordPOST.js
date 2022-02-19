@@ -73,12 +73,14 @@ module.exports = async (req, res) => {
     const friends = await roomDB.getFriendsByIds(client, roomId, userId);
     const receiverTokens = friends.map((f) => f.deviceToken);
     const { title, body, isService } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
-    pushAlarm.sendMulticastByTokens(req, res, receiverTokens, title, body);
 
-    for (let i = 0; i < friends.length; i++) {
-      const friend = friends[i];
-      await noticeDB.addNotification(client, title, body, 'Spark_IMG_URL', friend.userId, isService);
-    }
+    let notifications = friends.map((f) => {
+      return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
+    });
+
+    console.log(receiverTokens);
+    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens);
+    await noticeDB.addNotifications(client, notifications);
 
     const data = {
       userId,
@@ -92,14 +94,14 @@ module.exports = async (req, res) => {
       timerRecord: record.timerRecord,
     };
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CERTIFY_SUCCESS, data));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CERTIFY_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
     const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }
