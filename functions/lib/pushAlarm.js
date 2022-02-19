@@ -7,21 +7,20 @@ const responseMessage = require('../constants/responseMessage');
 const send = async (req, res, receiverToken, title, body) => {
   try {
     const message = {
-      notification: {
-        title,
-        body,
-      },
       android: {
-        notification: {
-          imageUrl: '',
+        data: {
+          title,
+          body,
         },
       },
       apns: {
         payload: {
-          aps: {},
-        },
-        fcm_options: {
-          image: '',
+          aps: {
+            alert: {
+              title,
+              body,
+            },
+          },
         },
       },
       token: receiverToken,
@@ -47,21 +46,20 @@ const send = async (req, res, receiverToken, title, body) => {
 const sendMulticastByTokens = async (req, res, title, body, receiverTokens) => {
   try {
     const message = {
-      notification: {
-        title,
-        body,
-      },
       android: {
-        notification: {
-          imageUrl: '',
+        data: {
+          title,
+          body,
         },
       },
       apns: {
         payload: {
-          aps: {},
-        },
-        fcm_options: {
-          image: '',
+          aps: {
+            alert: {
+              title,
+              body,
+            },
+          },
         },
       },
       tokens: receiverTokens,
