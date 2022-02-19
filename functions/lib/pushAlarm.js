@@ -43,13 +43,15 @@ const send = async (req, res, receiverToken, title, body) => {
   }
 };
 
-const sendMulticastByTokens = async (req, res, title, body, receiverTokens) => {
+const sendMulticastByTokens = async (req, res, title, body, receiverTokens, imageUrl = '', expand = 'disable') => {
   try {
     const message = {
       android: {
         data: {
           title,
           body,
+          imageUrl,
+          expand,
         },
       },
       apns: {
@@ -58,6 +60,8 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens) => {
             alert: {
               title,
               body,
+              imageUrl,
+              expand,
             },
           },
         },
