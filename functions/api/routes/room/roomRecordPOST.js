@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
       return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
     });
 
-    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens);
+    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, certifyingImg[0], 'enable');
     await noticeDB.addNotifications(client, notifications);
 
     const data = {
