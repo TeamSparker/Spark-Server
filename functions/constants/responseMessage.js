@@ -55,6 +55,7 @@ module.exports = {
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
   CERTIFY_SUCCESS: '습관인증 업로드 성공',
   ROOM_OUT_SUCCESS: '습관 방 퇴장 완료',
+  ROOM_DELETE_SUCCESS: '대기방 삭제 완료',
   HOST_WAITROOM_OUT_FAIL: '방 생성자는 대기방을 나갈 수 없습니다',
 
   // Feed
