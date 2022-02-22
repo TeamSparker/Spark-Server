@@ -519,6 +519,20 @@ const outById = async (client, roomId, userId) => {
   }
 };
 
+const deleteRoomById = async (client, roomId) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.room r
+      SET code = '', is_deleted = TRUE, deleted_at = $2, updated_at = $2
+      WHERE room_id = $1
+      RETURNING *
+    `,
+    [roomId, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -548,4 +562,5 @@ module.exports = {
   updateRestByIds,
   getFeedRecordsByRoomIds,
   outById,
+  deleteRoomById,
 };
