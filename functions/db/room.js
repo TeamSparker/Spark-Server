@@ -524,7 +524,7 @@ const deleteRoomById = async (client, roomId) => {
   const { rows } = await client.query(
     `
       UPDATE spark.room r
-      SET code = '', is_deleted = TRUE, deleted_at = $2, updated_at = $2
+      SET is_deleted = TRUE, deleted_at = $2, updated_at = $2
       WHERE room_id = $1
       RETURNING *
     `,
