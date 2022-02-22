@@ -156,6 +156,21 @@ const addNotifications = async (client, notifications) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getNumberOfUnreadServiceNotiById = async (client, userId) => {
+  const beforeAWeek = dayjs().subtract(7, 'day');
+  const { rows } = await client.query(
+    `
+      SELECT count(*) as number FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_service = TRUE
+      AND created_at > $2
+    `,
+    [userId, beforeAWeek],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0].number);
+};
+
 module.exports = {
   serviceReadByUserId,
   activeReadByUserId,
@@ -165,4 +180,5 @@ module.exports = {
   getActivesByUserId,
   addNotification,
   addNotifications,
+  getNumberOfUnreadServiceNotiById,
 };
