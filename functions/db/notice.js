@@ -156,7 +156,7 @@ const addNotifications = async (client, notifications) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getNumberOfUnreadServiceNotiById = async (client, userId) => {
+const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
   const beforeAWeek = dayjs().subtract(7, 'day');
   const { rows } = await client.query(
     `
@@ -164,6 +164,7 @@ const getNumberOfUnreadServiceNotiById = async (client, userId) => {
       WHERE receiver_id = $1
       AND is_deleted = FALSE
       AND is_service = TRUE
+      AND is_read = FALSE
       AND created_at > $2
     `,
     [userId, beforeAWeek],
@@ -180,5 +181,5 @@ module.exports = {
   getActivesByUserId,
   addNotification,
   addNotifications,
-  getNumberOfUnreadServiceNotiById,
+  getNumberOfUnreadServiceNoticeById,
 };
