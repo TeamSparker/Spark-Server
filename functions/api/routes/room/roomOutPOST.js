@@ -10,7 +10,7 @@ const { userDB, roomDB, sparkDB, noticeDB } = require('../../../db');
 
 /**
  *  @대기방_및_습관방_나가기
- *  @route POST /room/:roomId/out
+ *  @route DELETE /room/:roomId/out
  *  @body
  *  @error
  *      1. roomId가 전달되지 않음
