@@ -39,6 +39,13 @@ const ROOM_NEW = (roomName) => {
   return { title, body, isService: true };
 };
 
+const ROOM_DELETE = (roomName) => {
+  const title = '습관방 삭제';
+  const body = `습관방 "${roomName}"이 삭제되었습니다.`;
+
+  return { title, body, isService: true };
+};
+
 module.exports = {
   CERTIFICATION_COMPLETE,
   STATUS_CONSIDERING,
@@ -46,4 +53,5 @@ module.exports = {
   SEND_SPARK,
   ROOM_HALF,
   ROOM_NEW,
+  ROOM_DELETE,
 };
