@@ -4,9 +4,8 @@ const statusCode = require('../../../constants/statusCode');
 const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const pushAlarm = require('../../../lib/pushAlarm');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { userDB, roomDB, sparkDB, noticeDB } = require('../../../db');
+const { userDB, roomDB, noticeDB } = require('../../../db');
 
 /**
  *  @대기방_및_습관방_나가기
