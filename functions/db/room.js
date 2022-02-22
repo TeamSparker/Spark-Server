@@ -344,6 +344,23 @@ const enterById = async (client, roomId, userId) => {
   }
 };
 
+const getAllUsersById = async (client, roomId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.entry as e
+    INNER JOIN spark.user as u
+    ON e.user_id = u.user_id
+    WHERE e.room_id = $1
+      AND e.is_deleted = FALSE
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      ORDER BY e.created_at
+    `,
+    [roomId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getFriendsByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
@@ -548,6 +565,7 @@ module.exports = {
   getRecordsByDay,
   checkEnteredById,
   enterById,
+  getAllUsersById,
   getFriendsByIds,
   startRoomById,
   getRecordsByRoomIds,
