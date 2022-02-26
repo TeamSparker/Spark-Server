@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
     const { title, body, isService } = alarmMessage.SEND_SPARK(user.nickname, content);
     const receiver = await userDB.getUserById(client, record.userId);
     await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService);
-    pushAlarm.send(req, res, receiver.deviceToken, title, body);
+    pushAlarm.send(req, res, title, body, receiver.deviceToken, 'spark');
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
   } catch (error) {
