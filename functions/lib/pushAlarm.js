@@ -4,13 +4,21 @@ const util = require('./util');
 const statusCode = require('../constants/statusCode');
 const responseMessage = require('../constants/responseMessage');
 
-const send = async (req, res, receiverToken, title, body) => {
+const send = async (req, res, title, body, receiverToken, category, imageUrl = null) => {
+  let mutableContent = 1;
+  if (!imageUrl) {
+    mutableContent = 0;
+    imageUrl = '';
+  }
+
   try {
     const message = {
       android: {
         data: {
           title,
           body,
+          imageUrl,
+          category,
         },
       },
       apns: {
@@ -20,7 +28,13 @@ const send = async (req, res, receiverToken, title, body) => {
               title,
               body,
             },
+            category,
+            'thread-id': category,
+            'mutable-content': mutableContent,
           },
+        },
+        fcm_options: {
+          image: imageUrl,
         },
       },
       token: receiverToken,
