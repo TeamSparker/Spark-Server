@@ -43,7 +43,13 @@ const send = async (req, res, receiverToken, title, body) => {
   }
 };
 
-const sendMulticastByTokens = async (req, res, title, body, receiverTokens, imageUrl = '', expand = 'disable') => {
+const sendMulticastByTokens = async (req, res, title, body, receiverTokens, category, imageUrl = null) => {
+  let mutableContent = 1;
+  if (!imageUrl) {
+    mutableContent = 0;
+    imageUrl = '';
+  }
+
   try {
     const message = {
       android: {
@@ -51,7 +57,7 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens, imag
           title,
           body,
           imageUrl,
-          expand,
+          category,
         },
       },
       apns: {
@@ -60,10 +66,14 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens, imag
             alert: {
               title,
               body,
-              imageUrl,
-              expand,
             },
+            category,
+            'thread-id': category,
+            'mutable-content': mutableContent,
           },
+        },
+        fcm_options: {
+          image: imageUrl,
         },
       },
       tokens: receiverTokens,
