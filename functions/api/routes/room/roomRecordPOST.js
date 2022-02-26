@@ -74,12 +74,14 @@ module.exports = async (req, res) => {
     const receiverTokens = friends.map((f) => f.deviceToken);
     const { title, body, isService } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
 
-    let notifications = friends.map((f) => {
+    const notifications = friends.map((f) => {
       return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
     });
 
     pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, certifyingImg[0], 'enable');
-    await noticeDB.addNotifications(client, notifications);
+    if (notifications.length > 0) {
+      await noticeDB.addNotifications(client, notifications);
+    }
 
     const data = {
       userId,

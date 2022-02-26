@@ -48,12 +48,14 @@ module.exports = {
   GET_ROOM_DETAIL_SUCCESS: '특정 습관방 상세조회 성공',
   NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
   NOT_STARTED_ROOM: '아직 대기중인 방입니다',
+  ROOM_NOT_WAITING: '대기중인 습관방이 아닙니다',
 
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
   DONE_OR_REST_MEMBER: '습관 인증 완료 혹은 쉴래요 한 사용자입니다',
   CERTIFY_SUCCESS: '습관인증 업로드 성공',
   ROOM_OUT_SUCCESS: '습관 방 퇴장 완료',
+  ROOM_DELETE_SUCCESS: '대기방 삭제 완료',
   HOST_WAITROOM_OUT_FAIL: '방 생성자는 대기방을 나갈 수 없습니다',
 
   // Feed
