@@ -73,15 +73,19 @@ module.exports = async (req, res) => {
 
     const { title, body, isService } = alarmMessage.ROOM_NEW(room.roomName);
 
-    for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-      const targetId = entry.userId;
-      const target = await userDB.getUserById(client, targetId);
-      const receiverToken = target.deviceToken;
+    const allUsers = await roomDB.getAllUsersById(client, roomId);
 
-      // 방이 시작되면, 참여자들에게 알림 및 푸시알림 보내기
-      await noticeDB.addNotification(client, title, body, 'Spark_IMG_URL', targetId, isService);
-      pushAlarm.send(req, res, receiverToken, 'Spark', body);
+    // 푸시알림 전송
+    const receiverTokens = allUsers.map((u) => u.deviceToken);
+    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, 'roomStart');
+
+    // notification 생성
+    const notifications = allUsers.map((u) => {
+      return `('${title}', '${body}', '', ${u.userId}, ${isService})`;
+    });
+
+    if (notifications.length) {
+      await noticeDB.addNotifications(client, notifications);
     }
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.START_ROOM_SUCCESS));
