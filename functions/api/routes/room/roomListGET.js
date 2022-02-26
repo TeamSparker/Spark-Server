@@ -106,7 +106,6 @@ module.exports = async (req, res) => {
         .map((o) => o.profileImg);
       roomMemberNum.push(profileImgs.length);
       if (profileImgs.length < 3) {
-        let i = 0;
         const length = profileImgs.length;
 
         for (let i = 0; i < 3 - length; i++) {

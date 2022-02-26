@@ -80,6 +80,7 @@ module.exports = {
   NOTICE_DELETE_SUCCESS: '알림 삭제 완료',
   NOTICE_ID_NOT_VALID: '유효하지 않은 알림 ID 입니다',
   PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
+  NEW_NOTICE_GET_SUCCESS: '새로운 알림 조회 완료',
 
   // Status
   INVALID_USER_STATUS: '유효하지 않은 status type입니다',
