@@ -71,13 +71,13 @@ module.exports = async (req, res) => {
     // 참여자들의 1일차 record 생성
     await recordDB.insertRecords(client, insertEntries);
 
-    const { title, body, isService } = alarmMessage.ROOM_NEW(room.roomName);
+    const { title, body, isService, category } = alarmMessage.ROOM_NEW(room.roomName);
 
     const allUsers = await roomDB.getAllUsersById(client, roomId);
 
     // 푸시알림 전송
     const receiverTokens = allUsers.map((u) => u.deviceToken);
-    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, 'roomStart');
+    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
 
     // notification 생성
     const notifications = allUsers.map((u) => {

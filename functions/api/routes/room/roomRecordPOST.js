@@ -72,13 +72,13 @@ module.exports = async (req, res) => {
     // 인증을 완료하면 본인을 제외한 참여자들에게 알림 및 푸시알림 보내기
     const friends = await roomDB.getFriendsByIds(client, roomId, userId);
     const receiverTokens = friends.map((f) => f.deviceToken);
-    const { title, body, isService } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
+    const { title, body, isService, category } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
 
     const notifications = friends.map((f) => {
       return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
     });
 
-    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, 'certification', certifyingImg[0]);
+    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0]);
     if (notifications.length) {
       await noticeDB.addNotifications(client, notifications);
     }

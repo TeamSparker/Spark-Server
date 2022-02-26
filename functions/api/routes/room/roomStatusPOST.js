@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
       const sender = await userDB.getUserById(client, userId);
       const friends = await roomDB.getFriendsByIds(client, roomId, userId);
       const receiverTokens = friends.map((f) => f.deviceToken);
-      const { title, body, isService } = alarmMessage.STATUS_CONSIDERING(sender.nickname, room.roomName);
+      const { title, body, isService, category } = alarmMessage.STATUS_CONSIDERING(sender.nickname, room.roomName);
 
       const notifications = friends.map((f) => {
         return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
         await noticeDB.addNotifications(client, notifications);
       }
 
-      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, 'consider');
+      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
     }
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
