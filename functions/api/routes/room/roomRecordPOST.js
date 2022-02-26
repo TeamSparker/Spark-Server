@@ -6,7 +6,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const pushAlarm = require('../../../lib/pushAlarm');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
+const { roomDB, recordDB, noticeDB } = require('../../../db');
 
 /**
  *  @습관인증하기
