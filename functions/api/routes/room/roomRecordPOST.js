@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
   if (!timerRecord) {
     timerRecord = null;
   }
-  // @error 2. certifyingImg가 전달되지 않음
+  // @error 1. certifyingImg가 전달되지 않음
   if (!certifyingImg) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
