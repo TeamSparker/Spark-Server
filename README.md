@@ -1,11 +1,10 @@
-## 🔥 Spark Server, &nbsp;A large fire comes from small spark
+## 🎇 Spark, &nbsp;A large fire comes from small spark
 
 > 👑 WE SOPT 29th APPJAM 대상 👑 <br>
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
 > 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22.
 
 ![banner](https://user-images.githubusercontent.com/39653584/150547366-5ff166d7-874d-4b4d-a507-7a387c348991.png)
-
 ---
 
 
@@ -26,17 +25,9 @@
 ---
 
 ## 📲 WorkFlow
-
-![workflow_final](https://user-images.githubusercontent.com/71129059/150520896-1880bb04-9ce5-40aa-b378-c7b4a9e291d9.png)
-
----
-
-## ⭐️ IA
-
-![IA](https://user-images.githubusercontent.com/71129059/148944129-5fd8c834-699d-40e6-b129-bdb06eb21596.png)
+<img src = "https://user-images.githubusercontent.com/81167570/151120562-3da18d9a-1da0-43ea-92d4-b0576c8472a3.png" width="1000" />
 
 ---
-
 
 ## 📚 API Document
 
