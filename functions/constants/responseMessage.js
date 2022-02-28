@@ -82,6 +82,7 @@ module.exports = {
   PUSH_SEND_SUCCESS: '푸시알림 전송 완료',
   GET_NEW_NOTICE_SUCCESS: '새로운 알림 조회 완료',
   GET_NOTICE_SETTING_SUCCESS: '푸시알림 설정 조회 완료',
+  PUSH_CATEGORY_INVALID: '유효하지 않은 category입니다',
 
   // Status
   INVALID_USER_STATUS: '유효하지 않은 status type입니다',
