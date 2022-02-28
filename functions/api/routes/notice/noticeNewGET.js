@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 
     const numOfUnreadServiceNotice = await noticeDB.getNumberOfUnreadServiceNoticeById(client, user.userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEW_NOTICE_GET_SUCCESS, { newNotice: numOfUnreadServiceNotice > 0 ? true : false }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NEW_NOTICE_SUCCESS, { newNotice: numOfUnreadServiceNotice > 0 ? true : false }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
