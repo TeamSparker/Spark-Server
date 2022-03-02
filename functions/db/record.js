@@ -13,19 +13,6 @@ const getRecordById = async (client, recordId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getEntryAndRecordByRecordId = async (client, recordId) => {
-  const { rows } = await client.query(
-    `
-    SELECT * FROM spark.record
-    INNER JOIN spark.entry e
-    ON e.entry_id = r.entry_id
-    WHERE record_id = $1
-    `,
-    [recordId],
-  );
-  return convertSnakeToCamel.keysToCamel(rows[0]);
-};
-
 const getRecentRecordByEntryId = async (client, entryId) => {
   const { rows } = await client.query(
     `
@@ -122,5 +109,4 @@ module.exports = {
   uploadRecord,
   getPagedRecordsByEntryId,
   insertRecords,
-  getEntryAndRecordByRecordId,
 };
