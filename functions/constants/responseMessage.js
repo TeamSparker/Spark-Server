@@ -65,6 +65,7 @@ module.exports = {
   RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',
   SEND_LIKE_SUCCESS: '좋아요 성공',
   CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
+  REPORT_FEED_SUCCESS: '피드 신고 성공',
 
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
