@@ -6,4 +6,5 @@ module.exports = {
   noticeDB: require('./notice'),
   recordDB: require('./record'),
   scheduleDB: require('./schedule'),
+  reportDB: require('./report'),
 };
