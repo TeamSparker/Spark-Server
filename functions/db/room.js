@@ -361,6 +361,23 @@ const getAllUsersById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAllUsersByIds = async (client, roomIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT user_id, room_id FROM spark.entry as e
+    INNER JOIN spark.user as u
+    ON e.user_id = u.user_id
+    WHERE e.room_id IN ${roomIds.join()}
+      AND e.is_deleted = FALSE
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      ORDER BY e.created_at
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+
 const getFriendsByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
@@ -562,7 +579,23 @@ const getUserInfoByEntryId = async (client, entryId) => {
     [entryId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
-}
+};
+
+const setRoomsComplete = async (client, successRoomIds) => {
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
+  const { rows } = await client.query(
+    `
+      UPDATE spark.room
+      SET status = 'COMPLETE'
+      WHERE room_id IN (${successRoomIds.join()}) 
+      AND end_at = $1
+      RETURNING room_id
+      `,
+      [yesterday]
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
 
 module.exports = {
   addRoom,
@@ -596,4 +629,6 @@ module.exports = {
   outById,
   deleteRoomById,
   getUserInfoByEntryId,
+  setRoomsComplete,
+  getAllUsersByIds
 };
