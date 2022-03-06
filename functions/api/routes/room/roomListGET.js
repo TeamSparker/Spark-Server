@@ -30,7 +30,8 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-    const dialogs = await dialogDB.getUserDialogs(client, user.userId, ["'COMPLETE'", "'FAIL'"]);
+    let dialogs = await dialogDB.getUserDialogs(client, user.userId, ["'COMPLETE'", "'FAIL'"]);
+    dialogs = _.sortBy(dialogs, 'type');
     // const dialogs = await dialogDB.getUserDialogs(client, user.userId);
     console.log("DIALOGS", dialogs);
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
@@ -38,6 +39,7 @@ module.exports = async (req, res) => {
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
+    
 
     const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room)=>room.roomId))];
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
