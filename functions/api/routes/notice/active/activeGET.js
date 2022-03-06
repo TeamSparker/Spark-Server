@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
       return notice;
     });
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ACTIVE_GET_SUCCESS, { notices }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ACTIVE_SUCCESS, { notices }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

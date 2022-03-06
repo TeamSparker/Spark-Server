@@ -4,26 +4,32 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { noticeDB } = require('../../../db');
+const { userDB } = require('../../../db');
 
 /**
- *  @새로운_빨콩_알림_조회
- *  @route GET /notice/new
+ *  @푸시알림_설정_토글
+ *  @route PATCH /notice/setting
  *  @error
- *
+ *    1. 유효하지 않은 category
  */
 
 module.exports = async (req, res) => {
   const user = req.user;
+  const category = req.query.category;
+
+  // @error 1. 유효하지 않은 category
+  if (!['roomStart', 'spark', 'consider', 'certification', 'remind'].includes(category)) {
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.PUSH_CATEGORY_INVALID));
+  }
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const numOfUnreadNotice = await noticeDB.getNumberOfUnreadNoticeById(client, user.userId);
+    await userDB.togglePushSettingById(client, user.userId, category);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NEW_NOTICE_SUCCESS, { newNotice: numOfUnreadNotice > 0 ? true : false }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.PUSH_TOGGLE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
@@ -32,6 +38,5 @@ module.exports = async (req, res) => {
 
     return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
-    client.release();
   }
 };
