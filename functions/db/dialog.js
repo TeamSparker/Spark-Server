@@ -45,9 +45,39 @@ const insertLifeDeductionDialogs = async (client, dialogs) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const setDialogRead = async (client, dialogId) => {
+  const now = dayjs().add(9, 'h');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.dialog
+    SET is_read = TRUE, updated_at = $2, read_at = $2
+    WHERE dialog_id = $1
+    RETURNING *
+    `,
+    [dialogId, now]
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * 
+      FROM spark.dialog 
+      WHERE user_id = $2
+      AND room_id = $1
+      AND is_read = FALSE
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+}
 
 module.exports = {
   insertLifeDeductionDialogs,
-    insertDialogs,
-    getUserDialogs,
+  insertDialogs,
+  getUserDialogs,
+  setDialogRead,
+  getUnReadDialogByRoomAndUser,
 };
