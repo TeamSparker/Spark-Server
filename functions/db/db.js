@@ -24,7 +24,6 @@ Query.prototype.submit = function () {
   const values = this.values || [];
   const query = text.replace(/\$([0-9]+)/g, (m, v) => JSON.stringify(values[parseInt(v) - 1]));
   // devMode === true 이면서 sqlDebug === true일 때 SQL 쿼리문을 콘솔에 찍겠다는 분기입니다.
-  slackAPI.sendMessageToSlack(`\n\n[👻 SQL STATEMENT]\n${query}\n_________\n`, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   devMode && sqlDebug && console.log(`\n\n[👻 SQL STATEMENT]\n${query}\n_________\n`);
   submit.apply(this, arguments);
 };
