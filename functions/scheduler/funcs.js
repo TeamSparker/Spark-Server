@@ -14,8 +14,6 @@ const checkLife = async () => {
     if (!scheduleCheck.length) {
       return;
     }
-    console.log(1);
-
 
     const allRooms = await roomDB.getAllRoomIds(client);
     const allRoomIds = allRooms.map((o) => o.roomId);
@@ -35,7 +33,6 @@ const checkLife = async () => {
 
     const lifeDeductionRooms = [];
     const lifeDeductionMap = new Map();
-    console.log(2);
 
     let afterLife = []; // 수명 깎아 준 후 습관방별 수명들 [{ roomId: 100, life: 1 }, ...]
     for (let i = 1; i <= 3; i++) {
@@ -57,27 +54,19 @@ const checkLife = async () => {
     const failRoomIds = _.filter(afterLife, { life: 0 }).map((o) => o.roomId); // 수명 깎아주고 나서 {life: 0} 이면 폭파된 방
     const successRoomIds = _.difference(allRoomIds, failRoomIds); // 살아남은 방들
     let completeRooms = []
-    console.log(3);
 
     if (successRoomIds.length) {
       completeRooms = await roomDB.setRoomsComplete(client, successRoomIds);
     }
-    console.log(4);
     const completeRoomIds = completeRooms.map((o)=>o.roomId);
-    console.log(5);
-    const lifeDeductionRoomIds = _.difference(_.difference(lifeDeductionRooms, successRoomIds),failRoomIds);
-    console.log(6);
+    const lifeDeductionRoomIds = _.difference(_.difference(lifeDeductionRooms, completeRoomIds),failRoomIds);
     const dialogRoomIds = completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds);
     let dialogUsers = [];
     if(dialogRoomIds.length) {
       dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds));
-      console.log(dialogUsers, "dialogUsers");
     }
-    console.log(7);
     let insertDialogs = [];
-    console.log(8);
     let insertLifeDeductionDialogs = [];
-    console.log(9);
     dialogUsers.map((o) => {
       if(o.status === 'FAIL' || o.status === 'COMPLETE'){
         insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}')`);
@@ -86,7 +75,6 @@ const checkLife = async () => {
         insertLifeDeductionDialogs.push(`(${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId)}, 'LIFE_DEDUCTION')`);
       }
     });
-    console.log(10);
 
     if(insertDialogs.length) {
       await dialogDB.insertDialogs(client, insertDialogs);
