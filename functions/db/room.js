@@ -594,10 +594,9 @@ const setRoomsComplete = async (client, successRoomIds) => {
     `
       UPDATE spark.room
       SET status = 'COMPLETE'
-      WHERE 
-      end_at = $1
-      AND room_id IN (${successRoomIds.join()}) 
-      RETURNING room_id
+      WHERE room_id IN (${successRoomIds.join()}) 
+      AND end_at = $1
+      RETURNING *
       `,
       [yesterday]
   );

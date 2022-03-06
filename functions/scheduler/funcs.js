@@ -88,8 +88,12 @@ const checkLife = async () => {
     });
     console.log(10);
 
-    await dialogDB.insertDialogs(client, insertDialogs);
-    await dialogDB.insertLifeDeductionDialogs(client, insertLifeDeductionDialogs);
+    if(insertDialogs.length) {
+      await dialogDB.insertDialogs(client, insertDialogs);
+    }
+    if (insertLifeDeductionDialogs.length) {
+      await dialogDB.insertLifeDeductionDialogs(client, insertLifeDeductionDialogs);
+    }
     if (!successRoomIds.length) {
       // 살아남은 방 없으면 return
       return;
