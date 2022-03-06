@@ -550,6 +550,20 @@ const deleteRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getUserInfoByEntryId = async (client, entryId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * 
+    FROM spark.entry e
+    INNER JOIN spark.user u
+    ON e.user_id = u.user_id
+    WHERE entry_id = $1
+    `,
+    [entryId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+}
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -581,4 +595,5 @@ module.exports = {
   getFeedRecordsByRoomIds,
   outById,
   deleteRoomById,
+  getUserInfoByEntryId,
 };

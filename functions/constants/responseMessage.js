@@ -49,6 +49,8 @@ module.exports = {
   NOT_MATCH_ROOM_AND_RECORD: '해당 습관방의 record가 아닙니다',
   NOT_STARTED_ROOM: '아직 대기중인 방입니다',
   ROOM_NOT_WAITING: '대기중인 습관방이 아닙니다',
+  INCORRECT_RECORD: '올바르지 않은 recordId 입니다',
+  UPDATE_THUMBNAIL_SUCCESS: '보관함 대표사진 변경 성공',
 
   START_ROOM_SUCCESS: '습관 방 시작 완료',
   START_ROOM_ALREADY: '이미 시작된 방입니다',
@@ -63,6 +65,8 @@ module.exports = {
   RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',
   SEND_LIKE_SUCCESS: '좋아요 성공',
   CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
+  REPORT_FEED_SUCCESS: '피드 신고 성공',
+  ALREADY_REPORT_FEED: '이미 신고한 피드입니다',
 
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',
