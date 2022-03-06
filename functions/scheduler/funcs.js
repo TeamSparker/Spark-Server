@@ -4,6 +4,7 @@ const _ = require('lodash');
 const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
 const { success } = require('../lib/util');
+const { outById } = require('../db/room');
 
 const checkLife = async () => {
   let client;
@@ -30,32 +31,42 @@ const checkLife = async () => {
         roomIdsByFailCount[3] = roomIdsByFailCount[3].concat(roomIds);
       }
     });
+    const lifeDeductionRooms = [];
+    const lifeDeductionMap = new Map();
     let afterLife = []; // 수명 깎아 준 후 습관방별 수명들 [{ roomId: 100, life: 1 }, ...]
     for (let i = 1; i <= 3; i++) {
       // 수명 깎아주기! - 3번 진행 (수명 1개깎이는 방 / 2개 깎이는 방 / 3개 깎이는 방)
       if (roomIdsByFailCount[i].length) {
-        afterLife = afterLife.concat(await roomDB.updateLife(client, i, roomIdsByFailCount[i])); // { roomId: 100, life: 1 }
+        const updatedLife = await roomDB.updateLife(client, i, roomIdsByFailCount[i]) // { roomId: 100, life: 1 }
+        updatedLife.map((o) => {
+          if (o.life) {
+            lifeDeductionRooms.push(o.roomId);
+            lifeDeductionMap.set(o.roomId, i);
+          }
+        })
+        afterLife = afterLife.concat(updatedLife); 
         const slackMessage = `[Life Deduction] life: -${i} / Target Room: ${roomIdsByFailCount[i]}`;
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       }
     }
     const failRoomIds = _.filter(afterLife, { life: 0 }).map((o) => o.roomId); // 수명 깎아주고 나서 {life: 0} 이면 폭파된 방
     const successRoomIds = _.difference(allRoomIds, failRoomIds); // 살아남은 방들
-
-    const failUsers = await roomDB.getAllUsersByIds(client, failRoomIds);
-    const insertFailDialogs = failUsers.map((o) => {
-      return `(${o.userId}, ${o.roomId}, 'FAIL')`
-    });
-
     const completeRooms = await roomDB.setRoomsComplete(client, successRoomIds);
     const completeRoomIds = completeRooms.map((o)=>o.roomId);
-    const completeUsers = await roomDB.getAllUsersByIds(client, completeRoomIds); // [{roomId: 100, userId:100}, ...]
-    const insertSuccessDialogs = completeUsers.map((o) => {
-      return `(${o.userId}, ${o.roomId}, 'SUCCESS')`
+    const lifeDeductionRoomIds = _.difference(_.difference(lifeDeductionRooms, successRoomIds),failRoomIds);
+    const dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds));
+    let insertDialogs = [];
+    let insertLifeDeductionDialogs = [];
+    dialogUsers.map((o) => {
+      if(o.status === 'FAIL' || o.status === 'COMPLETE'){
+        insertDialogs.push(`(${o.userId}, ${o.roomId}, ${o.status})`);
+      }
+      else {
+        insertLifeDeductionDialogs.push(`${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId), 'LIFE_DEDUCTION'}`);
+      }
     });
-
-    await dialogDB.insertDialogs(client, insertFailDialogs.concat(insertSuccessDialogs));
-
+    await dialogDB.insertDialogs(client, insertDialogs);
+    await dialogDB.insertLifeDeductionDialogs(client, insertLifeDeductionDialogs);
     if (!successRoomIds.length) {
       // 살아남은 방 없으면 return
       return;
@@ -65,7 +76,7 @@ const checkLife = async () => {
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, ongoingRoomIds); // 성공한 방들의 entry 불러오기
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
-
+    
     const insertEntries = ongoingEntries.map((o) => {
       // 추가해줄 record들의 속성들 빚어주기
       const startDate = dayjs(o.startAt);

@@ -364,9 +364,11 @@ const getAllUsersById = async (client, roomId) => {
 const getAllUsersByIds = async (client, roomIds) => {
   const { rows } = await client.query(
     `
-    SELECT user_id, room_id FROM spark.entry as e
+    SELECT user_id, room_id, r.status FROM spark.entry as e
     INNER JOIN spark.user as u
     ON e.user_id = u.user_id
+    INNER JOIN spark.room as r
+    ON e.room_id = r.room_id
     WHERE e.room_id IN ${roomIds.join()}
       AND e.is_deleted = FALSE
       AND e.is_out = FALSE
