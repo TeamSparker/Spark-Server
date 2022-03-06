@@ -54,7 +54,7 @@ const checkLife = async () => {
       return `(${o.userId}, ${o.roomId}, 'SUCCESS')`
     });
 
-    await dialogDB.insertDialgs(client, insertFailDialogs.concat(insertSuccessDialogs));
+    await dialogDB.insertDialogs(client, insertFailDialogs.concat(insertSuccessDialogs));
 
     if (!successRoomIds.length) {
       // 살아남은 방 없으면 return
