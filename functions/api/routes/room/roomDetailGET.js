@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, sparkDB, dialogDB } = require('../../../db');
+const { roomDB, sparkDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 
@@ -56,15 +56,8 @@ module.exports = async (req, res) => {
     if (!userEntry.length) {
       res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
-    const dialog = await dialogDB.getUnReadLifeDeductionDialogByRoomAndUser(client, roomId, user.userId);
-    let lifeDeductionCount = 0;
-    console.log("dialog", dialog);
-    if (dialog) {
-      lifeDeductionCount = dialog.lifeDeductionCount;
-      await dialogDB.setDialogRead(client, dialog.dialogId);
-    }
     const records = await roomDB.getRecordsByDay(client, roomId, day);
-    
+
     let myRecord = null;
 
     let considerRecords = [];
@@ -134,7 +127,6 @@ module.exports = async (req, res) => {
       leftDay,
       life: room.life,
       fromStart: room.fromStart,
-      lifeDeductionCount,
       myRecord,
       otherRecords,
     };

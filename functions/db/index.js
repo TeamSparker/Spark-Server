@@ -7,5 +7,4 @@ module.exports = {
   recordDB: require('./record'),
   scheduleDB: require('./schedule'),
   reportDB: require('./report'),
-  dialogDB: require('./dialog'),
 };
