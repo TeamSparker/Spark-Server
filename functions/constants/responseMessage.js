@@ -59,7 +59,6 @@ module.exports = {
   ROOM_OUT_SUCCESS: '습관 방 퇴장 완료',
   ROOM_DELETE_SUCCESS: '대기방 삭제 완료',
   HOST_WAITROOM_OUT_FAIL: '방 생성자는 대기방을 나갈 수 없습니다',
-  DIALOG_READ_SUCCESS: '성공/실패한 습관방 읽음처리 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
