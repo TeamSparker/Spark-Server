@@ -21,9 +21,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const numOfUnreadServiceNotice = await noticeDB.getNumberOfUnreadServiceNoticeById(client, user.userId);
+    const numOfUnreadNotice = await noticeDB.getNumberOfUnreadNoticeById(client, user.userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NEW_NOTICE_SUCCESS, { newNotice: numOfUnreadServiceNotice > 0 ? true : false }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NEW_NOTICE_SUCCESS, { newNotice: numOfUnreadNotice > 0 ? true : false }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
