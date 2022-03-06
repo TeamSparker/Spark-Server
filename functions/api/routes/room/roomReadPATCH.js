@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const dialog = await dialogDB.getUnReadDialogByRoomAndUser(client, roomId, userId);
-    if(!dialog || (dialog.type !== 'FAIL' && dialog.type !== 'COMPLETE')) {
+    if(!dialog) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
     let entry = await roomDB.getEntryByIds(client, roomId, userId);

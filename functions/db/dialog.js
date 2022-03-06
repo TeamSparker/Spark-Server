@@ -68,11 +68,28 @@ const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
       WHERE user_id = $2
       AND room_id = $1
       AND is_read = FALSE
+      AND type IN ('COMPLETE', 'FAIL')
     `,
     [roomId, userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
-}
+};
+
+const getUnReadLifeDeductionDialogByRoomAndUser = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * 
+      FROM spark.dialog 
+      WHERE user_id = $2
+      AND room_id = $1
+      AND is_read = FALSE
+      AND type = 'LIFE_DEDUCTION'
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 
 module.exports = {
   insertLifeDeductionDialogs,
@@ -80,4 +97,5 @@ module.exports = {
   getUserDialogs,
   setDialogRead,
   getUnReadDialogByRoomAndUser,
+  getUnReadLifeDeductionDialogByRoomAndUser
 };
