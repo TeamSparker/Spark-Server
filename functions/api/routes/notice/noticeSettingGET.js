@@ -2,13 +2,11 @@ const functions = require('firebase-functions');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
-const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { noticeDB } = require('../../../db');
 
 /**
- *  @새로운_빨콩_알림_조회
- *  @route GET /notice/new
+ *  @푸시알림_설정_조회
+ *  @route GET /notice/setting
  *  @error
  *
  */
@@ -16,14 +14,18 @@ const { noticeDB } = require('../../../db');
 module.exports = async (req, res) => {
   const user = req.user;
 
-  let client;
-
   try {
-    client = await db.connect(req);
+    const { pushRoomStart, pushSpark, pushConsider, pushCertification, pushRemind } = user;
 
-    const numOfUnreadServiceNotice = await noticeDB.getNumberOfUnreadServiceNoticeById(client, user.userId);
+    const data = {
+      roomStart: pushRoomStart,
+      spark: pushSpark,
+      consider: pushConsider,
+      certification: pushCertification,
+      remind: pushRemind,
+    };
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NEW_NOTICE_SUCCESS, { newNotice: numOfUnreadServiceNotice > 0 ? true : false }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_NOTICE_SETTING_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
@@ -32,6 +34,5 @@ module.exports = async (req, res) => {
 
     return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
-    client.release();
   }
 };
