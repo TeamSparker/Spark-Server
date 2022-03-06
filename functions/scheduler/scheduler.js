@@ -2,7 +2,7 @@
 const schedule = require('node-schedule');
 const funcs = require('./funcs.js');
 
-const job = schedule.scheduleJob('0 * * * * *', function() {
+const job = schedule.scheduleJob('0 0 15 * * *', function() {
     funcs.checkLife();
 });
 
