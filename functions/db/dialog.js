@@ -4,6 +4,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 
 const insertDialogs = async (client, dialogs) => {
+  console.log("dialogs",dialogs);
   const { rows } = await client.query(
     `
     INSERT INTO spark.dialog

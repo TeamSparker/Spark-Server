@@ -14,11 +14,12 @@ const checkLife = async () => {
     if (!scheduleCheck.length) {
       return;
     }
+    console.log(1);
+
 
     const allRooms = await roomDB.getAllRoomIds(client);
     const allRoomIds = allRooms.map((o) => o.roomId);
     const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
-    console.log('failRecords', failRecords);
     const roomGroupByFailCount = _.groupBy(failRecords, 'failCount'); // failCount별 roomId 묶어주기 (ex. [{"failCount": 1, "roomId": [1,2,3]}, {"failCount":2, "roomId": [4,5,6]}])
     const failCountList = [...new Set(failRecords.map((o) => Number(o.failCount)))]; // failCount 뭐뭐있는지~ (ex. [1,2,3])
     const roomIdsByFailCount = { 1: [], 2: [], 3: [] };
@@ -31,8 +32,11 @@ const checkLife = async () => {
         roomIdsByFailCount[3] = roomIdsByFailCount[3].concat(roomIds);
       }
     });
+
     const lifeDeductionRooms = [];
     const lifeDeductionMap = new Map();
+    console.log(2);
+
     let afterLife = []; // 수명 깎아 준 후 습관방별 수명들 [{ roomId: 100, life: 1 }, ...]
     for (let i = 1; i <= 3; i++) {
       // 수명 깎아주기! - 3번 진행 (수명 1개깎이는 방 / 2개 깎이는 방 / 3개 깎이는 방)
@@ -49,22 +53,41 @@ const checkLife = async () => {
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       }
     }
+
     const failRoomIds = _.filter(afterLife, { life: 0 }).map((o) => o.roomId); // 수명 깎아주고 나서 {life: 0} 이면 폭파된 방
     const successRoomIds = _.difference(allRoomIds, failRoomIds); // 살아남은 방들
-    const completeRooms = await roomDB.setRoomsComplete(client, successRoomIds);
+    let completeRooms = []
+    console.log(3);
+
+    if (successRoomIds.length) {
+      completeRooms = await roomDB.setRoomsComplete(client, successRoomIds);
+    }
+    console.log(4);
     const completeRoomIds = completeRooms.map((o)=>o.roomId);
+    console.log(5);
     const lifeDeductionRoomIds = _.difference(_.difference(lifeDeductionRooms, successRoomIds),failRoomIds);
-    const dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds));
+    console.log(6);
+    const dialogRoomIds = completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds);
+    let dialogUsers = [];
+    if(dialogRoomIds.length) {
+      dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds));
+      console.log(dialogUsers, "dialogUsers");
+    }
+    console.log(7);
     let insertDialogs = [];
+    console.log(8);
     let insertLifeDeductionDialogs = [];
+    console.log(9);
     dialogUsers.map((o) => {
       if(o.status === 'FAIL' || o.status === 'COMPLETE'){
-        insertDialogs.push(`(${o.userId}, ${o.roomId}, ${o.status})`);
+        insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}')`);
       }
       else {
-        insertLifeDeductionDialogs.push(`${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId), 'LIFE_DEDUCTION'}`);
+        insertLifeDeductionDialogs.push(`(${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId)}, 'LIFE_DEDUCTION')`);
       }
     });
+    console.log(10);
+
     await dialogDB.insertDialogs(client, insertDialogs);
     await dialogDB.insertLifeDeductionDialogs(client, insertLifeDeductionDialogs);
     if (!successRoomIds.length) {

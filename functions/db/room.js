@@ -48,7 +48,7 @@ const getRoomsByIds = async (client, roomIds) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.room
-    WHERE room_id IN (${roomIds.join()})
+    WHERE room_id in (${roomIds.join()})
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -123,7 +123,7 @@ const getEntriesByRoomIds = async (client, roomIds) => {
     SELECT * FROM spark.entry e
     LEFT JOIN spark.room r
     ON r.room_id = e.room_id
-    WHERE e.room_id IN (${roomIds.join()})
+    WHERE e.room_id in (${roomIds.join()})
       AND e.is_out = FALSE
       AND e.is_kicked = FALSE
       AND e.is_deleted = FALSE
@@ -362,20 +362,23 @@ const getAllUsersById = async (client, roomId) => {
 };
 
 const getAllUsersByIds = async (client, roomIds) => {
+  console.log("roomIds", roomIds);
   const { rows } = await client.query(
     `
-    SELECT user_id, room_id, r.status FROM spark.entry as e
+    SELECT e.user_id, r.room_id, r.status FROM spark.entry as e
     INNER JOIN spark.user as u
     ON e.user_id = u.user_id
     INNER JOIN spark.room as r
     ON e.room_id = r.room_id
-    WHERE e.room_id IN ${roomIds.join()}
+    WHERE e.room_id
+     IN (${roomIds.join()})
       AND e.is_deleted = FALSE
       AND e.is_out = FALSE
       AND e.is_kicked = FALSE
       ORDER BY e.created_at
-    `,
+    `
   );
+  console.log("rows", rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
@@ -584,14 +587,16 @@ const getUserInfoByEntryId = async (client, entryId) => {
 };
 
 const setRoomsComplete = async (client, successRoomIds) => {
+  console.log("successRoomIds", successRoomIds);
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
     `
       UPDATE spark.room
       SET status = 'COMPLETE'
-      WHERE room_id IN (${successRoomIds.join()}) 
-      AND end_at = $1
+      WHERE 
+      end_at = $1
+      AND room_id IN (${successRoomIds.join()}) 
       RETURNING room_id
       `,
       [yesterday]
