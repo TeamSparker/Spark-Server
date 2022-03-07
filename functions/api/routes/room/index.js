@@ -17,5 +17,6 @@ router.post('/:roomId/spark', checkUser, require('./sparkPOST'));
 router.post('/:roomId/record', checkUser, uploadImageIntoSubDir('certification'), require('./roomRecordPOST'));
 router.delete('/:roomId', checkUser, require('./roomDELETE'));
 router.delete('/:roomId/out', checkUser, require('./roomOutDELETE'));
+router.patch('/:roomId/read', checkUser, require('./roomReadPATCH'));
 
 module.exports = router;
