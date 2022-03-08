@@ -207,8 +207,7 @@ const deleteNoticeByContentAndReceiver = async (client, title, body, isService, 
   const now = dayjs().add(9, 'h');
   const { rows } = await client.query(
     `
-      UPDATE spark.notification
-      SET is_deleted = TRUE, deleted_at = $5, updated_at = $5
+      DELETE FROM spark.notification
       WHERE title = $1
       AND content = $2
       AND is_service = $3
