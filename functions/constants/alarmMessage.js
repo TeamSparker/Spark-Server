@@ -33,14 +33,6 @@ const SEND_SPARK = (who, roomName, content) => {
   return { title, body, isService, category };
 };
 
-const ROOM_HALF = (roomName) => {
-  const title = '반이나 왔어!';
-  const body = `"${roomName}" 습관을 시작한지 33일이 지났습니다.`;
-  const isService = true;
-
-  return { title, body, isService };
-};
-
 const ROOM_NEW = (roomName) => {
   const title = '새로운 습관 시작 🔥';
   const body = `${roomName}방에서 가장 먼저 스파크를 보내볼까요?`;
@@ -63,7 +55,6 @@ module.exports = {
   STATUS_CONSIDERING,
   ROOM_OUT,
   SEND_SPARK,
-  ROOM_HALF,
   ROOM_NEW,
   ROOM_DELETE,
 };
