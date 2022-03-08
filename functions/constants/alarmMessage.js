@@ -1,5 +1,5 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
-  const title = `"${who}님의 인증 완료!`;
+  const title = `${who}님의 인증 완료!`;
   const body = `${roomName}방 인증을 완료했어요.`;
   const isService = false;
   const category = 'certification';
@@ -17,7 +17,7 @@ const STATUS_CONSIDERING = (who, roomName) => {
 };
 
 const ROOM_OUT = (who, roomName) => {
-  const title = '${roomName}방 인원 변동 🚨';
+  const title = `${roomName}방 인원 변동 🚨`;
   const body = `${who}님이 습관방에서 나갔어요.`;
   const isService = true;
 
@@ -34,7 +34,7 @@ const SEND_SPARK = (who, roomName, content) => {
 };
 
 const ROOM_NEW = (roomName) => {
-  const title = '새로운 습관 시작 🔥';
+  const title = `새로운 습관 시작 🔥`;
   const body = `${roomName}방에서 가장 먼저 스파크를 보내볼까요?`;
   const isService = true;
   const category = 'roomStart';
