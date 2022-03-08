@@ -35,11 +35,12 @@ module.exports = async (req, res) => {
       createdAt = createdAt.set('hour', 0);
       createdAt = createdAt.set('minute', 0);
       createdAt = createdAt.set('second', 0);
+      const passedDay = now.diff(createdAt, 'd');
 
       notice['noticeId'] = s.notificationId;
       notice['noticeTitle'] = s.title;
       notice['noticeContent'] = s.content;
-      notice['day'] = now.diff(createdAt, 'd') > 0 ? `${passedDay}일전` : `오늘`;
+      notice['day'] = passedDay > 0 ? `${passedDay}일전` : `오늘`;
       notice['isNew'] = !s.isRead;
       return notice;
     });
