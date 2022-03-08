@@ -75,6 +75,7 @@ const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
 };
 
 const getUnReadLifeDeductionDialogByRoomAndUser = async (client, roomId, userId) => {
+  const yesterday = dayjs().add(9, 'hour').subtract(1, 'day').format('YYYY-MM-DD');
   const { rows } = await client.query(
     `
       SELECT * 
@@ -83,8 +84,9 @@ const getUnReadLifeDeductionDialogByRoomAndUser = async (client, roomId, userId)
       AND room_id = $1
       AND is_read = FALSE
       AND type = 'LIFE_DEDUCTION'
+      AND date = $3
     `,
-    [roomId, userId],
+    [roomId, userId, yesterday],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
