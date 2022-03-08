@@ -70,7 +70,7 @@ module.exports = async (req, res) => {
     const spark = await sparkDB.insertSpark(client, recordId, userId, content);
 
     // 스파크를 보내면 받는 사람에게 알림 및 푸시알림 보내기
-    const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, content);
+    const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, room.roomName, content);
     const receiver = await userDB.getUserById(client, record.userId);
     await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService);
     pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
