@@ -204,7 +204,6 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
 };
 
 const deleteNoticeByContentAndReceiver = async (client, title, body, isService, receiverId) => {
-  const now = dayjs().add(9, 'h');
   const { rows } = await client.query(
     `
       DELETE FROM spark.notification
@@ -214,7 +213,7 @@ const deleteNoticeByContentAndReceiver = async (client, title, body, isService, 
       AND receiver_id = $4
       RETURNING *
     `,
-    [title, body, isService, receiverId, now],
+    [title, body, isService, receiverId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
