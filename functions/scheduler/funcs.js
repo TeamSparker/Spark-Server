@@ -15,6 +15,9 @@ const checkLife = async () => {
       return;
     }
 
+    const now = dayjs().add(9, 'hour');
+    const today = now.format('YYYY-MM-DD');
+
     const allRooms = await roomDB.getAllRoomIds(client);
     const allRoomIds = allRooms.map((o) => o.roomId);
     const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
@@ -69,10 +72,10 @@ const checkLife = async () => {
     let insertLifeDeductionDialogs = [];
     dialogUsers.map((o) => {
       if(o.status === 'FAIL' || o.status === 'COMPLETE'){
-        insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}')`);
+        insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}', '${today}')`);
       }
       else {
-        insertLifeDeductionDialogs.push(`(${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId)}, 'LIFE_DEDUCTION')`);
+        insertLifeDeductionDialogs.push(`(${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId)}, 'LIFE_DEDUCTION', '${today}')`);
       }
     });
 
@@ -89,9 +92,7 @@ const checkLife = async () => {
 
     const ongoingRoomIds = _.difference(successRoomIds, completeRoomIds);
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, ongoingRoomIds); // 성공한 방들의 entry 불러오기
-    const now = dayjs().add(9, 'hour');
-    const today = now.format('YYYY-MM-DD');
-    
+
     const insertEntries = ongoingEntries.map((o) => {
       // 추가해줄 record들의 속성들 빚어주기
       const startDate = dayjs(o.startAt);
