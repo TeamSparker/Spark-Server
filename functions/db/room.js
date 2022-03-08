@@ -213,6 +213,17 @@ const kickedHistoryByIds = async (client, roomId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getEntryById = async (client, entryId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM spark.entry
+      WHERE entry_id = $1
+    `,
+    [entryId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getEntryByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
@@ -362,7 +373,7 @@ const getAllUsersById = async (client, roomId) => {
 };
 
 const getAllUsersByIds = async (client, roomIds) => {
-  console.log("roomIds", roomIds);
+  console.log('roomIds', roomIds);
   const { rows } = await client.query(
     `
     SELECT e.user_id, r.room_id, r.status FROM spark.entry as e
@@ -376,12 +387,11 @@ const getAllUsersByIds = async (client, roomIds) => {
       AND e.is_out = FALSE
       AND e.is_kicked = FALSE
       ORDER BY e.created_at
-    `
+    `,
   );
-  console.log("rows", rows);
+  console.log('rows', rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getFriendsByIds = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -587,7 +597,7 @@ const getUserInfoByEntryId = async (client, entryId) => {
 };
 
 const setRoomsComplete = async (client, successRoomIds) => {
-  console.log("successRoomIds", successRoomIds);
+  console.log('successRoomIds', successRoomIds);
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
@@ -598,7 +608,7 @@ const setRoomsComplete = async (client, successRoomIds) => {
       AND end_at = $1
       RETURNING *
       `,
-      [yesterday]
+    [yesterday],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -613,6 +623,7 @@ module.exports = {
   getRoomsByUserId,
   getUserProfilesByRoomIds,
   kickedHistoryByIds,
+  getEntryById,
   getEntryByIds,
   updatePurposeByEntryId,
   getRecordsByDay,
@@ -636,5 +647,5 @@ module.exports = {
   deleteRoomById,
   getUserInfoByEntryId,
   setRoomsComplete,
-  getAllUsersByIds
+  getAllUsersByIds,
 };
