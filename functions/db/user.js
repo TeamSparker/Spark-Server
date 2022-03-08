@@ -24,6 +24,17 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getUserWithDelete = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.user as u
+    WHERE user_id = $1
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getUsersByIds = async (client, userIds) => {
   const { rows } = await client.query(
     `
@@ -104,6 +115,17 @@ const togglePushSettingById = async (client, userId, category) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const softDeleteUser = async (client) => {
+  const now = dayjs().add(9, 'hour').subtract();
+  const today = dayjs(now).format('YYYY-MM-DD');
+  const { rows } = await client.query(
+    `
+    DELETE
+    FROM spark.user
+    WHERE 
+    `, [today]
+  );
+}
 module.exports = {
   getAllUsers,
   getUserById,
@@ -113,4 +135,5 @@ module.exports = {
   updateDeviceTokenById,
   updateProfileById,
   togglePushSettingById,
+  getUserWithDelete,
 };
