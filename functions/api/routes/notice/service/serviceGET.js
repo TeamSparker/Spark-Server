@@ -23,6 +23,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    const newActiveNum = await noticeDB.getNumberOfUnreadActiveNoticeById(client, userId);
+    const newActive = newActiveNum > 0 ? true : false;
+
     const services = await noticeDB.getServicesByUserId(client, userId, parseInt(lastId), parseInt(size));
     let now = dayjs().add(9, 'hour');
     now = now.set('hour', 0);
@@ -45,7 +48,7 @@ module.exports = async (req, res) => {
       return notice;
     });
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_SERVICE_SUCCESS, { notices }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_SERVICE_SUCCESS, { newActive, notices }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
