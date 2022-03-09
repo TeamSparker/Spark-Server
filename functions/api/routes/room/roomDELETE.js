@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
     const allUsers = await roomDB.getAllUsersById(client, room.roomId);
 
     const notifications = allUsers.map((u) => {
-      return `('${title}', '${body}', 'Spark_IMG_URL', ${u.userId}, ${isService})`;
+      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false)`;
     });
 
     if (notifications.length > 0) {

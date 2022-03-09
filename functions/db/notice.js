@@ -129,16 +129,16 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
   }
 };
 
-const addNotification = async (client, title, body, senderImg, receiverId, isService) => {
+const addNotification = async (client, title, body, thumbnail, receiverId, isService, isThumbProfile) => {
   const { rows } = await client.query(
     `
     INSERT INTO spark.notification
-    (title, content, thumbnail, receiver_id, is_service)
+    (title, content, thumbnail, receiver_id, is_service, is_thumb_profile)
     VALUES
-    ($1, $2, $3, $4, $5)
+    ($1, $2, $3, $4, $5, $6)
     RETURNING *
     `,
-    [title, body, senderImg, receiverId, isService],
+    [title, body, thumbnail, receiverId, isService, isThumbProfile],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -147,7 +147,7 @@ const addNotifications = async (client, notifications) => {
   const { rows } = await client.query(
     `
     INSERT INTO spark.notification
-    (title, content, thumbnail, receiver_id, is_service)
+    (title, content, thumbnail, receiver_id, is_service, is_thumb_profile)
     VALUES
     ${notifications.join()}
     RETURNING *

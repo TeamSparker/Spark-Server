@@ -96,7 +96,7 @@ module.exports = async (req, res) => {
       const { title, body, isService, category } = alarmMessage.STATUS_CONSIDERING(sender.nickname, room.roomName);
 
       const notifications = friends.map((f) => {
-        return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
+        return `('${title}', '${body}', '${user.profileImg}', ${f.userId}, ${isService}, true)`;
       });
 
       if (notifications.length) {
