@@ -19,7 +19,7 @@ const STATUS_CONSIDERING = (who, roomName) => {
 const ROOM_OUT = (who, roomName) => {
   const title = `${roomName}방 인원 변동 🚨`;
   const body = `${who}님이 습관방에서 나갔어요.`;
-  const isService = true;
+  const isService = false;
 
   return { title, body, isService };
 };
