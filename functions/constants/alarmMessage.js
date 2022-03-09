@@ -19,13 +19,13 @@ const STATUS_CONSIDERING = (who, roomName) => {
 const ROOM_OUT = (who, roomName) => {
   const title = `${roomName}방 인원 변동 🚨`;
   const body = `${who}님이 습관방에서 나갔어요.`;
-  const isService = true;
+  const isService = false;
 
   return { title, body, isService };
 };
 
 const SEND_SPARK = (who, roomName, content) => {
-  const title = `${roomName}에서 보낸 스파크`;
+  const title = `${roomName}방에서 보낸 스파크`;
   const isService = false;
   const category = 'spark';
   const body = `${who} : ${content}`;
