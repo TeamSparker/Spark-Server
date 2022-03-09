@@ -25,7 +25,7 @@ const ROOM_OUT = (who, roomName) => {
 };
 
 const SEND_SPARK = (who, roomName, content) => {
-  const title = `${roomName}에서 보낸 스파크`;
+  const title = `${roomName}방에서 보낸 스파크`;
   const isService = false;
   const category = 'spark';
   const body = `${who} : ${content}`;
