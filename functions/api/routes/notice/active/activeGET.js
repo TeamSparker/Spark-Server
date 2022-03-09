@@ -44,6 +44,7 @@ module.exports = async (req, res) => {
       notice['noticeTitle'] = a.title;
       notice['noticeContent'] = a.content;
       notice['noticeImg'] = a.thumbnail;
+      notice['isThumbProfile'] = a.isThumbProfile;
       notice['day'] = passedDay > 0 ? `${passedDay}일전` : `오늘`;
       notice['isNew'] = !a.isRead;
       return notice;
