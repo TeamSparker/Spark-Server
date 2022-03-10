@@ -94,7 +94,7 @@ const insertRecords = async (client, insertEntries) => {
     INSERT INTO spark.record
     (entry_id, date, day)
     VALUES
-    ${insertEntries.join(',')}
+    ${insertEntries.join('')}
     RETURNING *
     `,
   );
