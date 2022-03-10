@@ -88,6 +88,7 @@ module.exports = async (req, res) => {
         sparkCount: sparkNums[i],
         isLiked: isLikes[i],
         timerRecord: responseRecords[i].timerRecord,
+        isMyRecord: responseRecords[i].userId === user.userId? true: false,
       });
     }
 
