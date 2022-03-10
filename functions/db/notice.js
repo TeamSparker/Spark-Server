@@ -203,6 +203,21 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
 
+const deleteNoticeByContentAndReceiver = async (client, title, body, isService, receiverId) => {
+  const { rows } = await client.query(
+    `
+      DELETE FROM spark.notification
+      WHERE title = $1
+      AND content = $2
+      AND is_service = $3
+      AND receiver_id = $4
+      RETURNING *
+    `,
+    [title, body, isService, receiverId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   serviceReadByUserId,
   activeReadByUserId,
@@ -215,4 +230,5 @@ module.exports = {
   getNumberOfUnreadNoticeById,
   getNumberOfUnreadServiceNoticeById,
   getNumberOfUnreadActiveNoticeById,
+  deleteNoticeByContentAndReceiver,
 };
