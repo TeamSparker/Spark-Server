@@ -1,5 +1,5 @@
 const CERTIFICATION_COMPLETE = (who, roomName) => {
-  const title = `"${who}님의 인증 완료!`;
+  const title = `${who}님의 인증 완료!`;
   const body = `${roomName}방 인증을 완료했어요.`;
   const isService = false;
   const category = 'certification';
@@ -19,13 +19,13 @@ const STATUS_CONSIDERING = (who, roomName) => {
 const ROOM_OUT = (who, roomName) => {
   const title = `${roomName}방 인원 변동 🚨`;
   const body = `${who}님이 습관방에서 나갔어요.`;
-  const isService = true;
+  const isService = false;
 
   return { title, body, isService };
 };
 
 const SEND_SPARK = (who, roomName, content) => {
-  const title = `${roomName}에서 보낸 스파크`;
+  const title = `${roomName}방에서 보낸 스파크`;
   const isService = false;
   const category = 'spark';
   const body = `${who} : ${content}`;
@@ -33,16 +33,8 @@ const SEND_SPARK = (who, roomName, content) => {
   return { title, body, isService, category };
 };
 
-const ROOM_HALF = (roomName) => {
-  const title = '반이나 왔어!';
-  const body = `"${roomName}" 습관을 시작한지 33일이 지났습니다.`;
-  const isService = true;
-
-  return { title, body, isService };
-};
-
 const ROOM_NEW = (roomName) => {
-  const title = '새로운 습관 시작 🔥';
+  const title = `새로운 습관 시작 🔥`;
   const body = `${roomName}방에서 가장 먼저 스파크를 보내볼까요?`;
   const isService = true;
   const category = 'roomStart';
@@ -71,7 +63,6 @@ module.exports = {
   STATUS_CONSIDERING,
   ROOM_OUT,
   SEND_SPARK,
-  ROOM_HALF,
   ROOM_NEW,
   ROOM_DELETE,
   FEED_LIKE,
