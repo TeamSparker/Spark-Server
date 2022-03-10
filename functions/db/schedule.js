@@ -14,7 +14,7 @@ const insertSchedule = async (client) => {
     ($1)
     RETURNING *
     `,
-    [today],
+    [today]
   );
 
   return convertSnakeToCamel.keysToCamel(rows);
