@@ -20,7 +20,9 @@ const getUserDialogs = async (client, userId, types) => {
   const { rows } = await client.query(
     `
       SELECT * 
-      FROM spark.dialog 
+      FROM spark.dialog d
+      INNER JOIN spark.room r
+      ON d.room_id = r.room_id
       WHERE user_id = $1
       AND type IN (${types.join(',')})
       AND is_read = FALSE
