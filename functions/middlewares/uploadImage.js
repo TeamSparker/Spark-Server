@@ -30,6 +30,9 @@ const uploadImageIntoSubDir = (subDir) => {
     // req.body로 들어오는 게 파일일 경우 처리
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
       if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+        const slackMessage = `[Image Upload File Type Exception]\n [${req.user.nickname} (${req.user.userId})] tried to upload ${mimetype} file`;
+        slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+
         return res.status(400).json({ error: 'Wrong file type submitted' });
       }
       // my.image.png => ['my', 'image', 'png']
