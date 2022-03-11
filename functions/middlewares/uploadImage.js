@@ -9,6 +9,7 @@ const { firebaseConfig } = require('../config/firebaseClient');
 const util = require('../lib/util');
 const statusCode = require('../constants/statusCode');
 const responseMessage = require('../constants/responseMessage');
+const slackAPI = require('./slackAPI');
 
 const uploadImageIntoSubDir = (subDir) => {
   return function (req, res, next) {
@@ -70,6 +71,9 @@ const uploadImageIntoSubDir = (subDir) => {
       } catch (err) {
         console.error(err);
         functions.logger.error(`[FILE UPLOAD ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
+
+        const slackMessage = `[ERROR BY ${req.user.nickname} (${req.user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${err} ${JSON.stringify(err)}`;
+        slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
         return res.status(500).json(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
       }
     });
