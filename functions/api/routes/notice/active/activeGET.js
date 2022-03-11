@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const newServiceNum = await noticeDB.getNumberOfUnreadActiveNoticeById(client, userId);
+    const newServiceNum = await noticeDB.getNumberOfUnreadServiceNoticeById(client, userId);
     const newService = newServiceNum > 0 ? true : false;
 
     const actives = await noticeDB.getActivesByUserId(client, userId, parseInt(lastId), parseInt(size));
