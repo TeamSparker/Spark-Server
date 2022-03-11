@@ -14,7 +14,6 @@ const dayjs = require('dayjs');
  *  @error
  *      1. reportReason이 전달되지 않음
  *      2. 유효하지 않은 recordId
- *      3. 이미 신고한 피드
  */
 
 module.exports = async (req, res) => {
@@ -40,12 +39,7 @@ module.exports = async (req, res) => {
     }
 
     const entry = await roomDB.getUserInfoByEntryId(client, record.entryId);
-    const alreadyReport = await reportDB.checkAlreadyReport(client, user.userId, recordId);
     
-    // @ error 3. 이미 신고한 피드
-    if(alreadyReport) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.CONFLICT, responseMessage.ALREADY_REPORT_FEED));
-    }
     await reportDB.addReport(client, user.userId, entry.userId, recordId);
     const reportData = `
     신고한 유저 ID: ${user.userId}
