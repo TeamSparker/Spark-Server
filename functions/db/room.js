@@ -613,6 +613,22 @@ const setRoomsComplete = async (client, successRoomIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAllRecordsByUserIdAndRoomIds = async (client, userId, roomIds) => {
+  const { rows } = await client.query(
+    `
+    SELECT *
+    FROM spark.record r
+    INNER JOIN spark.entry e
+    ON r.entry_id = e.entry_id
+    WHERE e.user_id = $1
+    AND room_id IN (${roomIds.join()})
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+
+}
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -648,4 +664,5 @@ module.exports = {
   getUserInfoByEntryId,
   setRoomsComplete,
   getAllUsersByIds,
+  getAllRecordsByUserIdAndRoomIds,
 };

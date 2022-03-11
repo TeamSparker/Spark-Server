@@ -32,14 +32,11 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
     let dialogs = await dialogDB.getUserDialogs(client, user.userId, ["'COMPLETE'", "'FAIL'"]);
     dialogs = _.sortBy(dialogs, 'type');
-    // const dialogs = await dialogDB.getUserDialogs(client, user.userId);
-    console.log("DIALOGS", dialogs);
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
     let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'NONE');
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
-    
 
     const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room)=>room.roomId))];
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
@@ -80,7 +77,8 @@ module.exports = async (req, res) => {
     // roomIds 빈 배열일 때 처리
     const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
     const profiles = rawProfiles.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
-    // console.log(profiles.filter((o)=> o.userId === user.userId));
+
+    const dialogRecords = await roomDB.getAllRecordsByUserIdAndRoomIds(client, user.userId, dialogRoomIds);
 
     rooms = responseRoomIds.map((roomId) => {
       const isDialog = dialogRoomIds.includes(roomId);
@@ -88,10 +86,15 @@ module.exports = async (req, res) => {
       let dialog;
       let status = 'NONE';
       let doneMemberNum = 0;
+      let isUploaded = false;
       if(isDialog) {
         dialog = dialogs.filter((o) => o.roomId === roomId)[0];
         // dialog이면 status로 dialogType (COMPLETE / FAIL) 전달
         status = dialog.type;
+        const endRecord = _(dialogRecords).filter((o) => o.roomId === roomId).sortBy('date').value().reverse()[0];
+        if(endRecord.status === 'DONE') {
+          isUploaded = true;
+        }
       }
       else {
         const userStatus = profiles.filter(Boolean).filter((o) => {
@@ -105,6 +108,10 @@ module.exports = async (req, res) => {
         const myStatus = userStatus[0].status;
         if (myStatus !== 'CONSIDER') {
           status = myStatus;
+        }
+
+        if (myStatus === 'DONE') {
+          isUploaded = true;
         }
       }
 
@@ -160,6 +167,7 @@ module.exports = async (req, res) => {
         myStatus: status,
         memberNum,
         doneMemberNum,
+        isUploaded,
       }
 
       return room;
