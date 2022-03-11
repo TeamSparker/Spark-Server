@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
     const { title, body, isService, category } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
 
     const notifications = friends.map((f) => {
-      return `('${title}', '${body}', 'Spark_IMG_URL', ${f.userId}, ${isService})`;
+      return `('${title}', '${body}', '${certifyingImg[0]}', ${f.userId}, ${isService}, false)`;
     });
 
     if (notifications.length) {

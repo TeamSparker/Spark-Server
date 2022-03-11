@@ -1,10 +1,11 @@
 const functions = require('firebase-functions');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
+const alarmMessage = require('../../../constants/alarmMessage');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { recordDB, likeDB } = require('../../../db');
+const { roomDB, recordDB, likeDB, noticeDB } = require('../../../db');
 
 /**
  *  @피드_좋아요_및_취소
@@ -25,6 +26,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const record = await recordDB.getRecordById(client, recordId);
+    const entry = await roomDB.getEntryById(client, record.entryId);
+    const room = await roomDB.getRoomById(client, entry.roomId);
+    const { title, body, isService } = alarmMessage.FEED_LIKE(user.nickname, room.roomName);
 
     // @error 1. 유효하지 않은 recordId
     if (!record) {
@@ -33,12 +37,16 @@ module.exports = async (req, res) => {
 
     const isLike = await likeDB.checkIsLike(client, recordId, userId);
 
+    // Like
     if (!isLike) {
       await likeDB.sendLike(client, recordId, userId);
+      await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false);
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_LIKE_SUCCESS));
     }
 
+    // Unlike
     await likeDB.cancelLike(client, recordId, userId);
+    await noticeDB.deleteNoticeByContentAndReceiver(client, title, body, isService, entry.userId);
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCEL_LIKE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

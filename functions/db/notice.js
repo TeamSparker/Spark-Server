@@ -129,16 +129,16 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
   }
 };
 
-const addNotification = async (client, title, body, senderImg, receiverId, isService) => {
+const addNotification = async (client, title, body, thumbnail, receiverId, isService, isThumbProfile) => {
   const { rows } = await client.query(
     `
     INSERT INTO spark.notification
-    (title, content, thumbnail, receiver_id, is_service)
+    (title, content, thumbnail, receiver_id, is_service, is_thumb_profile)
     VALUES
-    ($1, $2, $3, $4, $5)
+    ($1, $2, $3, $4, $5, $6)
     RETURNING *
     `,
-    [title, body, senderImg, receiverId, isService],
+    [title, body, thumbnail, receiverId, isService, isThumbProfile],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -147,7 +147,7 @@ const addNotifications = async (client, notifications) => {
   const { rows } = await client.query(
     `
     INSERT INTO spark.notification
-    (title, content, thumbnail, receiver_id, is_service)
+    (title, content, thumbnail, receiver_id, is_service, is_thumb_profile)
     VALUES
     ${notifications.join()}
     RETURNING *
@@ -171,6 +171,53 @@ const getNumberOfUnreadNoticeById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
 
+const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
+  const beforeAWeek = dayjs().subtract(7, 'day');
+  const { rows } = await client.query(
+    `
+      SELECT count(*) as number FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_read = FALSE
+      AND is_service = TRUE
+      AND created_at > $2
+    `,
+    [userId, beforeAWeek],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0].number);
+};
+
+const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
+  const beforeAWeek = dayjs().subtract(7, 'day');
+  const { rows } = await client.query(
+    `
+      SELECT count(*) as number FROM spark.notification
+      WHERE receiver_id = $1
+      AND is_deleted = FALSE
+      AND is_read = FALSE
+      AND is_service = FALSE
+      AND created_at > $2
+    `,
+    [userId, beforeAWeek],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0].number);
+};
+
+const deleteNoticeByContentAndReceiver = async (client, title, body, isService, receiverId) => {
+  const { rows } = await client.query(
+    `
+      DELETE FROM spark.notification
+      WHERE title = $1
+      AND content = $2
+      AND is_service = $3
+      AND receiver_id = $4
+      RETURNING *
+    `,
+    [title, body, isService, receiverId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   serviceReadByUserId,
   activeReadByUserId,
@@ -181,4 +228,7 @@ module.exports = {
   addNotification,
   addNotifications,
   getNumberOfUnreadNoticeById,
+  getNumberOfUnreadServiceNoticeById,
+  getNumberOfUnreadActiveNoticeById,
+  deleteNoticeByContentAndReceiver,
 };

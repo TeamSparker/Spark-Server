@@ -50,6 +50,14 @@ const ROOM_DELETE = (roomName) => {
   return { title, body, isService };
 };
 
+const FEED_LIKE = (who, roomName) => {
+  const title = `${who}님이 좋아한 피드`;
+  const body = `${roomName}방 인증을 좋아해요.`;
+  const isService = false;
+
+  return { title, body, isService };
+};
+
 module.exports = {
   CERTIFICATION_COMPLETE,
   STATUS_CONSIDERING,
@@ -57,4 +65,5 @@ module.exports = {
   SEND_SPARK,
   ROOM_NEW,
   ROOM_DELETE,
+  FEED_LIKE,
 };

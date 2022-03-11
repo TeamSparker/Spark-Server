@@ -8,7 +8,7 @@ const insertDialogs = async (client, dialogs) => {
     INSERT INTO spark.dialog
     (user_id, room_id, type, date)
     VALUES
-    ${dialogs.join(',')}
+    ${dialogs.join()}
     RETURNING *
     `,
   );
@@ -24,7 +24,7 @@ const getUserDialogs = async (client, userId, types) => {
       INNER JOIN spark.room r
       ON d.room_id = r.room_id
       WHERE user_id = $1
-      AND type IN (${types.join(',')})
+      AND type IN (${types.join()})
       AND is_read = FALSE
     `,
     [userId],
@@ -38,7 +38,7 @@ const insertLifeDeductionDialogs = async (client, dialogs) => {
     INSERT INTO spark.dialog
     (user_id, room_id, life_deduction_count, type, date)
     VALUES
-    ${dialogs.join(',')}
+    ${dialogs.join()}
     RETURNING *
     `,
   );

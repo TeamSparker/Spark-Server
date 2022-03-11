@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
 
     for (let i = 0; i < entries.length; i++) {
       const target = await userDB.getUserById(client, entries[i].userId);
-      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService);
+      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
