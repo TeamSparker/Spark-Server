@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
 
-    const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room)=>room.roomId))];
+    const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room) => room.roomId))];
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(dialogRoomIds.concat(ongoingRoomIds));
@@ -87,16 +87,19 @@ module.exports = async (req, res) => {
       let status = 'NONE';
       let doneMemberNum = 0;
       let isUploaded = false;
-      if(isDialog) {
+      if (isDialog) {
         dialog = dialogs.filter((o) => o.roomId === roomId)[0];
         // dialog이면 status로 dialogType (COMPLETE / FAIL) 전달
         status = dialog.type;
-        const endRecord = _(dialogRecords).filter((o) => o.roomId === roomId).sortBy('date').value().reverse()[0];
-        if(endRecord.status === 'DONE') {
+        const endRecord = _(dialogRecords)
+          .filter((o) => o.roomId === roomId)
+          .sortBy('date')
+          .value()
+          .reverse()[0];
+        if (endRecord.status === 'DONE') {
           isUploaded = true;
         }
-      }
-      else {
+      } else {
         const userStatus = profiles.filter(Boolean).filter((o) => {
           if (o.roomId === roomId && o.userId === user.userId) {
             return true;
@@ -127,7 +130,7 @@ module.exports = async (req, res) => {
         .filter(Boolean)
         .filter((o) => o.roomId === roomId)
         .map((o) => o.profileImg);
-      
+
       const memberNum = profileImgs.length;
       if (profileImgs.length < 3) {
         const length = profileImgs.length;
@@ -141,22 +144,20 @@ module.exports = async (req, res) => {
 
       const endDate = dayjs(roomInfo.endAt);
       let leftDay = 0;
-      if (isDialog){
-        if(dialog.type === "COMPLETE") {
+      if (isDialog) {
+        if (dialog.type === 'COMPLETE') {
           leftDay = 0;
-        }
-        else {
+        } else {
           const startDate = dayjs(roomInfo.startAt);
           // 기존: startDate + 65 = endDate
           // startDate + 65 - endDate = leftDay
           // leftDay = 65 - (endDate - startDate)
           leftDay = 65 - endDate.diff(startDate, 'day');
         }
-      }
-      else {
+      } else {
         leftDay = endDate.diff(today, 'day');
       }
-      
+
       const room = {
         roomId,
         roomName: roomInfo.roomName,
@@ -168,17 +169,16 @@ module.exports = async (req, res) => {
         memberNum,
         doneMemberNum,
         isUploaded,
-      }
+      };
 
       return room;
     });
-
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms }));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.userId}] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
