@@ -78,7 +78,10 @@ module.exports = async (req, res) => {
     const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
     const profiles = rawProfiles.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
 
-    const dialogRecords = await roomDB.getAllRecordsByUserIdAndRoomIds(client, user.userId, dialogRoomIds);
+    let dialogRecords = [];
+    if (dialogRoomIds.length > 0) {
+      dialogRecords = await roomDB.getAllRecordsByUserIdAndRoomIds(client, user.userId, dialogRoomIds);
+    }
 
     rooms = responseRoomIds.map((roomId) => {
       const isDialog = dialogRoomIds.includes(roomId);
