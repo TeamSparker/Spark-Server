@@ -82,7 +82,9 @@ module.exports = async (req, res) => {
       await noticeDB.addNotifications(client, notifications);
     }
 
-    pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0]);
+    if (receiverTokens.length > 0) {
+      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0]);
+    }
 
     const data = {
       userId,

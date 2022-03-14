@@ -103,7 +103,9 @@ module.exports = async (req, res) => {
         await noticeDB.addNotifications(client, notifications);
       }
 
-      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
+      if (receiverTokens.length > 0) {
+        pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
+      }
     }
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_STATUS_SUCCESS));
