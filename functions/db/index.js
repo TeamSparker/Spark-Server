@@ -8,4 +8,5 @@ module.exports = {
   scheduleDB: require('./schedule'),
   reportDB: require('./report'),
   dialogDB: require('./dialog'),
+  remindDB: require('./remind'),
 };

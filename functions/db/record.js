@@ -108,8 +108,6 @@ const getNoneEntryIdsByDate = async (client, date) => {
       SELECT entry_id FROM spark.record
       WHERE date = $1
       AND status = 'NONE'
-      ORDER BY record_id desc
-      LIMIT 1
     `,
     [date],
   );

@@ -27,7 +27,7 @@ const getUserById = async (client, userId) => {
 const getUsersByIds = async (client, userIds) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.user
+    SELECT DISTINCT * FROM spark.user
     WHERE user_id in (${userIds.join()})
       AND is_deleted = FALSE
     `,
