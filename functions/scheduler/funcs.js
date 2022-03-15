@@ -3,8 +3,11 @@ const { roomDB, recordDB, scheduleDB, remindDB, dialogDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
+const alarmMessage = require('../constants/alarmMessage');
+const pushAlarm = require('../lib/pushAlarm');
 const { success } = require('../lib/util');
 const { outById } = require('../db/room');
+const { user } = require('firebase-functions/v1/auth');
 
 const checkLife = async () => {
   let client;
@@ -125,12 +128,18 @@ const sendRemind = async () => {
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
 
-    const notCompletedRecords = await recordDB.getNotCompletedRecordsByDate(client, today);
+    const noneEntryIds = await recordDB.getNoneEntryIdsByDate(client, today);
 
-    const targetUsers = [];
+    if (noneEntryIds.length > 0) {
+      const targetUsers = await roomDB.getMembersByEntryIds(client, noneEntryIds);
+      const targetTokens = targetUsers.map((u) => u.deviceToken);
+      const { title, body } = alarmMessage.REMIND_ALERT;
+      pushAlarm.sendMulticastByTokens(null, null, title, body, targetTokens);
+      const slackMessage = `[REMIND SEND SUCCESS]: users = [${targetUsers.map((u) => user.nickname)}]`;
+      slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+    }
 
-    // const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${ongoingRoomIds}`;
-    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+    slackAPI.sendMessageToSlack('[REMIND NOT SENT]: 모든 방 습관인증 완료', slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
