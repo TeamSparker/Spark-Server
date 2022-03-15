@@ -626,8 +626,7 @@ const getAllRecordsByUserIdAndRoomIds = async (client, userId, roomIds) => {
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
-
-}
+};
 
 module.exports = {
   addRoom,
