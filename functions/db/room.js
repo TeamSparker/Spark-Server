@@ -626,8 +626,30 @@ const getAllRecordsByUserIdAndRoomIds = async (client, userId, roomIds) => {
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
+};
 
-}
+const getMemberIdsByEntryIds = async (client, entryIds) => {
+  const { rows } = await client.query(
+    `
+      SELECT DISTINCT outer_e.user_id
+      FROM spark.entry outer_e
+      WHERE outer_e.room_id in (
+        SELECT r.room_id
+        FROM spark.room r
+        INNER JOIN spark.entry e
+        ON r.room_id = e.room_id
+        WHERE e.entry_id IN (${entryIds.join()})
+        AND e.is_out = FALSE
+        AND e.is_deleted = FALSE
+        AND e.is_kicked = FALSE
+      )
+      AND outer_e.is_out = FALSE
+      AND outer_e.is_deleted = FALSE
+      AND outer_e.is_kicked = FALSE
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
 
 module.exports = {
   addRoom,
@@ -665,4 +687,5 @@ module.exports = {
   setRoomsComplete,
   getAllUsersByIds,
   getAllRecordsByUserIdAndRoomIds,
+  getMemberIdsByEntryIds,
 };
