@@ -58,6 +58,14 @@ const FEED_LIKE = (who, roomName) => {
   return { title, body, isService };
 };
 
+const REMIND_ALERT = () => {
+  const title = `🚨비상🚨`;
+  const body = `미완료 습관방 발견! 👀 얼른 생명 지키러 가요!`;
+  const isService = true;
+
+  return { title, body, isService };
+};
+
 module.exports = {
   CERTIFICATION_COMPLETE,
   STATUS_CONSIDERING,
@@ -66,4 +74,5 @@ module.exports = {
   ROOM_NEW,
   ROOM_DELETE,
   FEED_LIKE,
+  REMIND_ALERT,
 };
