@@ -428,7 +428,7 @@ const startRoomById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getFailRecords = async (client) => {
+const getFailRecords = async (client, roomIds) => {
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
@@ -446,6 +446,7 @@ const getFailRecords = async (client) => {
     AND r.day != 0
     AND r.status IN ('NONE', 'CONSIDER')
     AND r.date = $1
+    AND e.room_id IN ${roomIds.join()}
     GROUP BY e.room_id
     `,
     [yesterday],

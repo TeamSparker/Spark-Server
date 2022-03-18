@@ -5,9 +5,6 @@ const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
 const alarmMessage = require('../constants/alarmMessage');
 const pushAlarm = require('../lib/pushAlarm');
-const { success } = require('../lib/util');
-const { outById } = require('../db/room');
-const { user } = require('firebase-functions/v1/auth');
 
 const checkLife = async () => {
   let client;
@@ -23,7 +20,10 @@ const checkLife = async () => {
 
     const allRooms = await roomDB.getAllRoomIds(client);
     const allRoomIds = allRooms.map((o) => o.roomId);
-    const failRecords = await roomDB.getFailRecords(client); // 습관방별 [실패한 record 개수(failCount)] 불러오기
+    let failRecords = [];
+    if(allRoomIds.length) {
+      failRecords = await roomDB.getFailRecords(client, allRoomIds); // 습관방별 [실패한 record 개수(failCount)] 불러오기
+    }
     const roomGroupByFailCount = _.groupBy(failRecords, 'failCount'); // failCount별 roomId 묶어주기 (ex. [{"failCount": 1, "roomId": [1,2,3]}, {"failCount":2, "roomId": [4,5,6]}])
     const failCountList = [...new Set(failRecords.map((o) => Number(o.failCount)))]; // failCount 뭐뭐있는지~ (ex. [1,2,3])
     const roomIdsByFailCount = { 1: [], 2: [], 3: [] };
