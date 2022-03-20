@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     const friends = await roomDB.getFriendsByIds(client, roomId, userId);
 
     // 습관방의 마지막 인원이었다면, 방 END 처리
-    if (friends.length) {
+    if (!friends.length) {
       await roomDB.endById(client, roomId);
     }
 
