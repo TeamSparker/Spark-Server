@@ -9,7 +9,7 @@ const _ = require('lodash');
 
 /**
  *  @인증사진_모아보기
- *  @route GET /myroom/room/:roomId?lastId=&size=
+ *  @route GET /myroom/:roomId?lastId=&size=
  *  @error
  *    1. roomId가 없음
  *    2. 존재하지 않는 습관방인 경우
