@@ -298,7 +298,6 @@ const checkEnteredById = async (client, roomId, userId) => {
     SELECT * FROM spark.entry
     WHERE room_id = $1
       AND user_id = $2
-      AND is_out = FALSE
       AND is_deleted = FALSE
     `,
     [roomId, userId],
