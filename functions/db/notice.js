@@ -62,7 +62,6 @@ const deleteNoticeByNoticeId = async (client, noticeId) => {
 };
 
 const getServicesByUserId = async (client, userId, lastId, size) => {
-  const beforeAWeek = dayjs().subtract(7, 'day');
   if (lastId === -1) {
     const { rows } = await client.query(
       `
@@ -70,11 +69,11 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       WHERE receiver_id = $1
       AND is_deleted = FALSE
       AND is_service = TRUE
-      AND created_at > $3
+      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
       ORDER BY notification_id DESC
       LIMIT $2
     `,
-      [userId, size, beforeAWeek],
+      [userId, size],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   } else {
@@ -85,18 +84,17 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       AND is_deleted = FALSE
       AND is_service = TRUE
       AND notification_id < $2
-      AND created_at > $4
+      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
       ORDER BY notification_id DESC
       LIMIT $3
     `,
-      [userId, lastId, size, beforeAWeek],
+      [userId, lastId, size],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   }
 };
 
 const getActivesByUserId = async (client, userId, lastId, size) => {
-  const beforeAWeek = dayjs().subtract(7, 'day');
   if (lastId === -1) {
     const { rows } = await client.query(
       `
@@ -104,11 +102,11 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
         WHERE receiver_id = $1
         AND is_deleted = FALSE
         AND is_service = FALSE
-        AND created_at > $3
+        AND created_at >= CURRENT_DATE - INTERVAL '7 days'
         ORDER BY notification_id DESC
         LIMIT $2
       `,
-      [userId, size, beforeAWeek],
+      [userId, size],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   } else {
@@ -119,11 +117,11 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
         AND is_deleted = FALSE
         AND is_service = FALSE
         AND notification_id < $2
-        AND created_at > $4
+        AND created_at >= CURRENT_DATE - INTERVAL '7 days'
         ORDER BY notification_id DESC
         LIMIT $3
       `,
-      [userId, lastId, size, beforeAWeek],
+      [userId, lastId, size],
     );
     return convertSnakeToCamel.keysToCamel(rows);
   }
@@ -157,22 +155,20 @@ const addNotifications = async (client, notifications) => {
 };
 
 const getNumberOfUnreadNoticeById = async (client, userId) => {
-  const beforeAWeek = dayjs().subtract(7, 'day');
   const { rows } = await client.query(
     `
       SELECT count(*) as number FROM spark.notification
       WHERE receiver_id = $1
       AND is_deleted = FALSE
       AND is_read = FALSE
-      AND created_at > $2
+      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
     `,
-    [userId, beforeAWeek],
+    [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
 
 const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
-  const beforeAWeek = dayjs().subtract(7, 'day');
   const { rows } = await client.query(
     `
       SELECT count(*) as number FROM spark.notification
@@ -180,15 +176,14 @@ const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = TRUE
-      AND created_at > $2
+      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
     `,
-    [userId, beforeAWeek],
+    [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
 
 const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
-  const beforeAWeek = dayjs().subtract(7, 'day');
   const { rows } = await client.query(
     `
       SELECT count(*) as number FROM spark.notification
@@ -196,9 +191,9 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = FALSE
-      AND created_at > $2
+      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
     `,
-    [userId, beforeAWeek],
+    [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
