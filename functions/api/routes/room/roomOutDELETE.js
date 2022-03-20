@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
 
     for (let i = 0; i < friends.length; i++) {
       const target = await userDB.getUserById(client, friends[i].userId);
-      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true);
+      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true, room.roomId);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));

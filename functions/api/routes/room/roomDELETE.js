@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
     const allUsers = await roomDB.getAllUsersById(client, room.roomId);
 
     const notifications = allUsers.map((u) => {
-      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false)`;
+      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false, ${room.roomId})`;
     });
 
     if (notifications.length > 0) {

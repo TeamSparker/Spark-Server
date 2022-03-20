@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
     // Like
     if (!isLike) {
       await likeDB.sendLike(client, recordId, userId);
-      await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false);
+      await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false, room.roomId);
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_LIKE_SUCCESS));
     }
 

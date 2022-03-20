@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
     // 스파크를 보내면 받는 사람에게 알림 및 푸시알림 보내기
     const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, room.roomName, content);
     const receiver = await userDB.getUserById(client, record.userId);
-    await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService, true);
+    await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService, true, room.roomId);
     pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
