@@ -372,7 +372,6 @@ const getAllUsersById = async (client, roomId) => {
 };
 
 const getAllUsersByIds = async (client, roomIds) => {
-  console.log('roomIds', roomIds);
   const { rows } = await client.query(
     `
     SELECT e.user_id, r.room_id, r.status FROM spark.entry as e
@@ -388,7 +387,6 @@ const getAllUsersByIds = async (client, roomIds) => {
       ORDER BY e.created_at
     `,
   );
-  console.log('rows', rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
@@ -596,7 +594,6 @@ const getUserInfoByEntryId = async (client, entryId) => {
 };
 
 const setRoomsComplete = async (client, successRoomIds) => {
-  console.log('successRoomIds', successRoomIds);
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
