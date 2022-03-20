@@ -1,6 +1,4 @@
 const dayjs = require('dayjs');
-const { last } = require('lodash');
-const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const addRoom = async (client, roomName, code, creator, fromStart) => {
