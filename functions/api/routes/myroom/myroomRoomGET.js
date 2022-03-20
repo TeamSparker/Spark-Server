@@ -13,7 +13,6 @@ const _ = require('lodash');
  *  @error
  *    1. roomId가 없음
  *    2. 존재하지 않는 습관방인 경우
- *    3. 접근 권한이 없는 유저인 경우
  */
 
 module.exports = async (req, res) => {
