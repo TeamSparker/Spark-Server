@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
     // 대기방 또는 습관방 나가기
     await roomDB.outById(client, roomId, userId);
 
-    // 본인을 제외한 참여자들에게 서비스 알림 및 푸시알림 보내기
+    // 본인을 제외한 참여자들에게 활동 알림 보내기
     const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
 
     const entries = await roomDB.getFriendsByIds(client, roomId, userId);
