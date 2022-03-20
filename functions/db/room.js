@@ -182,11 +182,9 @@ const getFeedRecordsByRoomIds = async (client, roomIds) => {
     LEFT JOIN spark.record r
     ON e.entry_id = r.entry_id
     WHERE e.room_id in (${roomIds.join()})
-    AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
-    AND u.is_deleted = FALSE
-    AND NOT r.certified_at IS null
+    AND r.status = 'DONE'
     AND r.date >= CURRENT_DATE - INTERVAL '7 days'
     ORDER BY r.date DESC, r.certified_at DESC
     `,
