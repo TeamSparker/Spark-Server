@@ -173,8 +173,6 @@ const getRecordsByRoomIds = async (client, roomIds) => {
 };
 
 const getFeedRecordsByRoomIds = async (client, roomIds) => {
-  const now = dayjs().add(9, 'hour');
-  const lastWeek = dayjs(now).subtract(7, 'day').format('YYYY-MM-DD');
   const { rows } = await client.query(
     `
     SELECT *
@@ -189,10 +187,9 @@ const getFeedRecordsByRoomIds = async (client, roomIds) => {
     AND e.is_deleted = FALSE
     AND u.is_deleted = FALSE
     AND NOT r.certified_at IS null
-    AND r.date > $1
+    AND r.date >= CURRENT_DATE - INTERVAL '7 days'
     ORDER BY r.date DESC, r.certified_at DESC
     `,
-    [lastWeek],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
