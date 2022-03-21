@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
 
     // Unlike
     await likeDB.cancelLike(client, recordId, userId);
-    await noticeDB.deleteNoticeByContentAndReceiver(client, title, body, isService, entry.userId);
+    await noticeDB.deleteNoticeByContentReceiverAndThumbnail(client, title, body, isService, entry.userId, record.certifyingImg);
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCEL_LIKE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
