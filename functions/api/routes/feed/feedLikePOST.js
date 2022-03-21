@@ -40,7 +40,11 @@ module.exports = async (req, res) => {
     // Like
     if (!isLike) {
       await likeDB.sendLike(client, recordId, userId);
-      await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false, room.roomId);
+
+      // 본인이 본인의 게시물을 좋아할 경우 알림을 생성하지 않음
+      if (userId !== entry.userId) {
+        await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false, room.roomId);
+      }
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_LIKE_SUCCESS));
     }
 
