@@ -247,7 +247,7 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0].number);
 };
 
-const deleteNoticeByContentAndReceiver = async (client, title, body, isService, receiverId) => {
+const deleteNoticeByContentReceiverAndThumbnail = async (client, title, body, isService, receiverId, thumbnail) => {
   const { rows } = await client.query(
     `
       DELETE FROM spark.notification
@@ -255,9 +255,10 @@ const deleteNoticeByContentAndReceiver = async (client, title, body, isService, 
       AND content = $2
       AND is_service = $3
       AND receiver_id = $4
+      AND thumbnail = $5
       RETURNING *
     `,
-    [title, body, isService, receiverId],
+    [title, body, isService, receiverId, thumbnail],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -274,5 +275,5 @@ module.exports = {
   getNumberOfUnreadNoticeById,
   getNumberOfUnreadServiceNoticeById,
   getNumberOfUnreadActiveNoticeById,
-  deleteNoticeByContentAndReceiver,
+  deleteNoticeByContentReceiverAndThumbnail,
 };
