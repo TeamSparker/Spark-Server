@@ -81,7 +81,7 @@ module.exports = async (req, res) => {
 
     // notification 생성
     const notifications = allUsers.map((u) => {
-      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false)`;
+      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false, ${room.roomId})`;
     });
 
     if (notifications.length) {
