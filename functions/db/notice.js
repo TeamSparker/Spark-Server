@@ -67,6 +67,13 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       `
       SELECT * FROM spark.notification
       WHERE receiver_id = $1
+      AND room_id in (
+        SELECT room_id
+        FROM spark.entry
+        WHERE user_id = $1
+        AND is_out = FALSE
+        AND is_kicked = FALSE
+      )
       AND is_deleted = FALSE
       AND is_service = TRUE
       AND created_at >= CURRENT_DATE - INTERVAL '7 days'
@@ -81,6 +88,13 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       `
       SELECT * FROM spark.notification
       WHERE receiver_id = $1
+      AND room_id in (
+        SELECT room_id
+        FROM spark.entry
+        WHERE user_id = $1
+        AND is_out = FALSE
+        AND is_kicked = FALSE
+      )
       AND is_deleted = FALSE
       AND is_service = TRUE
       AND notification_id < $2
@@ -100,6 +114,13 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
       `
         SELECT * FROM spark.notification
         WHERE receiver_id = $1
+        AND room_id in (
+          SELECT room_id
+          FROM spark.entry
+          WHERE user_id = $1
+          AND is_out = FALSE
+          AND is_kicked = FALSE
+        )
         AND is_deleted = FALSE
         AND is_service = FALSE
         AND created_at >= CURRENT_DATE - INTERVAL '7 days'
@@ -114,6 +135,13 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
       `
         SELECT * FROM spark.notification
         WHERE receiver_id = $1
+        AND room_id in (
+          SELECT room_id
+          FROM spark.entry
+          WHERE user_id = $1
+          AND is_out = FALSE
+          AND is_kicked = FALSE
+        )
         AND is_deleted = FALSE
         AND is_service = FALSE
         AND notification_id < $2
@@ -159,6 +187,13 @@ const getNumberOfUnreadNoticeById = async (client, userId) => {
     `
       SELECT count(*) as number FROM spark.notification
       WHERE receiver_id = $1
+      AND room_id in (
+        SELECT room_id
+        FROM spark.entry
+        WHERE user_id = $1
+        AND is_out = FALSE
+        AND is_kicked = FALSE
+      )
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND created_at >= CURRENT_DATE - INTERVAL '7 days'
@@ -173,6 +208,13 @@ const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
     `
       SELECT count(*) as number FROM spark.notification
       WHERE receiver_id = $1
+      AND room_id in (
+        SELECT room_id
+        FROM spark.entry
+        WHERE user_id = $1
+        AND is_out = FALSE
+        AND is_kicked = FALSE
+      )
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = TRUE
@@ -188,6 +230,13 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
     `
       SELECT count(*) as number FROM spark.notification
       WHERE receiver_id = $1
+      AND room_id in (
+        SELECT room_id
+        FROM spark.entry
+        WHERE user_id = $1
+        AND is_out = FALSE
+        AND is_kicked = FALSE
+      )
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = FALSE
