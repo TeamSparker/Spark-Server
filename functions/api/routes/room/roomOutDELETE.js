@@ -53,14 +53,18 @@ module.exports = async (req, res) => {
 
     // 대기방 또는 습관방 나가기
     await roomDB.outById(client, roomId, userId);
+    const friends = await roomDB.getFriendsByIds(client, roomId, userId);
 
-    // 본인을 제외한 참여자들에게 서비스 알림 및 푸시알림 보내기
+    // 습관방의 마지막 인원이었다면, 방 END 처리
+    if (!friends.length) {
+      await roomDB.endById(client, roomId);
+    }
+
+    // 본인을 제외한 참여자들에게 활동 알림 보내기
     const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
 
-    const entries = await roomDB.getFriendsByIds(client, roomId, userId);
-
-    for (let i = 0; i < entries.length; i++) {
-      const target = await userDB.getUserById(client, entries[i].userId);
+    for (let i = 0; i < friends.length; i++) {
+      const target = await userDB.getUserById(client, friends[i].userId);
       await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true);
     }
 

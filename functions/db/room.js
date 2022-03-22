@@ -1,6 +1,4 @@
 const dayjs = require('dayjs');
-const { last } = require('lodash');
-const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const addRoom = async (client, roomName, code, creator, fromStart) => {
@@ -175,8 +173,6 @@ const getRecordsByRoomIds = async (client, roomIds) => {
 };
 
 const getFeedRecordsByRoomIds = async (client, roomIds) => {
-  const now = dayjs().add(9, 'hour');
-  const lastWeek = dayjs(now).subtract(7, 'day').format('YYYY-MM-DD');
   const { rows } = await client.query(
     `
     SELECT *
@@ -191,10 +187,9 @@ const getFeedRecordsByRoomIds = async (client, roomIds) => {
     AND e.is_deleted = FALSE
     AND u.is_deleted = FALSE
     AND NOT r.certified_at IS null
-    AND r.date > $1
+    AND r.date >= CURRENT_DATE - INTERVAL '7 days'
     ORDER BY r.date DESC, r.certified_at DESC
     `,
-    [lastWeek],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -372,7 +367,6 @@ const getAllUsersById = async (client, roomId) => {
 };
 
 const getAllUsersByIds = async (client, roomIds) => {
-  console.log('roomIds', roomIds);
   const { rows } = await client.query(
     `
     SELECT e.user_id, r.room_id, r.status FROM spark.entry as e
@@ -388,7 +382,6 @@ const getAllUsersByIds = async (client, roomIds) => {
       ORDER BY e.created_at
     `,
   );
-  console.log('rows', rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
@@ -596,7 +589,6 @@ const getUserInfoByEntryId = async (client, entryId) => {
 };
 
 const setRoomsComplete = async (client, successRoomIds) => {
-  console.log('successRoomIds', successRoomIds);
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
   const { rows } = await client.query(
@@ -650,6 +642,20 @@ const getMemberIdsByEntryIds = async (client, entryIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const endById = async (client, roomId) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.room
+      SET status = 'FAIL', end_at = $2, updated_at = $2
+      WHERE room_id = $1
+      RETURNING *
+    `,
+    [roomId, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -687,4 +693,5 @@ module.exports = {
   getAllUsersByIds,
   getAllRecordsByUserIdAndRoomIds,
   getMemberIdsByEntryIds,
+  endById,
 };
