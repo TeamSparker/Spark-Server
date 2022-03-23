@@ -5,9 +5,6 @@ const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
 const alarmMessage = require('../constants/alarmMessage');
 const pushAlarm = require('../lib/pushAlarm');
-const { success } = require('../lib/util');
-const { outById } = require('../db/room');
-const { user } = require('firebase-functions/v1/auth');
 
 const checkLife = async () => {
   let client;
