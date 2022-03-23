@@ -3,7 +3,10 @@ const schedule = require('node-schedule');
 const funcs = require('./funcs.js');
 
 const jobSchedule = schedule.scheduleJob('0 0 15 * * *', function () {
-  funcs.checkLife();
+  const now = dayjs();
+  if (now.get('h') === 15 && now.get('m') === 0) {
+    funcs.checkLife();
+  }
 });
 
 const remindSchedule = schedule.scheduleJob('0 0 12 * * *', function () {
