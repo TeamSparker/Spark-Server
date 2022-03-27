@@ -6,5 +6,5 @@ const { checkUser } = require('../../../middlewares/auth');
 router.post('/signup', uploadImageIntoSubDir('users'), require('./authSignUpPOST'));
 router.post('/signout', checkUser, require('./authSignOutPOST'));
 router.get('/doorbell', require('./authDoorbellGET'));
-router.delete('/', checkUser, require('./authUserDELETE'));
+router.delete('/user', checkUser, require('./authUserDELETE'));
 module.exports = router;
