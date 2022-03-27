@@ -24,6 +24,17 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getUserWithDelete = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM spark.user as u
+    WHERE user_id = $1
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getUsersByIds = async (client, userIds) => {
   const { rows } = await client.query(
     `
@@ -118,6 +129,22 @@ const emptyDeviceTokenById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const deleteUserSoft = async(client, userId, socialId) => {
+  const now = dayjs().add(9,'hour');
+  const nowToString = now.format('YYYYMMDDHHmmssSSS');
+  const newSocialId = `${socialId}-out-${nowToString}`;
+  const { rows } = await client.query(
+    `
+    UPDATE spark.user
+    SET device_token = '', is_deleted = TRUE, social_id = $3, updated_at = $2, deleted_at = $2
+    WHERE user_id = $1
+    RETURNING *
+    `,
+    [userId, now, newSocialId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -127,5 +154,7 @@ module.exports = {
   updateDeviceTokenById,
   updateProfileById,
   togglePushSettingById,
+  getUserWithDelete,
   emptyDeviceTokenById,
+  deleteUserSoft,
 };

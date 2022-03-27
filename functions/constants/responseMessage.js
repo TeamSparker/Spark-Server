@@ -20,6 +20,10 @@ module.exports = {
   NO_USER: '존재하지 않는 회원입니다.',
   MISS_MATCH_PW: '비밀번호가 맞지 않습니다.',
 
+  // 회원 탈퇴
+  ALREADY_DELETED_USER: '이미 탈퇴한 회원입니다.',
+  DELETE_USER_SUCCESS: '회원 탈퇴 성공',
+  
   // 로그아웃
   LOGOUT_SUCCESS: '로그아웃 성공',
 
