@@ -42,6 +42,9 @@ module.exports = async (req, res) => {
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
     const roomIds = waitingRoomIds.concat(dialogRoomIds.concat(ongoingRoomIds));
+    console.log("dialogs", dialogs);
+    console.log("dialogIds", dialogRoomIds);
+    console.log("roomIds", roomIds);
 
     let responseRoomIds = [];
 

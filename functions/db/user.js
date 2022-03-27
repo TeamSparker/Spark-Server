@@ -132,7 +132,7 @@ const emptyDeviceTokenById = async (client, userId) => {
 const deleteUserSoft = async(client, userId, socialId) => {
   const now = dayjs().add(9,'hour');
   const nowToString = now.format('YYYYMMDDHHmmssSSS');
-  const newSocialId = `${socialId}-out-nowToString`;
+  const newSocialId = `${socialId}-out-${nowToString}`;
   const { rows } = await client.query(
     `
     UPDATE spark.user
@@ -142,6 +142,7 @@ const deleteUserSoft = async(client, userId, socialId) => {
     `,
     [userId, now, newSocialId],
   );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 }
 
 module.exports = {

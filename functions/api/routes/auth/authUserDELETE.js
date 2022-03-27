@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { userDB } = require('../../../db');
+const { userDB, roomDB } = require('../../../db');
 const { DEFAULT_PROFILE_IMG_URL } = require('../../../constants/defaultProfileImg');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../middlewares/slackAPI');
@@ -33,7 +33,9 @@ module.exports = async (req, res) => {
         return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_DELETED_USER));
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATED_USER, { user, accesstoken }));
+    const deletedUser = await userDB.deleteUserSoft(client, userObject.userId, userObject.socialId);
+    await roomDB.outByUserId(client, userObject.userId);
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_USER_SUCCESS));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[SIGNUP ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] socialId:${socialId} ${error}`);

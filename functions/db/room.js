@@ -558,6 +558,37 @@ const outById = async (client, roomId, userId) => {
   }
 };
 
+
+const outByUserId = async (client, userId) => {
+  const now = dayjs().add(9, 'hour');
+    // 대기방을 나갈경우 데이터 hard delete
+    await client.query(
+      `
+        DELETE FROM spark.entry
+        WHERE entry_id IN (
+          SELECT entry_id
+          FROM spark.entry e
+          INNER JOIN spark.room r
+          ON e.room_id = r.room_id
+          WHERE e.user_id = $1
+          AND r.status = 'NONE' )
+        RETURNING *
+      `,
+      [userId],
+    );
+
+    // 습관방을 나갈경우 데이터 soft delete
+     await client.query(
+      `
+        UPDATE spark.entry
+        SET is_out = TRUE, out_at = $2, updated_at = $2
+        WHERE user_id = $1
+        RETURNING *
+      `,
+      [userId, now],
+    );
+  };
+
 const deleteRoomById = async (client, roomId) => {
   const now = dayjs().add(9, 'hour');
   const { rows } = await client.query(
@@ -692,4 +723,5 @@ module.exports = {
   getAllRecordsByUserIdAndRoomIds,
   getMemberIdsByEntryIds,
   endById,
+  outByUserId,
 };
