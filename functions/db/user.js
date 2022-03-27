@@ -104,6 +104,20 @@ const togglePushSettingById = async (client, userId, category) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const emptyDeviceTokenById = async (client, userId) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    UPDATE spark.user
+    SET device_token = '',  updated_at = $2
+    WHERE user_id = $1
+    RETURNING *
+    `,
+    [userId, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -113,4 +127,5 @@ module.exports = {
   updateDeviceTokenById,
   updateProfileById,
   togglePushSettingById,
+  emptyDeviceTokenById,
 };

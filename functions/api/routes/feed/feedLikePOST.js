@@ -40,13 +40,17 @@ module.exports = async (req, res) => {
     // Like
     if (!isLike) {
       await likeDB.sendLike(client, recordId, userId);
-      await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false);
+
+      // 본인이 본인의 게시물을 좋아할 경우 알림을 생성하지 않음
+      if (userId !== entry.userId) {
+        await noticeDB.addNotification(client, title, body, record.certifyingImg, entry.userId, isService, false, room.roomId);
+      }
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_LIKE_SUCCESS));
     }
 
     // Unlike
     await likeDB.cancelLike(client, recordId, userId);
-    await noticeDB.deleteNoticeByContentAndReceiver(client, title, body, isService, entry.userId);
+    await noticeDB.deleteNoticeByContentReceiverAndThumbnail(client, title, body, isService, entry.userId, record.certifyingImg);
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCEL_LIKE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

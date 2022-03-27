@@ -9,11 +9,10 @@ const _ = require('lodash');
 
 /**
  *  @인증사진_모아보기
- *  @route GET /myroom/room/:roomId?lastId=&size=
+ *  @route GET /myroom/:roomId?lastId=&size=
  *  @error
  *    1. roomId가 없음
  *    2. 존재하지 않는 습관방인 경우
- *    3. 접근 권한이 없는 유저인 경우
  */
 
 module.exports = async (req, res) => {
