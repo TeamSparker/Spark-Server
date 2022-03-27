@@ -61,6 +61,25 @@ const setDialogRead = async (client, dialogId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const setLifeDeductionDialogsRead = async (client, userId, roomId) => {
+  const now = dayjs().add(9, 'hour');
+  const today = dayjs(now.format('YYYY-MM-DD'));
+  const { rows } = await client.query(
+    `
+    UPDATE spark.dialog
+    SET is_read = TRUE, updated_at = $3, read_at = $3
+    WHERE user_id = $1
+    AND room_id = $2
+    AND is_read = FALSE
+    AND type = 'LIFE_DEDUCTION'
+    AND date != $4
+    RETURNING *
+    `,
+    [userId, roomId, now, today]
+  )
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
 const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
   const { rows } = await client.query(
     `
@@ -76,28 +95,11 @@ const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUnReadLifeDeductionDialogByRoomAndUser = async (client, roomId, userId) => {
-  const yesterday = dayjs().add(9, 'hour').subtract(1, 'day').format('YYYY-MM-DD');
-  const { rows } = await client.query(
-    `
-      SELECT * 
-      FROM spark.dialog 
-      WHERE user_id = $2
-      AND room_id = $1
-      AND is_read = FALSE
-      AND type = 'LIFE_DEDUCTION'
-      AND date = $3
-    `,
-    [roomId, userId, yesterday],
-  );
-  return convertSnakeToCamel.keysToCamel(rows[0]);
-};
-
 module.exports = {
   insertLifeDeductionDialogs,
   insertDialogs,
   getUserDialogs,
   setDialogRead,
   getUnReadDialogByRoomAndUser,
-  getUnReadLifeDeductionDialogByRoomAndUser,
+  setLifeDeductionDialogsRead,
 };
