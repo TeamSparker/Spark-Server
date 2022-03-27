@@ -98,10 +98,7 @@ module.exports = async (req, res) => {
         comment: room.comment,
       };
       if (roomType === 'FAIL') {
-        const failDay = endDate.diff(startDate, 'day');
-        console.log('failDay', failDay);
-        console.log('startDate', startDate);
-        console.log('endDate', endDate);
+        const failDay = endDate.diff(startDate, 'day')+1;
         oneRoom.failDay = failDay;
       }
       roomData.push(oneRoom);
