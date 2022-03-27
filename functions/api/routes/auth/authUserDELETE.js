@@ -11,9 +11,6 @@ const slackAPI = require('../../../middlewares/slackAPI');
 /**
  *  @회원_탈퇴
  *  @route DELETE /auth/user
- *  @error
- *      1. 존재하지 않는 유저
- *      2. 이미 삭제된 유저
  */
 
 module.exports = async (req, res) => {
@@ -23,18 +20,8 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect();
 
-    const userObject = await userDB.getUserWithDelete(client, user.userId);
-    // @error 1. 존재하지 않는 유저
-    if(!userObject) { 
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
-    }
-    // @error 2. 이미 삭제된 유저
-    else if(userObject.isDeleted) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_DELETED_USER));
-    }
-
-    const deletedUser = await userDB.deleteUserSoft(client, userObject.userId, userObject.socialId);
-    await roomDB.outByUserId(client, userObject.userId);
+    const deletedUser = await userDB.deleteUserSoft(client, user.userId, user.socialId);
+    await roomDB.outByUserId(client, user.userId);
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_USER_SUCCESS));
   } catch (error) {
     console.log(error);
