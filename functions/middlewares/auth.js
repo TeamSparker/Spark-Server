@@ -28,10 +28,10 @@ const checkUser = async (req, res, next) => {
 
     if (!userId) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
-    user = await userDB.getUserById(client, userId);
-
+    user = await userDB.getUserWithDelete(client, userId);
+    
     if (!user) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_USER));
-
+    if (user.isDeleted) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_DELETED_USER));
     req.user = user;
   } catch (error) {
     console.log(error);
