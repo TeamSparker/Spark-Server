@@ -63,7 +63,6 @@ const setDialogRead = async (client, dialogId) => {
 
 const setLifeDeductionDialogsRead = async (client, userId, roomId) => {
   const now = dayjs().add(9, 'hour');
-  const today = dayjs(now.format('YYYY-MM-DD'));
   const { rows } = await client.query(
     `
     UPDATE spark.dialog
@@ -72,10 +71,9 @@ const setLifeDeductionDialogsRead = async (client, userId, roomId) => {
     AND room_id = $2
     AND is_read = FALSE
     AND type = 'LIFE_DEDUCTION'
-    AND date != $4
     RETURNING *
     `,
-    [userId, roomId, now, today]
+    [userId, roomId, now]
   )
   return convertSnakeToCamel.keysToCamel(rows);
 }
