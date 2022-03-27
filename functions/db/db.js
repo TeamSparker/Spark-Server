@@ -3,6 +3,8 @@ const functions = require('firebase-functions');
 const { Pool, Query } = require('pg');
 const dayjs = require('dayjs');
 const dotenv = require('dotenv');
+const slackAPI = require('../middlewares/slackAPI');
+
 dotenv.config();
 
 // DB Config (유저, 호스트, DB 이름, 패스워드)를 로딩해줍시다.

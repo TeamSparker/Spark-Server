@@ -14,7 +14,6 @@ const dayjs = require('dayjs');
  *  @error
  *      1. reportReason이 전달되지 않음
  *      2. 유효하지 않은 recordId
- *      3. 이미 신고한 피드
  */
 
 module.exports = async (req, res) => {
@@ -29,7 +28,7 @@ module.exports = async (req, res) => {
 
     // @error 1. reportReason이 전달되지 않음
     if (!reportReason) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     }
 
     const record = await recordDB.getRecordById(client, recordId);
@@ -40,10 +39,7 @@ module.exports = async (req, res) => {
     }
 
     const entry = await roomDB.getUserInfoByEntryId(client, record.entryId);
-    const alreadyReport = await reportDB.checkAlreadyReport(client, user.userId, recordId);
-    if(alreadyReport) {
-        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ALREADY_REPORT_FEED));
-    }
+
     await reportDB.addReport(client, user.userId, entry.userId, recordId);
     const reportData = `
     신고한 유저 ID: ${user.userId}
@@ -54,14 +50,14 @@ module.exports = async (req, res) => {
     신고대상 record 사진: ${record.certifyingImg}
     신고사유: ${reportReason}
     신고일자: ${dayjs().add(9, 'hour')}
-    `
+    `;
     slackAPI.feedReporotToSlack(reportData, slackAPI.DEV_WEB_HOOK_FEED_REPORT);
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.REPORT_FEED_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

@@ -13,7 +13,8 @@ if (admin.apps.length === 0) {
 } else {
   firebase = admin.app();
 }
-const job = scheduler.job; 
+const jobSchedule = scheduler.jobSchedule;
+const remindSchedule = scheduler.remindSchedule;
 
 module.exports = {
   api: require('./api'),

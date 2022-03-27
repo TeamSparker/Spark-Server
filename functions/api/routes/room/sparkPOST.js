@@ -70,16 +70,16 @@ module.exports = async (req, res) => {
     const spark = await sparkDB.insertSpark(client, recordId, userId, content);
 
     // 스파크를 보내면 받는 사람에게 알림 및 푸시알림 보내기
-    const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, content);
+    const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, room.roomName, content);
     const receiver = await userDB.getUserById(client, record.userId);
-    await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService);
+    await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService, true, room.roomId);
     pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));

@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB } = require('../../../db');
+const { roomDB, dialogDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 const _ = require('lodash');
@@ -30,17 +30,18 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-
+    let dialogs = await dialogDB.getUserDialogs(client, user.userId, ["'COMPLETE'", "'FAIL'"]);
+    dialogs = _.sortBy(dialogs, 'type');
     const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
-
     let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'NONE');
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
     ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
 
+    const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room) => room.roomId))];
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
     const ongoingRoomIds = [...new Set(ongoingRooms.filter(Boolean).map((room) => room.roomId))];
-    const roomIds = waitingRoomIds.concat(ongoingRoomIds);
+    const roomIds = waitingRoomIds.concat(dialogRoomIds.concat(ongoingRoomIds));
 
     let responseRoomIds = [];
 
@@ -64,6 +65,12 @@ module.exports = async (req, res) => {
     }
 
     const rawRoomInfo = await roomDB.getRoomsByIds(client, responseRoomIds);
+    const roomInfoMap = new Map();
+    rawRoomInfo.map((o) => {
+      roomInfoMap.set(o.roomId, o);
+    });
+    let rooms = [];
+
     const roomInfo = rawRoomInfo.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
     const today = dayjs(dayjs().add(9, 'hour').format('YYYY-M-D'));
 
@@ -71,25 +78,47 @@ module.exports = async (req, res) => {
     const rawProfiles = await roomDB.getUserProfilesByRoomIds(client, responseRoomIds, today);
     const profiles = rawProfiles.sort((a, b) => responseRoomIds.indexOf(a.roomId) - responseRoomIds.indexOf(b.roomId));
 
-    let roomProfileImg = [];
-    let roomMemberNum = [];
-    let roomUserStatus = [];
-    let roomDoneMemberNum = [];
+    let dialogRecords = [];
+    if (dialogRoomIds.length > 0) {
+      dialogRecords = await roomDB.getAllRecordsByUserIdAndRoomIds(client, user.userId, dialogRoomIds);
+    }
 
-    responseRoomIds.map((roomId) => {
-      const userStatus = profiles.filter(Boolean).filter((o) => {
-        if (o.roomId === roomId && o.userId === user.userId) {
-          return true;
+    rooms = responseRoomIds.map((roomId) => {
+      const isDialog = dialogRoomIds.includes(roomId);
+      const roomInfo = roomInfoMap.get(roomId);
+      let dialog;
+      let status = 'NONE';
+      let doneMemberNum = 0;
+      let isUploaded = false;
+      if (isDialog) {
+        dialog = dialogs.filter((o) => o.roomId === roomId)[0];
+        // dialog이면 status로 dialogType (COMPLETE / FAIL) 전달
+        status = dialog.type;
+        const endRecord = _(dialogRecords)
+          .filter((o) => o.roomId === roomId)
+          .sortBy('date')
+          .value()
+          .reverse()[0];
+        if (endRecord.status === 'DONE') {
+          isUploaded = true;
         }
-        return false;
-      });
-
-      // myStatus가 CONSIDER인 경우, NONE으로 전달
-      const myStatus = userStatus[0].status;
-      if (myStatus !== 'CONSIDER') {
-        roomUserStatus.push(myStatus);
       } else {
-        roomUserStatus.push('NONE');
+        const userStatus = profiles.filter(Boolean).filter((o) => {
+          if (o.roomId === roomId && o.userId === user.userId) {
+            return true;
+          }
+          return false;
+        });
+
+        // myStatus가 CONSIDER인 경우, NONE으로 전달
+        const myStatus = userStatus[0].status;
+        if (myStatus !== 'CONSIDER') {
+          status = myStatus;
+        }
+
+        if (myStatus === 'DONE') {
+          isUploaded = true;
+        }
       }
 
       const doneMembers = profiles.filter(Boolean).filter((o) => {
@@ -98,13 +127,14 @@ module.exports = async (req, res) => {
         }
         return false;
       });
-      roomDoneMemberNum.push(doneMembers.length);
+      doneMemberNum = doneMembers.length;
 
       let profileImgs = profiles
         .filter(Boolean)
         .filter((o) => o.roomId === roomId)
         .map((o) => o.profileImg);
-      roomMemberNum.push(profileImgs.length);
+
+      const memberNum = profileImgs.length;
       if (profileImgs.length < 3) {
         const length = profileImgs.length;
 
@@ -114,32 +144,44 @@ module.exports = async (req, res) => {
       } else {
         profileImgs = profileImgs.slice(0, 3);
       }
-      roomProfileImg.push(profileImgs);
-    });
 
-    let rooms = [];
-    for (let i = 0; i < responseRoomIds.length; i++) {
-      const endDate = dayjs(roomInfo[i].endAt);
-      const leftDay = endDate.diff(today, 'day');
+      const endDate = dayjs(roomInfo.endAt);
+      let leftDay = 0;
+      if (isDialog) {
+        if (dialog.type === 'COMPLETE') {
+          leftDay = 0;
+        } else {
+          const startDate = dayjs(roomInfo.startAt);
+          // 기존: startDate + 65 = endDate
+          // startDate + 65 - endDate = leftDay
+          // leftDay = 65 - (endDate - startDate)
+          leftDay = 65 - endDate.diff(startDate, 'day');
+        }
+      } else {
+        leftDay = endDate.diff(today, 'day');
+      }
+
       const room = {
-        roomId: roomInfo[i].roomId,
-        roomName: roomInfo[i].roomName,
+        roomId,
+        roomName: roomInfo.roomName,
         leftDay,
-        profileImg: roomProfileImg[i],
-        life: roomInfo[i].life,
-        isStarted: roomInfo[i].status === 'NONE' ? false : true,
-        myStatus: roomUserStatus[i],
-        memberNum: roomMemberNum[i],
-        doneMemberNum: roomDoneMemberNum[i],
+        profileImg: profileImgs,
+        life: roomInfo.life,
+        isStarted: roomInfo.status === 'NONE' ? false : true,
+        myStatus: status,
+        memberNum,
+        doneMemberNum,
+        isUploaded,
       };
-      rooms.push(room);
-    }
+
+      return room;
+    });
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_ROOM_LIST_SUCCESS, { rooms }));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

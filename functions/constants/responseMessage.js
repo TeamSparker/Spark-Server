@@ -22,6 +22,8 @@ module.exports = {
 
   // 회원 탈퇴
   ALREADY_DELETED_USER: '이미 탈퇴한 회원입니다.',
+  // 로그아웃
+  LOGOUT_SUCCESS: '로그아웃 성공',
 
   // 사용자 프로필
   GET_USER_PROFILE_SUCCESS: '프로필 조회 성공',
@@ -62,6 +64,7 @@ module.exports = {
   ROOM_OUT_SUCCESS: '습관 방 퇴장 완료',
   ROOM_DELETE_SUCCESS: '대기방 삭제 완료',
   HOST_WAITROOM_OUT_FAIL: '방 생성자는 대기방을 나갈 수 없습니다',
+  DIALOG_READ_SUCCESS: '성공/실패한 습관방 읽음처리 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
@@ -69,7 +72,6 @@ module.exports = {
   SEND_LIKE_SUCCESS: '좋아요 성공',
   CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
   REPORT_FEED_SUCCESS: '피드 신고 성공',
-  ALREADY_REPORT_FEED: '이미 신고한 피드입니다',
 
   // Spark
   CANNOT_SEND_SPARK_SELF: '자기자신에게 스파크를 보낼 수 없습니다',

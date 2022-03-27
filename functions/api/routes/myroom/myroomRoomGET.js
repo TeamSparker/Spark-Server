@@ -9,11 +9,10 @@ const _ = require('lodash');
 
 /**
  *  @인증사진_모아보기
- *  @route GET /myroom/room/:roomId?lastId=&size=
+ *  @route GET /myroom/:roomId?lastId=&size=
  *  @error
  *    1. roomId가 없음
  *    2. 존재하지 않는 습관방인 경우
- *    3. 접근 권한이 없는 유저인 경우
  */
 
 module.exports = async (req, res) => {
@@ -82,7 +81,7 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

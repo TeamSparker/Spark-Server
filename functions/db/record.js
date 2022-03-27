@@ -94,11 +94,23 @@ const insertRecords = async (client, insertEntries) => {
     INSERT INTO spark.record
     (entry_id, date, day)
     VALUES
-    ${insertEntries.join(',')}
+    ${insertEntries.join()}
     RETURNING *
     `,
   );
 
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getNoneEntryIdsByDate = async (client, date) => {
+  const { rows } = await client.query(
+    `
+      SELECT entry_id FROM spark.record
+      WHERE date = $1
+      AND status = 'NONE'
+    `,
+    [date],
+  );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
@@ -109,4 +121,5 @@ module.exports = {
   uploadRecord,
   getPagedRecordsByEntryId,
   insertRecords,
+  getNoneEntryIdsByDate,
 };

@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, sparkDB } = require('../../../db');
+const { roomDB, sparkDB, dialogDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 
@@ -55,6 +55,13 @@ module.exports = async (req, res) => {
 
     if (!userEntry.length) {
       res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
+    }
+    const dialog = await dialogDB.getUnReadLifeDeductionDialogByRoomAndUser(client, roomId, user.userId);
+    let lifeDeductionCount = 0;
+    console.log('dialog', dialog);
+    if (dialog) {
+      lifeDeductionCount = dialog.lifeDeductionCount;
+      await dialogDB.setDialogRead(client, dialog.dialogId);
     }
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
@@ -127,6 +134,7 @@ module.exports = async (req, res) => {
       leftDay,
       life: room.life,
       fromStart: room.fromStart,
+      lifeDeductionCount,
       myRecord,
       otherRecords,
     };
@@ -135,7 +143,7 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

@@ -9,6 +9,7 @@ const { firebaseConfig } = require('../config/firebaseClient');
 const util = require('../lib/util');
 const statusCode = require('../constants/statusCode');
 const responseMessage = require('../constants/responseMessage');
+const slackAPI = require('./slackAPI');
 
 const uploadImageIntoSubDir = (subDir) => {
   return function (req, res, next) {
@@ -29,6 +30,9 @@ const uploadImageIntoSubDir = (subDir) => {
     // req.body로 들어오는 게 파일일 경우 처리
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
       if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+        const slackMessage = `[Image Upload File Type Exception]\n [${req.user.nickname} (${req.user.userId})] tried to upload ${mimetype} file`;
+        slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+
         return res.status(400).json({ error: 'Wrong file type submitted' });
       }
       // my.image.png => ['my', 'image', 'png']
@@ -70,6 +74,9 @@ const uploadImageIntoSubDir = (subDir) => {
       } catch (err) {
         console.error(err);
         functions.logger.error(`[FILE UPLOAD ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
+
+        const slackMessage = `[ERROR BY ${req.user.nickname} (${req.user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${err} ${JSON.stringify(err)}`;
+        slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
         return res.status(500).json(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
       }
     });

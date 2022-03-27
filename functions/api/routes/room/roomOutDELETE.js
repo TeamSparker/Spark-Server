@@ -53,22 +53,26 @@ module.exports = async (req, res) => {
 
     // 대기방 또는 습관방 나가기
     await roomDB.outById(client, roomId, userId);
+    const friends = await roomDB.getFriendsByIds(client, roomId, userId);
 
-    // 본인을 제외한 참여자들에게 서비스 알림 및 푸시알림 보내기
+    // 습관방의 마지막 인원이었다면, 방 END 처리
+    if (!friends.length) {
+      await roomDB.endById(client, roomId);
+    }
+
+    // 본인을 제외한 참여자들에게 활동 알림 보내기
     const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
 
-    const entries = await roomDB.getFriendsByIds(client, roomId, userId);
-
-    for (let i = 0; i < entries.length; i++) {
-      const target = await userDB.getUserById(client, entries[i].userId);
-      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService);
+    for (let i = 0; i < friends.length; i++) {
+      const target = await userDB.getUserById(client, friends[i].userId);
+      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true, room.roomId);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
-    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
+    const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
