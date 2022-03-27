@@ -56,13 +56,12 @@ module.exports = async (req, res) => {
     if (!userEntry.length) {
       res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
-    const dialog = await dialogDB.getUnReadLifeDeductionDialogByRoomAndUser(client, roomId, user.userId);
     let lifeDeductionCount = 0;
-    console.log('dialog', dialog);
-    if (dialog) {
-      lifeDeductionCount = dialog.lifeDeductionCount;
-      await dialogDB.setDialogRead(client, dialog.dialogId);
-    }
+    const dialogs = await dialogDB.setLifeDeductionDialogsRead(client, user.userId, roomId);
+    console.log(dialogs);
+    dialogs.map((dialog) => {
+      lifeDeductionCount += dialog.lifeDeductionCount;
+    })
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
     let myRecord = null;
