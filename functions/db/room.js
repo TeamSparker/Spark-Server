@@ -408,7 +408,7 @@ const startRoomById = async (client, roomId) => {
   const { rows } = await client.query(
     `
     UPDATE spark.room
-    SET status = 'ONGOING', updated_at = $2, start_at = $3, end_at = $4
+    SET status = 'ONGOING', updated_at = $2, start_at = $3, end_at = $4, start_time = $2
     WHERE room_id = $1
     AND status != 'ONGOING'
     RETURNING *
@@ -559,12 +559,11 @@ const outById = async (client, roomId, userId) => {
   }
 };
 
-
 const outByUserId = async (client, userId) => {
   const now = dayjs().add(9, 'hour');
-    // 대기방을 나갈경우 데이터 hard delete
-    await client.query(
-      `
+  // 대기방을 나갈경우 데이터 hard delete
+  await client.query(
+    `
         DELETE FROM spark.entry
         WHERE entry_id IN (
           SELECT entry_id
@@ -575,20 +574,20 @@ const outByUserId = async (client, userId) => {
           AND r.status = 'NONE' )
         RETURNING *
       `,
-      [userId],
-    );
+    [userId],
+  );
 
-    // 습관방을 나갈경우 데이터 soft delete
-     await client.query(
-      `
+  // 습관방을 나갈경우 데이터 soft delete
+  await client.query(
+    `
         UPDATE spark.entry
         SET is_out = TRUE, out_at = $2, updated_at = $2
         WHERE user_id = $1
         RETURNING *
       `,
-      [userId, now],
-    );
-  };
+    [userId, now],
+  );
+};
 
 const deleteRoomById = async (client, roomId) => {
   const now = dayjs().add(9, 'hour');
