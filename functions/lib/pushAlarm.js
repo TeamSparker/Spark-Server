@@ -11,10 +11,11 @@ const send = async (req, res, title, body, receiverToken, category, imageUrl = n
     imageUrl = '';
   }
 
+  if (!receiverToken) {
+    return true;
+  }
+
   try {
-    if (!receiverToken) {
-      return true;
-    }
     const message = {
       android: {
         data: {
