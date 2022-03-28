@@ -68,6 +68,12 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens, cate
     imageUrl = '';
   }
 
+  // FCM Token이 empty인 경우 제외
+  receiverTokens = receiverTokens.filter((t) => t);
+  if (!receiverTokens.length) {
+    return true;
+  }
+
   try {
     const message = {
       android: {
