@@ -11,6 +11,10 @@ const send = async (req, res, title, body, receiverToken, category, imageUrl = n
     imageUrl = '';
   }
 
+  if (!receiverToken) {
+    return true;
+  }
+
   try {
     const message = {
       android: {
@@ -62,6 +66,12 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens, cate
   if (!imageUrl) {
     mutableContent = 0;
     imageUrl = '';
+  }
+
+  // FCM Token이 empty인 경우 제외
+  receiverTokens = receiverTokens.filter((t) => t);
+  if (!receiverTokens.length) {
+    return true;
   }
 
   try {
