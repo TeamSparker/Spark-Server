@@ -12,6 +12,9 @@ const send = async (req, res, title, body, receiverToken, category, imageUrl = n
   }
 
   try {
+    if (!receiverToken) {
+      return true;
+    }
     const message = {
       android: {
         data: {
