@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     let waitingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'NONE');
     waitingRooms = _.sortBy(waitingRooms, 'createdAt').reverse(); // 최근에 생성된 대기방이 위로
     let ongoingRooms = rawRooms.filter((rawRoom) => rawRoom.status === 'ONGOING');
-    ongoingRooms = _.sortBy(ongoingRooms, 'startAt').reverse(); // 최근에 시작한 습관방이 위로
+    ongoingRooms = _.sortBy(ongoingRooms, 'startTime').reverse(); // 최근에 시작한 습관방이 위로
 
     const dialogRoomIds = [...new Set(dialogs.filter(Boolean).map((room) => room.roomId))];
     const waitingRoomIds = [...new Set(waitingRooms.filter(Boolean).map((room) => room.roomId))];
