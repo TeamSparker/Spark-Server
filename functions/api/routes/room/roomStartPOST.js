@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
     const allUsers = await roomDB.getAllUsersById(client, roomId);
 
     // 푸시알림 전송
-    const receiverTokens = allUsers.map((u) => u.deviceToken);
+    const receiverTokens = allUsers.filter((u) => u.pushRoomStart).map((u) => u.deviceToken);
     pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
 
     // notification 생성
