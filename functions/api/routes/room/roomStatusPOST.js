@@ -92,7 +92,7 @@ module.exports = async (req, res) => {
       }
       const sender = await userDB.getUserById(client, userId);
       const friends = await roomDB.getFriendsByIds(client, roomId, userId);
-      const receiverTokens = friends.map((f) => f.deviceToken);
+      const receiverTokens = friends.filter((f) => f.pushConsider).map((f) => f.deviceToken);
       const { title, body, isService, category } = alarmMessage.STATUS_CONSIDERING(sender.nickname, room.roomName);
 
       const notifications = friends.map((f) => {

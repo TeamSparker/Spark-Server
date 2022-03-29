@@ -73,7 +73,11 @@ module.exports = async (req, res) => {
     const { title, body, isService, category } = alarmMessage.SEND_SPARK(user.nickname, room.roomName, content);
     const receiver = await userDB.getUserById(client, record.userId);
     await noticeDB.addNotification(client, title, body, user.profileImg, receiver.userId, isService, true, room.roomId);
-    pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
+
+    // 푸시알림 허용한 사용자일 경우
+    if (receiver.pushSpark) {
+      pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
+    }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
   } catch (error) {

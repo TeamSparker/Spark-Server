@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
 
     // 인증을 완료하면 본인을 제외한 참여자들에게 알림 및 푸시알림 보내기
     const friends = await roomDB.getFriendsByIds(client, roomId, userId);
-    const receiverTokens = friends.map((f) => f.deviceToken);
+    const receiverTokens = friends.filter((f) => f.pushCertification).map((f) => f.deviceToken);
     const { title, body, isService, category } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
 
     const notifications = friends.map((f) => {
