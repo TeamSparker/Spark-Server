@@ -103,12 +103,15 @@ const getCardsByUserId = async (client, userId) => {
 const getEntriesByRoomId = async (client, roomId) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.entry
-    WHERE room_id = $1
-      AND is_out = FALSE
-      AND is_kicked = FALSE
-      AND is_deleted = FALSE
-      ORDER BY created_at
+    SELECT * FROM spark.entry e
+    INNER JOIN spark.user u
+    ON e.user_id = u.user_id
+    WHERE e.room_id = $1
+      AND e.is_out = FALSE
+      AND e.is_kicked = FALSE
+      AND e.is_deleted = false
+      AND u.is_deleted = FALSE
+      ORDER BY e.created_at
     `,
     [roomId],
   );
