@@ -439,7 +439,7 @@ const getFailRecords = async (client, roomIds) => {
     AND r.day != 0
     AND r.status IN ('NONE', 'CONSIDER')
     AND r.date = $1
-    AND e.room_id IN ${roomIds.join()}
+    AND e.room_id IN (${roomIds.join()})
     GROUP BY e.room_id
     `,
     [yesterday],
