@@ -49,7 +49,6 @@ module.exports = async (req, res) => {
     const kickedHistory = await roomDB.kickedHistoryByIds(client, room.roomId, userId);
     if (kickedHistory.length !== 0) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_IMPOSSIBLE));
-      // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_KICKED));
     }
 
     const creator = await userDB.getUserById(client, room.creator);
