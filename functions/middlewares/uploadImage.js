@@ -5,6 +5,8 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const dayjs = require('dayjs');
+const db = require('../db/db');
+const { ownershipDB } = require('../db');
 const { firebaseConfig } = require('../config/firebaseClient');
 const util = require('../lib/util');
 const statusCode = require('../constants/statusCode');
@@ -19,6 +21,7 @@ const uploadImageIntoSubDir = (subDir) => {
     let imagesToUpload = [];
     let imageToAdd = {};
     let imageUrls = [];
+    let filePaths = [];
 
     let fields = {};
 
@@ -50,6 +53,7 @@ const uploadImageIntoSubDir = (subDir) => {
       let promises = [];
       imagesToUpload.forEach((imageToBeUploaded) => {
         imageUrls.push(`https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/${subDir}%2F${imageToBeUploaded.imageFileName}?alt=media`);
+        filePaths.push(`${subDir}/${imageToBeUploaded.imageFileName}`);
         promises.push(
           admin
             .storage()
@@ -66,7 +70,14 @@ const uploadImageIntoSubDir = (subDir) => {
         );
       });
 
+      let client;
       try {
+        // File에 대한 Ownership 등록
+        client = await db.connect(req);
+        for (let i = 0; i < filePaths.length; i++) {
+          await ownershipDB.insertOwnership(client, req.user.userId, filePaths[i]);
+        }
+
         await Promise.all(promises);
         req.body = fields;
         req.imageUrls = imageUrls;
@@ -78,6 +89,8 @@ const uploadImageIntoSubDir = (subDir) => {
         const slackMessage = `[ERROR BY ${req.user.nickname} (${req.user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${err} ${JSON.stringify(err)}`;
         slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
         return res.status(500).json(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+      } finally {
+        client.release();
       }
     });
 
