@@ -9,4 +9,5 @@ module.exports = {
   reportDB: require('./report'),
   dialogDB: require('./dialog'),
   remindDB: require('./remind'),
+  ownershipDB: require('./ownership'),
 };
