@@ -67,7 +67,7 @@ const getRoomByCode = async (client, code) => {
 const getRoomsByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM spark.entry e
+    SELECT r.room_id, r.room_name, r.status, e.created_at, r.start_time FROM spark.entry e
     INNER JOIN spark.room r
     ON r.room_id = e.room_id
     WHERE e.user_id = $1
