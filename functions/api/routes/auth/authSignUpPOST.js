@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { userDB } = require('../../../db');
+const { userDB, ownershipDB } = require('../../../db');
 const { DEFAULT_PROFILE_IMG_URL } = require('../../../constants/defaultProfileImg');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../middlewares/slackAPI');
@@ -46,7 +46,15 @@ module.exports = async (req, res) => {
     if (profileImg.length === 0) {
       profileImg.push(DEFAULT_PROFILE_IMG_URL);
     }
+
     const user = await userDB.addUser(client, socialId, nickname, profileImg[0], fcmToken);
+
+    // 프로필 이미지를 등록한 사용자라면 프로필 사진에 대한 ownership 부여
+    if (user.profileImg !== DEFAULT_PROFILE_IMG_URL) {
+      const profileUrl = user.profileImg;
+      const profilePath = profileUrl.split('/')[profileUrl.split('/').length - 1].split('?')[0].replace('%2F', '/');
+      await ownershipDB.insertOwnership(client, user.userId, profilePath);
+    }
 
     const { accesstoken } = jwtHandlers.sign(user);
 
