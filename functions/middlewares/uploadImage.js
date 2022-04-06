@@ -75,7 +75,10 @@ const uploadImageIntoSubDir = (subDir) => {
         // File에 대한 Ownership 등록
         client = await db.connect(req);
         for (let i = 0; i < filePaths.length; i++) {
-          await ownershipDB.insertOwnership(client, req.user.userId, filePaths[i]);
+          // 회원가입을 제외하고 항상 소유권 부여
+          if (req.user) {
+            await ownershipDB.insertOwnership(client, req.user.userId, filePaths[i]);
+          }
         }
 
         await Promise.all(promises);
