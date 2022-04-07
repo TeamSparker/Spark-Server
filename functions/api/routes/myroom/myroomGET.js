@@ -47,9 +47,11 @@ module.exports = async (req, res) => {
     if (roomType === 'ONGOING') {
       roomIds = ongoingRooms.map((room) => room.roomId);
       rooms = ongoingRooms;
+      rooms = _.sortBy(rooms, 'startAt').reverse();
     } else if (roomType === 'COMPLETE') {
       roomIds = completeRooms.map((room) => room.roomId);
       rooms = completeRooms;
+      rooms = _.sortBy(rooms, 'outAt').reverse();
     } else if (roomType === 'FAIL') {
       roomIds = failRooms.map((room) => room.roomId);
       rooms = failRooms;
@@ -60,6 +62,7 @@ module.exports = async (req, res) => {
           room.endAt = room.outAt;
         }
       }
+      rooms = _.sortBy(rooms, 'endAt').reverse();
     }
 
     if (lastId !== -1) {
@@ -98,7 +101,7 @@ module.exports = async (req, res) => {
         comment: room.comment,
       };
       if (roomType === 'FAIL') {
-        const failDay = endDate.diff(startDate, 'day')+1;
+        const failDay = endDate.diff(startDate, 'day') + 1;
         oneRoom.failDay = failDay;
       }
       roomData.push(oneRoom);

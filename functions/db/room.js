@@ -93,7 +93,6 @@ const getCardsByUserId = async (client, userId) => {
     AND e.is_deleted = FALSE
     AND e.thumbnail IS NOT null
     AND r.is_deleted = FALSE
-    ORDER BY r.start_at
     `,
     [userId],
   );
