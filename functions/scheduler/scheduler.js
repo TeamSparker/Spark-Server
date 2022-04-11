@@ -1,6 +1,6 @@
 const dayjs = require('dayjs');
 const schedule = require('node-schedule');
-const funcs = require('./funcs.js');
+const funcs = require('./funcs');
 
 const jobSchedule = schedule.scheduleJob('0 0 15 * * *', function () {
   const now = dayjs();
