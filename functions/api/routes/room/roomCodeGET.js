@@ -40,8 +40,8 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_NULL));
     }
 
-    // @error 3. 참여 코드에 해당하는 방은 이미 습관 시작한 방임
-    if (room.status === 'ONGOING') {
+    // @error 3. 참여 코드에 해당하는 방은 대기방이 아님
+    if (room.status !== 'NONE') {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.GET_WAITROOM_DATA_STARTED));
     }
 
