@@ -74,7 +74,7 @@ const getRoomsByUserId = async (client, userId) => {
     AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
-    AND r.status <> FAIL
+    AND r.status <> 'FAIL'
     AND r.is_deleted = FALSE
     ORDER BY r.start_at
     `,
