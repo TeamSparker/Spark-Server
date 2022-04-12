@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-    const rawRooms = await roomDB.getRoomsByUserId(client, user.userId);
+    const rawRooms = await roomDB.getRoomsIncludingFailByUserId(client, user.userId);
 
     if (!rawRooms.length) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records: [] }));

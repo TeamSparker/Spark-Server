@@ -74,6 +74,25 @@ const getRoomsByUserId = async (client, userId) => {
     AND e.is_out = FALSE
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
+    AND r.status <> FAIL
+    AND r.is_deleted = FALSE
+    ORDER BY r.start_at
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getRoomsIncludingFailByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT r.room_id, r.room_name, r.status, e.created_at, r.start_time FROM spark.entry e
+    INNER JOIN spark.room r
+    ON r.room_id = e.room_id
+    WHERE e.user_id = $1
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
     AND r.is_deleted = FALSE
     ORDER BY r.start_at
     `,
@@ -696,6 +715,7 @@ module.exports = {
   getRoomByCode,
   getEntriesByRoomId,
   getRoomsByUserId,
+  getRoomsIncludingFailByUserId,
   getUserProfilesByRoomIds,
   kickedHistoryByIds,
   getEntryById,
