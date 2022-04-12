@@ -14,7 +14,6 @@ if (admin.apps.length === 0) {
   firebase = admin.app();
 }
 const jobSchedule = scheduler.jobSchedule;
-const remindSchedule = scheduler.remindSchedule;
 
 module.exports = {
   api: require('./api'),
