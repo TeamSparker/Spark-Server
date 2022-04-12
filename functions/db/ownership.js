@@ -16,18 +16,19 @@ const insertOwnership = async (client, userId, filePath) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getOwnFilesByUserId = async (client, userId) => {
+const getOwnershipByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM spark.ownership
-    WHERE userId = $1
+    WHERE user_id = $1
+    AND file_deleted = FALSE
     `,
     [userId],
   );
-  return convertSnakeToCamel.keysToCamel(rows.map((r) => r.file_path));
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 module.exports = {
   insertOwnership,
-  getOwnFilesByUserId,
+  getOwnershipByUserId,
 };
