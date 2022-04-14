@@ -21,7 +21,6 @@ const { userDB, roomDB, noticeDB } = require('../../../db');
 module.exports = async (req, res) => {
   const { roomId } = req.params;
   const user = req.user;
-  const userId = user.userId;
 
   // @error 1. roomId가 전달되지 않음
   if (!roomId) {
@@ -46,7 +45,7 @@ module.exports = async (req, res) => {
     }
 
     // @error 4. 요청을 보낸 사용자가 대기방의 호스트가 아닌 경우
-    if (room.creator !== userId) {
+    if (room.creator !== user.userId) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.PRIV_NOT_FOUND));
     }
 
@@ -56,17 +55,17 @@ module.exports = async (req, res) => {
     // 본인을 제외한 참여자들에게 서비스 알림 보내기
     const { title, body, isService } = alarmMessage.ROOM_DELETE(room.roomName);
 
-    const allUsers = await roomDB.getAllUsersById(client, room.roomId);
+    const friends = await roomDB.getFriendsByIds(client, room.roomId, user.userId);
 
-    const notifications = allUsers.map((u) => {
-      return `('${title}', '${body}', '', ${u.userId}, ${isService}, false, ${room.roomId})`;
+    const notifications = friends.map((f) => {
+      return `('${title}', '${body}', '', ${f.userId}, ${isService}, false, ${room.roomId})`;
     });
 
     if (notifications.length > 0) {
       await noticeDB.addNotifications(client, notifications);
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_DELETE_SUCCESS));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_DELETE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
