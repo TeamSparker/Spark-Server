@@ -7,7 +7,7 @@ const { sendRemind } = require('../../../scheduler/funcs');
 
 /**
  *  @리마인드_푸시알림_전송
- *  @route POST /notice/remind
+ *  @route POST /scheduling/remind
  *  @error
  */
 

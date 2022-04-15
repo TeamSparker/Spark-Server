@@ -7,5 +7,6 @@ router.use('/myroom', require('./myroom'));
 router.use('/notice', require('./notice'));
 router.use('/room', require('./room'));
 router.use('/user', require('./user'));
+router.use('/scheduling', require('./scheduling'));
 
 module.exports = router;
