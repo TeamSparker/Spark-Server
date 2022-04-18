@@ -60,7 +60,7 @@ const FEED_LIKE = (who, roomName) => {
 
 const REMIND_ALERT = () => {
   const title = `🚨비상🚨`;
-  const body = `미완료 습관방 발견! 👀 얼른 생명 지키러 가요!`;
+  const body = `미완료 습관방 발견!👀 얼른 생명 지키러 가요!`;
   const isService = true;
 
   return { title, body, isService };
