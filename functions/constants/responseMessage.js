@@ -37,7 +37,7 @@ module.exports = {
   GET_WAITROOM_DATA_SUCCESS: '대기방 정보 확인 완료',
   GET_WAITROOM_DATA_IMPOSSIBLE: '참여할 수 없는 코드예요.',
   GET_WAITROOM_DATA_NULL: '참여할 수 없는 코드예요.',
-  GET_WAITROOM_DATA_STARTED: '참여할 수 없는 코드예요.',
+  GET_WAITROOM_DATA_STARTED: '이미 시작된 습관방이에요.',
   GET_WAITROOM_DATA_ALREADY: '이미 참여중인 코드예요.',
   GET_WAITROOM_DATA_FULL: '인원초과로 참여할 수 없어요.',
   ENTER_ROOM_SUCCESS: '습관 방 참여 완료',
