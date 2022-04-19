@@ -1,7 +1,6 @@
 const admin = require('firebase-admin');
 const serviceAccount = require('./we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json');
 const dotenv = require('dotenv');
-const scheduler = require('./scheduler/scheduler');
 
 dotenv.config();
 
@@ -13,7 +12,6 @@ if (admin.apps.length === 0) {
 } else {
   firebase = admin.app();
 }
-const jobSchedule = scheduler.jobSchedule;
 
 module.exports = {
   api: require('./api'),
