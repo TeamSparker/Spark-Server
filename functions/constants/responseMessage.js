@@ -93,7 +93,6 @@ module.exports = {
   GET_NOTICE_SETTING_SUCCESS: '푸시알림 설정 조회 완료',
   PUSH_CATEGORY_INVALID: '유효하지 않은 category입니다',
   PUSH_TOGGLE_SUCCESS: '푸시알림 설정 변경 완료',
-  SEND_REMIND_SUCCESS: '리마인드 알림 보내기 성공',
 
   // Status
   INVALID_USER_STATUS: '유효하지 않은 status type입니다',
@@ -106,4 +105,8 @@ module.exports = {
   // Token
   TOKEN_EXPIRED: '만료된 토큰입니다',
   TOKEN_INVALID: '유효하지 않은 토큰입니다',
+
+  // Scheduling
+  CERTIFICATION_INSPECTION_SUCCESS: '인증 검사 성공',
+  SEND_REMIND_SUCCESS: '리마인드 알림 보내기 성공',
 };
