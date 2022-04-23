@@ -549,9 +549,9 @@ const updateRestByIds = async (client, roomId, userId, newRestCount) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const outById = async (client, roomId, userId) => {
+const outById = async (client, room, userId) => {
   const now = dayjs().add(9, 'hour');
-  const room = await getRoomById(client, roomId);
+  const roomId = room.roomId;
 
   if (room.status === 'NONE') {
     // 대기방을 나갈경우 데이터 hard delete
