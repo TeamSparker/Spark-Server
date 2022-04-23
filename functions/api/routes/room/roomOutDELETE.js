@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
     }
 
     // 대기방 또는 습관방 나가기
-    await roomDB.outById(client, roomId, userId);
+    await roomDB.outById(client, room, userId);
     const friends = await roomDB.getFriendsByIds(client, roomId, userId);
 
     // 습관방의 마지막 인원이었다면, 방 END 처리
