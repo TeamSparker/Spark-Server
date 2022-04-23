@@ -60,22 +60,23 @@ module.exports = async (req, res) => {
       await roomDB.endById(client, roomId);
     }
 
-    // 본인을 제외한 참여자들에게 활동 알림 보내기
-    const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
+    // 진행중인 방을 나갔을 경우에는 본인을 제외한 참여자들에게 활동 알림 보내기
+    if (room.status === 'ONGOING') {
+      const { title, body, isService } = alarmMessage.ROOM_OUT(user.nickname, room.roomName);
 
-    for (let i = 0; i < friends.length; i++) {
-      const target = await userDB.getUserById(client, friends[i].userId);
-      await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true, room.roomId);
+      for (let i = 0; i < friends.length; i++) {
+        const target = await userDB.getUserById(client, friends[i].userId);
+        await noticeDB.addNotification(client, title, body, user.profileImg, target.userId, isService, true, room.roomId);
+      }
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ROOM_OUT_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    console.log(error);
     const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }
