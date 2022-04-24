@@ -509,7 +509,7 @@ const updateThumbnail = async (client, entryId, img) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getAllRoomIds = async (client) => {
+const getOngoingRoomIds = async (client) => {
   const { rows } = await client.query(
     `
     SELECT r.room_id
@@ -734,7 +734,7 @@ module.exports = {
   getFailRecords,
   getEntriesByRoomIds,
   updateThumbnail,
-  getAllRoomIds,
+  getOngoingRoomIds,
   getRestCountByIds,
   updateRestByIds,
   getFeedRecordsByRoomIds,
