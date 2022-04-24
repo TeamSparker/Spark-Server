@@ -18,11 +18,11 @@ const checkLife = async () => {
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
 
-    const allRooms = await roomDB.getAllRoomIds(client);
-    const allRoomIds = allRooms.map((o) => o.roomId);
+    const ongoingRooms = await roomDB.getOngoingRoomIds(client);
+    const ongoingRoomIds = ongoingRooms.map((o) => o.roomId);
     let failRecords = [];
-    if (allRoomIds.length) {
-      failRecords = await roomDB.getFailRecords(client, allRoomIds); // 습관방별 [실패한 record 개수(failCount)] 불러오기
+    if (ongoingRoomIds.length) {
+      failRecords = await roomDB.getFailRecords(client, ongoingRoomIds); // 습관방별 [실패한 record 개수(failCount)] 불러오기
     }
     const roomGroupByFailCount = _.groupBy(failRecords, 'failCount'); // failCount별 roomId 묶어주기 (ex. [{"failCount": 1, "roomId": [1,2,3]}, {"failCount":2, "roomId": [4,5,6]}])
     const failCountList = [...new Set(failRecords.map((o) => Number(o.failCount)))]; // failCount 뭐뭐있는지~ (ex. [1,2,3])
@@ -58,7 +58,7 @@ const checkLife = async () => {
     }
 
     const failRoomIds = _.filter(afterLife, { life: 0 }).map((o) => o.roomId); // 수명 깎아주고 나서 {life: 0} 이면 폭파된 방
-    const successRoomIds = _.difference(allRoomIds, failRoomIds); // 살아남은 방들
+    const successRoomIds = _.difference(ongoingRoomIds, failRoomIds); // 살아남은 방들
     let completeRooms = [];
 
     if (successRoomIds.length) {
@@ -92,7 +92,7 @@ const checkLife = async () => {
       return;
     }
 
-    const ongoingRoomIds = _.difference(successRoomIds, completeRoomIds);
+    const survivedRoomIds = _.difference(successRoomIds, completeRoomIds);
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, ongoingRoomIds); // 성공한 방들의 entry 불러오기
 
     const insertEntries = ongoingEntries.map((o) => {
@@ -105,7 +105,7 @@ const checkLife = async () => {
     });
 
     const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-    const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${ongoingRoomIds}`;
+    const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
