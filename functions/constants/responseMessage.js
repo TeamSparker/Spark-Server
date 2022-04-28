@@ -55,6 +55,7 @@ module.exports = {
   NOT_STARTED_ROOM: '아직 대기중인 방입니다',
   ROOM_NOT_WAITING: '대기중인 습관방이 아닙니다',
   INCORRECT_RECORD: '올바르지 않은 recordId 입니다',
+  GET_THUMBNAIL_LIST_SUCCESS: '보관함 대표사진 변경 뷰 사진 불러오기 성공',
   UPDATE_THUMBNAIL_SUCCESS: '보관함 대표사진 변경 성공',
 
   START_ROOM_SUCCESS: '습관 방 시작 완료',
