@@ -110,4 +110,7 @@ module.exports = {
   // Scheduling
   CERTIFICATION_INSPECTION_SUCCESS: '인증 검사 성공',
   SEND_REMIND_SUCCESS: '리마인드 알림 보내기 성공',
+
+  // Version
+  GET_RECENT_VERSION_SUCCESS: '최신 버전정보 불러오기 성공',
 };
