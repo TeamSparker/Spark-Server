@@ -10,4 +10,5 @@ module.exports = {
   dialogDB: require('./dialog'),
   remindDB: require('./remind'),
   ownershipDB: require('./ownership'),
+  versionDB: require('./version'),
 };
