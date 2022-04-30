@@ -8,5 +8,6 @@ router.use('/notice', require('./notice'));
 router.use('/room', require('./room'));
 router.use('/user', require('./user'));
 router.use('/scheduling', require('./scheduling'));
+router.use('/version', require('./version'));
 
 module.exports = router;
