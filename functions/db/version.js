@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const getRecentVersion = async (client) => {
@@ -11,6 +12,22 @@ const getRecentVersion = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const updateRecentVersion = async (client, newVersion) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+    INSERT INTO spark.version
+    (version, created_at)
+    VALUES
+    ($1, $2)
+    RETURNING *
+    `,
+    [newVersion, now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getRecentVersion,
+  updateRecentVersion,
 };
