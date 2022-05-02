@@ -22,10 +22,10 @@
 
 ![영권쌤 거](https://user-images.githubusercontent.com/39653584/150317112-aa048eba-ee94-4711-99dd-89dcb3c2746e.png)
 
----
+<!-- ---
 
 ## 📲 WorkFlow
-<img src = "https://user-images.githubusercontent.com/81167570/151120562-3da18d9a-1da0-43ea-92d4-b0576c8472a3.png" width="1000" />
+<img src = "https://user-images.githubusercontent.com/81167570/151120562-3da18d9a-1da0-43ea-92d4-b0576c8472a3.png" width="1000" /> -->
 
 ---
 
@@ -73,11 +73,12 @@
 |  | 푸시알림 ON / OFF Toggle  | 🦋 영권 |
 |  | 푸시알림 설정 조회  | 🦋 영권 |
 | version | 최신 버전정보 불러오기 | 🦋 영권 |
+|  | 최신 버전정보 갱신하기 | 🦋 영권 |
 
 
 ---
 
-## 📑 ERD
+<!-- ## 📑 ERD
 
 <img src="https://user-images.githubusercontent.com/39653584/150285337-1c0dbbd0-a8d7-4e79-9528-d0ffb529b04b.png" width="500px">
 
@@ -314,5 +315,6 @@ main → develop → feature/#3(issue num)
   "private": true
 }
 ```
-
+ -->
+ 
 <img src="https://user-images.githubusercontent.com/69136340/150557506-ceb378c4-9fcc-4c27-ae98-6b22d61386d9.png">
