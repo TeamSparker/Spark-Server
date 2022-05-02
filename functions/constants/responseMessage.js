@@ -113,4 +113,5 @@ module.exports = {
 
   // Version
   GET_RECENT_VERSION_SUCCESS: '최신 버전정보 불러오기 성공',
+  UPDATE_RECENT_VERSION_SUCCESS: '최신 버전정보 갱신 성공',
 };
