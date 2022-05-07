@@ -3,7 +3,6 @@ const functions = require('firebase-functions');
 const { Pool, Query } = require('pg');
 const dayjs = require('dayjs');
 const dotenv = require('dotenv');
-const slackAPI = require('../middlewares/slackAPI');
 
 dotenv.config();
 
@@ -29,7 +28,7 @@ Query.prototype.submit = function () {
 };
 
 // 서버가 실행되면 현재 환경이 개발 모드(로컬)인지 프로덕션 모드(배포)인지 콘솔에 찍어줍시다.
-console.log(`[🔥DB] ${process.env.NODE_ENV}`);
+console.log(`[🔥DB] ${process.env.NODE_ENV} / DB: ${dbConfig.database}`);
 
 // 커넥션 풀을 생성해줍니다.
 const pool = new Pool({
