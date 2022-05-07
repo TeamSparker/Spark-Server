@@ -128,7 +128,7 @@ const sendRemind = async () => {
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
 
-    const noneEntryIds = await recordDB.getNoneEntryIdsByDate(client, today);
+    const noneEntryIds = await recordDB.getNoneOrConsiderEntryIdsByDate(client, today);
 
     if (noneEntryIds.length > 0) {
       const targetUserIds = await roomDB.getMemberIdsByEntryIds(
