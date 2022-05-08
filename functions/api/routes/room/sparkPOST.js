@@ -58,9 +58,9 @@ module.exports = async (req, res) => {
     }
 
     // @error 4. 쉴래요 습관완료한 사람한테 스파크 보내려함
-    if (record.status === 'DONE' || record.status === 'REST') {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DONE_OR_REST_MEMBER));
-    }
+    // if (record.status === 'DONE' || record.status === 'REST') {
+    // return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DONE_OR_REST_MEMBER));
+    // }
 
     // @error 5. 자신에게 스파크를 보내려 할 때
     if (record.userId === userId) {
