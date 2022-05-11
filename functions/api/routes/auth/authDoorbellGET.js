@@ -31,20 +31,20 @@ module.exports = async (req, res) => {
 
     // 회원가입 한적 없는 사용자
     if (!user) {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NOT_SIGNED_UP, { isNew: true }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NOT_SIGNED_UP, { isNew: true }));
     }
 
     let data = jwtHandlers.sign(user);
     data.isNew = false;
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, data));
     await userDB.updateDeviceTokenById(client, user.userId, fcmToken);
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, data));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
-    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }
