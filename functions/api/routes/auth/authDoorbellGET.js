@@ -15,7 +15,7 @@ const { userDB } = require('../../../db');
  */
 
 module.exports = async (req, res) => {
-  const { socialId, fcmToken } = req.query;
+  const { socialId, fcmToken, os } = req.query;
 
   // @error 1. socialId 또는 fcmToken 누락
   if (!socialId || !fcmToken) {
@@ -36,7 +36,13 @@ module.exports = async (req, res) => {
 
     let data = jwtHandlers.sign(user);
     data.isNew = false;
-    await userDB.updateDeviceTokenById(client, user.userId, fcmToken);
+
+    if (!os) {
+      await userDB.updateDeviceTokenById(client, user.userId, fcmToken);
+    } else {
+      await userDB.updateDeviceTokenAndOsById(client, user.userId, fcmToken, os);
+    }
+
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_SIGNED_UP, data));
   } catch (error) {
     console.log(error);
