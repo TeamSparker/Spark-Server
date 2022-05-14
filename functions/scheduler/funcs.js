@@ -93,7 +93,7 @@ const checkLife = async () => {
     }
 
     const survivedRoomIds = _.difference(successRoomIds, completeRoomIds);
-    const ongoingEntries = await roomDB.getEntriesByRoomIds(client, ongoingRoomIds); // 성공한 방들의 entry 불러오기
+    const ongoingEntries = await roomDB.getEntriesByRoomIds(client, survivedRoomIds); // 성공한 방들의 entry 불러오기
 
     const insertEntries = ongoingEntries.map((o) => {
       // 추가해줄 record들의 속성들 빚어주기
@@ -105,7 +105,7 @@ const checkLife = async () => {
     });
 
     const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-    const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${survivedRoomIds}`;
+    const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
