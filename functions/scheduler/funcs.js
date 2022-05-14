@@ -105,7 +105,7 @@ const checkLife = async () => {
     });
 
     const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-    const slackMessage = `폭파된 방 목록: ${failRoomIds} / 살아남은 방 목록: ${survivedRoomIds}`;
+    const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
