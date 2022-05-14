@@ -93,7 +93,7 @@ const checkLife = async () => {
     }
 
     const survivedRoomIds = _.difference(successRoomIds, completeRoomIds);
-    const ongoingEntries = await roomDB.getEntriesByRoomIds(client, ongoingRoomIds); // 성공한 방들의 entry 불러오기
+    const ongoingEntries = await roomDB.getEntriesByRoomIds(client, survivedRoomIds); // 성공한 방들의 entry 불러오기
 
     const insertEntries = ongoingEntries.map((o) => {
       // 추가해줄 record들의 속성들 빚어주기
