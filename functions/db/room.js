@@ -206,7 +206,7 @@ const getFeedRecordsByRoomIds = async (client, roomIds) => {
     AND e.is_kicked = FALSE
     AND e.is_deleted = FALSE
     AND r.status = 'DONE'
-    AND r.date >= CURRENT_DATE - INTERVAL '7 days'
+    AND r.date >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
     ORDER BY r.date DESC, r.certified_at DESC
     `,
   );
