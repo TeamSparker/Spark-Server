@@ -76,7 +76,7 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       )
       AND is_deleted = FALSE
       AND is_service = TRUE
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
       ORDER BY notification_id DESC
       LIMIT $2
     `,
@@ -98,7 +98,7 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       AND is_deleted = FALSE
       AND is_service = TRUE
       AND notification_id < $2
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
       ORDER BY notification_id DESC
       LIMIT $3
     `,
@@ -123,7 +123,7 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
         )
         AND is_deleted = FALSE
         AND is_service = FALSE
-        AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+        AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
         ORDER BY notification_id DESC
         LIMIT $2
       `,
@@ -145,7 +145,7 @@ const getActivesByUserId = async (client, userId, lastId, size) => {
         AND is_deleted = FALSE
         AND is_service = FALSE
         AND notification_id < $2
-        AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+        AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
         ORDER BY notification_id DESC
         LIMIT $3
       `,
@@ -196,7 +196,7 @@ const getNumberOfUnreadNoticeById = async (client, userId) => {
       )
       AND is_deleted = FALSE
       AND is_read = FALSE
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
     `,
     [userId],
   );
@@ -218,7 +218,7 @@ const getNumberOfUnreadServiceNoticeById = async (client, userId) => {
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = TRUE
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
     `,
     [userId],
   );
@@ -240,7 +240,7 @@ const getNumberOfUnreadActiveNoticeById = async (client, userId) => {
       AND is_deleted = FALSE
       AND is_read = FALSE
       AND is_service = FALSE
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
     `,
     [userId],
   );
