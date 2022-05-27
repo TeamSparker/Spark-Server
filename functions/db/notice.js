@@ -98,7 +98,7 @@ const getServicesByUserId = async (client, userId, lastId, size) => {
       AND is_deleted = FALSE
       AND is_service = TRUE
       AND notification_id < $2
-      AND created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND created_at >= (CURRENT_TIMESTAMP - INTERVAL '7 days - 9 hours')::date
       ORDER BY notification_id DESC
       LIMIT $3
     `,
