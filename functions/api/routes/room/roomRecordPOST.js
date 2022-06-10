@@ -17,13 +17,12 @@ const { roomDB, recordDB, noticeDB } = require('../../../db');
  *      2. 해당 roomId의 습관방이 존재하지 않음
  *      3. 현재 진행중인 습관방이 아님
  *      4. 해당 습관방의 member가 아님
- *      5. 이미 인증 완료하거나 쉴래요 한 MEMBER
+ *      5. 이미 인증 완료하거나 쉴래요 한 member
  */
 
 module.exports = async (req, res) => {
   const { roomId } = req.params;
   const user = req.user;
-  const userId = user.userId;
   const certifyingImg = req.imageUrls;
   let { timerRecord } = req.body;
   if (!timerRecord) {
@@ -44,7 +43,7 @@ module.exports = async (req, res) => {
     if (!room) {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
     }
-    const entry = await roomDB.getEntryByIds(client, roomId, userId);
+    const entry = await roomDB.getEntryByIds(client, roomId, user.userId);
 
     // @error 3. 현재 진행중인 습관방이 아님
     if (room.status !== 'ONGOING') {
@@ -63,14 +62,16 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DONE_OR_REST_MEMBER));
     }
 
-    const uploadedRecord = await recordDB.uploadRecord(client, record.recordId, certifyingImg[0], timerRecord);
+    // 인증한 record update
+    await recordDB.uploadRecord(client, record.recordId, certifyingImg[0], timerRecord);
+
     if (!entry.thumbnail) {
       await roomDB.updateThumbnail(client, entry.entryId, certifyingImg[0]);
-      // @TODO 첫번째 습관 인증 축하 알림
+      // @TODO: 첫번째 습관 인증 축하 알림
     }
 
     // 인증을 완료하면 본인을 제외한 참여자들에게 알림 및 푸시알림 보내기
-    const friends = await roomDB.getFriendsByIds(client, roomId, userId);
+    const friends = await roomDB.getFriendsByIds(client, roomId, user.userId);
     const receiverTokens = friends.filter((f) => f.pushCertification).map((f) => f.deviceToken);
     const { title, body, isService, category } = alarmMessage.CERTIFICATION_COMPLETE(user.nickname, room.roomName);
 
@@ -82,12 +83,12 @@ module.exports = async (req, res) => {
       await noticeDB.addNotifications(client, notifications);
     }
 
-    if (receiverTokens.length > 0) {
+    if (receiverTokens.length) {
       pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0]);
     }
 
     const data = {
-      userId,
+      userId: user.userId,
       nickname: user.nickname,
       profileImg: user.profileImg,
       roomId: room.roomId,
@@ -101,7 +102,6 @@ module.exports = async (req, res) => {
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CERTIFY_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
-    console.log(error);
     const slackMessage = `[ERROR BY ${user.nickname} (${user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
