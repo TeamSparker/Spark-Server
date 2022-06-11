@@ -74,11 +74,10 @@ const uploadImageIntoSubDir = (subDir) => {
       try {
         // File에 대한 Ownership 등록
         client = await db.connect(req);
-        for (let i = 0; i < filePaths.length; i++) {
-          // 회원가입을 제외하고 항상 소유권 부여
-          if (req.user) {
-            await ownershipDB.insertOwnership(client, req.user.userId, filePaths[i]);
-          }
+        if (req.user) {
+          filePaths.forEach(async (filePath) => {
+            await ownershipDB.insertOwnership(client, req.user.userId, filePath);
+          });
         }
 
         await Promise.all(promises);
@@ -86,7 +85,6 @@ const uploadImageIntoSubDir = (subDir) => {
         req.imageUrls = imageUrls;
         next();
       } catch (err) {
-        console.error(err);
         functions.logger.error(`[FILE UPLOAD ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
 
         const slackMessage = `[ERROR BY ${req.user.nickname} (${req.user.userId})] [${req.method.toUpperCase()}] ${req.originalUrl} ${err} ${JSON.stringify(err)}`;
