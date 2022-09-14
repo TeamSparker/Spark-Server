@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
     }
 
     if (receiverTokens.length) {
-      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0], roomId, record.recordId);
+      pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, certifyingImg[0]);
     }
 
     const data = {

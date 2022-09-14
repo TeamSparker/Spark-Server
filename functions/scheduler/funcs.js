@@ -1,5 +1,4 @@
 const db = require('../db/db');
-const admin = require('firebase-admin');
 const { userDB, roomDB, recordDB, scheduleDB, remindDB, dialogDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
@@ -121,7 +120,6 @@ const sendRemind = async () => {
   let client;
   try {
     client = await db.connect();
-
     const scheduleCheck = await remindDB.insertRemind(client);
     if (!scheduleCheck.length) {
       return;
@@ -130,21 +128,20 @@ const sendRemind = async () => {
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
 
-    let remindUsers = await recordDB.getPushRemindUsers(client, today);
+    const noneEntryIds = await recordDB.getNoneOrConsiderEntryIdsByDate(client, today);
 
-    if (remindUsers.length) {
-      messages = [];
-      remindUsers.map((u) => {
-        if (u.status == 'NONE' || u.status == 'CONSIDER') {
-          const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
-          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-        } else {
-          const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
-          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-        }
-      });
-      pushAlarm.sendMessages(null, null, messages);
-
+    if (noneEntryIds.length > 0) {
+      const targetUserIds = await roomDB.getMemberIdsByEntryIds(
+        client,
+        noneEntryIds.map((e) => e.entryId),
+      );
+      const targetUsers = await userDB.getUsersByIds(
+        client,
+        targetUserIds.map((u) => u.userId),
+      );
+      const targetTokens = targetUsers.filter((u) => u.pushRemind).map((u) => u.deviceToken);
+      const { title, body } = alarmMessage.REMIND_ALERT();
+      pushAlarm.sendMulticastByTokens(null, null, title, body, targetTokens, 'remind');
       const slackMessage = `[REMIND SEND SUCCESS]: To ${targetUsers.length} users: ${targetUsers.map((u) => u.nickname)}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
@@ -156,7 +153,7 @@ const sendRemind = async () => {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
-    console.log('release');
+    console.log('relase');
     client.release();
   }
 };
