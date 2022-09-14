@@ -133,7 +133,7 @@ const sendRemind = async () => {
     let remindUsers = await recordDB.getPushRemindUsers(client, today);
 
     if (remindUsers.length) {
-      messages = [];
+      let messages = [];
       remindUsers.map((u) => {
         if (u.status == 'NONE' || u.status == 'CONSIDER') {
           const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
@@ -145,7 +145,8 @@ const sendRemind = async () => {
       });
       pushAlarm.sendMessages(null, null, messages);
 
-      const slackMessage = `[REMIND SEND SUCCESS]: To ${targetUsers.length} users: ${targetUsers.map((u) => u.nickname)}`;
+      const slackMessage = `[REMIND SEND SUCCESS]`;
+      // const slackMessage = `[REMIND SEND SUCCESS]: To ${.length} users: ${remindUsers.map((u) => u.nickname)}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
