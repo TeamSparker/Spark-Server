@@ -146,11 +146,11 @@ const sendRemind = async () => {
       pushAlarm.sendMessages(null, null, messages);
 
       const slackMessage = `[REMIND SEND SUCCESS]: To ${targetUsers.length} users: ${targetUsers.map((u) => u.nickname)}`;
-      // slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+      slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
 
-    // slackAPI.sendMessageToSlack('[REMIND NOT SENT]: 모든 방 습관인증 완료', slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+    slackAPI.sendMessageToSlack('[REMIND NOT SENT]: 모든 방 습관인증 완료', slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     return;
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
