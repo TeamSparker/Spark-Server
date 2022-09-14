@@ -20,9 +20,8 @@ const ROOM_OUT = (who, roomName) => {
   const title = `${roomName}방 인원 변동 🚨`;
   const body = `${who}님이 습관방에서 나갔어요.`;
   const isService = false;
-  const category = 'roomOut';
 
-  return { title, body, isService, category };
+  return { title, body, isService };
 };
 
 const SEND_SPARK = (who, roomName, content) => {
@@ -47,18 +46,16 @@ const ROOM_DELETE = (roomName) => {
   const title = `${roomName} 대기방 삭제`;
   const body = `방 개설자에 의해 대기방이 삭제되었어요.`;
   const isService = true;
-  const category = 'roomDelete';
 
-  return { title, body, isService, category };
+  return { title, body, isService };
 };
 
 const FEED_LIKE = (who, roomName) => {
   const title = `${who}님이 좋아한 피드`;
   const body = `${roomName}방 인증을 좋아해요.`;
   const isService = false;
-  const category = 'like';
 
-  return { title, body, isService, category };
+  return { title, body, isService };
 };
 
 const REMIND_ALERT = () => {
@@ -67,7 +64,7 @@ const REMIND_ALERT = () => {
   const isService = true;
   const category = 'remind';
 
-  return { title, body, isService };
+  return { title, body, isService, category };
 };
 
 module.exports = {
