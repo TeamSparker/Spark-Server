@@ -58,17 +58,8 @@ const FEED_LIKE = (who, roomName) => {
   return { title, body, isService };
 };
 
-const REMIND_ALERT = () => {
-  const title = `🚨비상🚨`;
-  const body = `미완료 습관방 발견!👀 얼른 생명 지키러 가요!`;
-  const isService = true;
-  const category = 'remind';
-
-  return { title, body, isService, category };
-};
-
-const REMIND_ALERT_NONE = () => {
-  const title = `방의 인증을 하지 않았어요!`;
+const REMIND_ALERT_NONE = (roomName) => {
+  const title = `${roomName}방의 인증을 하지 않았어요!`;
   const body = `생명이 줄어들기 전에 서둘러 인증해주세요🏃‍♂️`;
   const isService = true;
   const category = 'remind';
@@ -76,8 +67,8 @@ const REMIND_ALERT_NONE = () => {
   return { title, body, isService, category };
 };
 
-const REMIND_ALERT_DONE = () => {
-  const title = `방에 인증을 안 한 친구가 있어요! `;
+const REMIND_ALERT_DONE = (roomName) => {
+  const title = `${roomName}방에 인증을 안 한 친구가 있어요! `;
   const body = `지금 스파크를 보내 친구를 응원해주세요 🔥`;
   const isService = true;
   const category = 'remind';
@@ -93,7 +84,6 @@ module.exports = {
   ROOM_NEW,
   ROOM_DELETE,
   FEED_LIKE,
-  REMIND_ALERT,
   REMIND_ALERT_NONE,
   REMIND_ALERT_DONE,
 };

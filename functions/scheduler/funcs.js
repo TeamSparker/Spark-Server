@@ -121,6 +121,7 @@ const sendRemind = async () => {
   let client;
   try {
     client = await db.connect();
+
     const scheduleCheck = await remindDB.insertRemind(client);
     if (!scheduleCheck.length) {
       return;
@@ -128,31 +129,28 @@ const sendRemind = async () => {
 
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
-    const remindUsers = await recordDB.getPushRemindUsers(client, today);
+
+    let remindUsers = await recordDB.getPushRemindUsers(client, today);
+
     if (remindUsers.length) {
-      const noneMessage = alarmMessage.REMIND_ALERT_NONE();
-      const doneMessage = alarmMessage.REMIND_ALERT_DONE();
       messages = [];
       remindUsers.map((u) => {
-        let title;
-        let body;
         if (u.status == 'NONE' || u.status == 'CONSIDER') {
-          title = u.roomName + noneMessage.title;
-          body = noneMessage.body;
+          const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
+          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
         } else {
-          title = u.roomName + doneMessage.title;
-          body = doneMessage.body;
+          const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
+          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
         }
-        messages.push(pushAlarm.getMessage(title, body, u.deviceToken, noneMessage.category, null, u.roomId));
       });
       pushAlarm.sendMessages(null, null, messages);
 
       const slackMessage = `[REMIND SEND SUCCESS]: To ${targetUsers.length} users: ${targetUsers.map((u) => u.nickname)}`;
-      slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+      // slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
 
-    slackAPI.sendMessageToSlack('[REMIND NOT SENT]: 모든 방 습관인증 완료', slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+    // slackAPI.sendMessageToSlack('[REMIND NOT SENT]: 모든 방 습관인증 완료', slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     return;
   } catch (error) {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
