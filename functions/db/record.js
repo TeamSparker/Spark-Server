@@ -148,6 +148,39 @@ const getNoneOrConsiderEntryIdsByDate = async (client, date) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getPushRemindUsers = async (client, date) => {
+  const { rows } = await client.query(
+    `
+    SELECT e.user_id, r.room_name, r.room_id, rec.status, u.device_token
+    FROM spark.entry e
+    INNER JOIN spark.room r
+    ON  e.room_id = r.room_id
+    INNER JOIN spark.record rec
+    ON rec.entry_id = e.entry_id
+    INNER JOIN spark.user u
+    ON u.user_id = e.user_id
+    WHERE e.is_out = FALSE
+    AND e.is_deleted = FALSE
+    AND e.is_kicked = FALSE
+    AND u.is_deleted = FALSE
+    AND u.push_remind = TRUE
+    AND rec.date = $1
+    AND e.room_id IN (
+        SELECT DISTINCT e.room_id FROM spark.entry e
+        INNER JOIN spark.record r
+        ON e.entry_id = r.entry_id
+        WHERE r.date = $1
+        AND r.status IN ('NONE', 'CONSIDER')
+        AND e.is_kicked = FALSE
+        AND e.is_deleted = FALSE
+        AND e.is_kicked = FALSE
+    )    
+    `,
+    [date],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getRecordById,
   getRecentRecordByEntryId,
@@ -157,4 +190,5 @@ module.exports = {
   getDonePagedRecordsByEntryId,
   insertRecords,
   getNoneOrConsiderEntryIdsByDate,
+  getPushRemindUsers,
 };

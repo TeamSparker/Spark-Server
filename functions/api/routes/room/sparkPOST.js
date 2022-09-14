@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
 
     // 푸시알림 허용한 사용자일 경우
     if (receiver.pushSpark) {
-      pushAlarm.send(req, res, title, body, receiver.deviceToken, category);
+      pushAlarm.send(req, res, title, body, receiver.deviceToken, category, null, roomId);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SEND_SPARK_SUCCESS));
