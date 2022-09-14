@@ -4,7 +4,7 @@ const util = require('./util');
 const statusCode = require('../constants/statusCode');
 const responseMessage = require('../constants/responseMessage');
 
-const send = async (req, res, title, body, receiverToken, category, imageUrl = null) => {
+const send = async (req, res, title, body, receiverToken, category, imageUrl = null, roomId = '', recordId = '') => {
   let mutableContent = 1;
   if (!imageUrl) {
     mutableContent = 0;
@@ -15,14 +15,23 @@ const send = async (req, res, title, body, receiverToken, category, imageUrl = n
     return true;
   }
 
+  if (!roomId) roomId = '';
+  if (!recordId) recordId = '';
+
   try {
     const message = {
+      data: {
+        roomId: String(roomId),
+        recordId: String(recordId),
+      },
       android: {
         data: {
           title,
           body,
           imageUrl,
           category,
+          roomId: String(roomId),
+          recordId: String(recordId),
         },
       },
       apns: {
@@ -61,20 +70,20 @@ const send = async (req, res, title, body, receiverToken, category, imageUrl = n
   }
 };
 
-const getMessage = (title, body, receiverToken, category, imageUrl = null, roomId = null) => {
+const getMessage = (title, body, receiverToken, category, imageUrl = null, roomId = '', recordId = '') => {
   let mutableContent = 1;
   if (!imageUrl) {
     mutableContent = 0;
     imageUrl = '';
   }
 
-  if (!roomId) {
-    roomId = 0;
-  }
+  if (!roomId) roomId = '';
+  if (!recordId) recordId = '';
 
   const message = {
     data: {
       roomId: String(roomId),
+      recordId: String(recordId),
     },
     android: {
       data: {
@@ -83,6 +92,7 @@ const getMessage = (title, body, receiverToken, category, imageUrl = null, roomI
         imageUrl,
         category,
         roomId: String(roomId),
+        recordId: String(recordId),
       },
     },
     apns: {
@@ -119,12 +129,15 @@ const sendMessages = async (req, res, messages) => {
     });
 };
 
-const sendMulticastByTokens = async (req, res, title, body, receiverTokens, category, imageUrl = null, roomId = null) => {
+const sendMulticastByTokens = async (req, res, title, body, receiverTokens, category, imageUrl = null, roomId = '', recordId = '') => {
   let mutableContent = 1;
   if (!imageUrl) {
     mutableContent = 0;
     imageUrl = '';
   }
+
+  if (!roomId) roomId = '';
+  if (!recordId) recordId = '';
 
   // FCM Token이 empty인 경우 제외
   receiverTokens = receiverTokens.filter((t) => t);
@@ -134,12 +147,18 @@ const sendMulticastByTokens = async (req, res, title, body, receiverTokens, cate
 
   try {
     const message = {
+      data: {
+        roomId: String(roomId),
+        recordId: String(recordId),
+      },
       android: {
         data: {
           title,
           body,
           imageUrl,
           category,
+          roomId: String(roomId),
+          recordId: String(recordId),
         },
       },
       apns: {
