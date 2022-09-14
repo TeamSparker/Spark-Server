@@ -151,7 +151,7 @@ const getNoneOrConsiderEntryIdsByDate = async (client, date) => {
 const getPushRemindUsers = async (client, date) => {
   const { rows } = await client.query(
     `
-    SELECT e.user_id, r.room_name, r.room_id, rec.status
+    SELECT e.user_id, r.room_name, r.room_id, rec.status, u.device_token
     FROM spark.entry e
     INNER JOIN spark.room r
     ON  e.room_id = r.room_id

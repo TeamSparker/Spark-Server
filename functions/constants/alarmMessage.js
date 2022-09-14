@@ -67,6 +67,24 @@ const REMIND_ALERT = () => {
   return { title, body, isService, category };
 };
 
+const REMIND_ALERT_NONE = () => {
+  const title = `방의 인증을 하지 않았어요!`;
+  const body = `생명이 줄어들기 전에 서둘러 인증해주세요🏃‍♂️`;
+  const isService = true;
+  const category = 'remind';
+
+  return { title, body, isService, category };
+};
+
+const REMIND_ALERT_DONE = () => {
+  const title = `방에 인증을 안 한 친구가 있어요! `;
+  const body = `지금 스파크를 보내 친구를 응원해주세요 🔥`;
+  const isService = true;
+  const category = 'remind';
+
+  return { title, body, isService, category };
+};
+
 module.exports = {
   CERTIFICATION_COMPLETE,
   STATUS_CONSIDERING,
@@ -76,4 +94,6 @@ module.exports = {
   ROOM_DELETE,
   FEED_LIKE,
   REMIND_ALERT,
+  REMIND_ALERT_NONE,
+  REMIND_ALERT_DONE,
 };

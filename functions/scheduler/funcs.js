@@ -1,4 +1,5 @@
 const db = require('../db/db');
+const admin = require('firebase-admin');
 const { userDB, roomDB, recordDB, scheduleDB, remindDB, dialogDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
@@ -127,21 +128,25 @@ const sendRemind = async () => {
 
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
+    const remindUsers = await recordDB.getPushRemindUsers(client, today);
+    if (remindUsers.length) {
+      const noneMessage = alarmMessage.REMIND_ALERT_NONE();
+      const doneMessage = alarmMessage.REMIND_ALERT_DONE();
+      messages = [];
+      remindUsers.map((u) => {
+        let title;
+        let body;
+        if (u.status == 'NONE' || u.status == 'CONSIDER') {
+          title = u.roomName + noneMessage.title;
+          body = noneMessage.body;
+        } else {
+          title = u.roomName + doneMessage.title;
+          body = doneMessage.body;
+        }
+        messages.push(pushAlarm.getMessage(title, body, u.deviceToken, noneMessage.category, null, u.roomId));
+      });
+      pushAlarm.sendMessages(null, null, messages);
 
-    const noneEntryIds = await recordDB.getNoneOrConsiderEntryIdsByDate(client, today);
-
-    if (noneEntryIds.length > 0) {
-      const targetUserIds = await roomDB.getMemberIdsByEntryIds(
-        client,
-        noneEntryIds.map((e) => e.entryId),
-      );
-      const targetUsers = await userDB.getUsersByIds(
-        client,
-        targetUserIds.map((u) => u.userId),
-      );
-      const targetTokens = targetUsers.filter((u) => u.pushRemind).map((u) => u.deviceToken);
-      const { title, body } = alarmMessage.REMIND_ALERT();
-      pushAlarm.sendMulticastByTokens(null, null, title, body, targetTokens, 'remind');
       const slackMessage = `[REMIND SEND SUCCESS]: To ${targetUsers.length} users: ${targetUsers.map((u) => u.nickname)}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
@@ -153,7 +158,7 @@ const sendRemind = async () => {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
-    console.log('relase');
+    console.log('release');
     client.release();
   }
 };
