@@ -151,7 +151,7 @@ const getNoneOrConsiderEntryIdsByDate = async (client, date) => {
 const getPushRemindUsers = async (client, date) => {
   const { rows } = await client.query(
     `
-    SELECT e.user_id, r.room_name, rec.status
+    SELECT e.user_id, r.room_name, r.room_id, rec.status
     FROM spark.entry e
     INNER JOIN spark.room r
     ON  e.room_id = r.room_id
@@ -164,12 +164,12 @@ const getPushRemindUsers = async (client, date) => {
     AND e.is_kicked = FALSE
     AND u.is_deleted = FALSE
     AND u.push_remind = TRUE
-    AND rec.date = '2022-09-14'
+    AND rec.date = $1
     AND e.room_id IN (
         SELECT DISTINCT e.room_id FROM spark.entry e
         INNER JOIN spark.record r
         ON e.entry_id = r.entry_id
-        WHERE r.date = '2022-09-14'
+        WHERE r.date = $1
         AND r.status IN ('NONE', 'CONSIDER')
         AND e.is_kicked = FALSE
         AND e.is_deleted = FALSE
