@@ -104,7 +104,7 @@ module.exports = async (req, res) => {
       }
 
       if (receiverTokens.length > 0) {
-        pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category);
+        pushAlarm.sendMulticastByTokens(req, res, title, body, receiverTokens, category, null, roomId);
       }
     }
 
