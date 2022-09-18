@@ -13,6 +13,10 @@ const { checkLife } = require('../../../scheduler/funcs');
 
 module.exports = async (req, res) => {
   try {
+    const timeLog = `[TIME STAMP] 인증 체크 시작: ${new Date()}`;
+    console.log(timeLog);
+    slackAPI.sendMessageToSlack(timeLog, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
+
     // 인증체크 및 생명감소
     checkLife();
 
@@ -26,5 +30,8 @@ module.exports = async (req, res) => {
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
+    const timeLog = `[TIME STAMP] 인증 체크 종료: ${new Date()}`;
+    console.log(timeLog);
+    slackAPI.sendMessageToSlack(timeLog, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   }
 };
