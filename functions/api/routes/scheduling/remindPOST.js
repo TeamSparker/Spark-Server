@@ -13,7 +13,7 @@ const { sendRemind } = require('../../../scheduler/funcs');
 
 module.exports = async (req, res) => {
   try {
-    const timeLog = `[TIME STAMP] 인증 체크 종료: ${new Date()}`;
+    const timeLog = `[TIME STAMP] 리마인드 알림 시작: ${new Date()}`;
     console.log(timeLog);
     slackAPI.sendMessageToSlack(timeLog, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
