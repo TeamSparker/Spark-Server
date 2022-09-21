@@ -130,23 +130,40 @@ const sendRemind = async () => {
     const now = dayjs().add(9, 'hour');
     const today = now.format('YYYY-MM-DD');
 
-    let remindUsers = await recordDB.getPushRemindUsers(client, today);
+    const remindUsers = await recordDB.getPushRemindUsers(client, today);
 
     if (remindUsers.length) {
-      let messages = [];
-      remindUsers.map((u) => {
-        if (u.status == 'NONE' || u.status == 'CONSIDER') {
-          const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
-          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-        } else {
-          const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
-          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-        }
+      const messages = [];
+
+      /**
+       * @임시_로직 (10시 리마인드 중복 알림 방지 / deviceToken DISTINCT 처리)
+       */
+      const userIds = [];
+      const tokenGroups = _.groupBy(remindUsers, 'deviceToken');
+      const tokens = Object.keys(tokenGroups);
+      tokens.map((t) => {
+        const obj = tokenGroups[t][0];
+        userIds.push(obj.userId);
+        const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(obj.roomName);
+        messages.push(pushAlarm.getMessage(title, body, t, category, null, obj.roomId));
       });
+
+      /**
+       * @실제_로직
+       */
+      // remindUsers.map((u) => {
+      //   if (u.status == 'NONE' || u.status == 'CONSIDER') {
+      //     const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
+      //     messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+      //   } else {
+      //     const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
+      //     messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+      //   }
+      // });
+
       pushAlarm.sendMessages(null, null, messages);
 
-      const slackMessage = `[REMIND SEND SUCCESS]`;
-      // const slackMessage = `[REMIND SEND SUCCESS]: To ${.length} users: ${remindUsers.map((u) => u.nickname)}`;
+      const slackMessage = `[REMIND SEND SUCCESS]: To ${tokens.length} users: ${userIds.sort()}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
