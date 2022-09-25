@@ -1,6 +1,5 @@
 const db = require('../db/db');
-const admin = require('firebase-admin');
-const { userDB, roomDB, recordDB, scheduleDB, remindDB, dialogDB } = require('../db');
+const { userDB, roomDB, recordDB, scheduleDB, remindDB, dialogDB, lifeTimelineDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
@@ -70,34 +69,49 @@ const checkLife = async () => {
     const dialogRoomIds = completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds);
     let dialogUsers = [];
     if (dialogRoomIds.length) {
-      dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds));
+      dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds));
     }
     let insertDialogs = [];
-    let insertLifeDeductionDialogs = [];
     dialogUsers.map((o) => {
-      if (o.status === 'FAIL' || o.status === 'COMPLETE') {
-        insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}', '${today}')`);
-      } else {
-        insertLifeDeductionDialogs.push(`(${o.userId}, ${o.roomId}, ${lifeDeductionMap.get(o.roomId)}, 'LIFE_DEDUCTION', '${today}')`);
-      }
+      insertDialogs.push(`(${o.userId}, ${o.roomId}, '${o.status}', '${today}')`);
     });
-
     if (insertDialogs.length) {
       await dialogDB.insertDialogs(client, insertDialogs);
     }
-    if (insertLifeDeductionDialogs.length) {
-      await dialogDB.insertLifeDeductionDialogs(client, insertLifeDeductionDialogs);
+
+    let failProfiles = {}; // 인증 안한 사용자 프로필 사진, key: roomId, value: profile 배열
+    let decreaseMessageUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds));
+    let decreaseMessage = [];
+    for (let i = 0; i < decreaseMessageUsers.length; i++) {
+      const { userId, roomId } = decreaseMessageUsers[i];
+
+      if (!Object.keys(failProfiles).includes(roomId)) {
+        let profiles = await roomDB.getFailProfiles(client, roomId);
+        profiles = profiles.sort(() => Math.random() - 0.5);
+        while (profiles.length < 2) {
+          profiles.push(null);
+        }
+        failProfiles[roomId] = profiles;
+      }
+
+      decreaseMessage.push(`('${userId}', '${roomId}', true, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
     }
+
+    // 생명 감소시 Time Line Insert
+    if (decreaseMessage.length) {
+      await lifeTimelineDB.addLifeTimeline(client, decreaseMessage);
+    }
+
+    // 살아남은 방 없으면 return
     if (!successRoomIds.length) {
-      // 살아남은 방 없으면 return
       return;
     }
 
     const survivedRoomIds = _.difference(successRoomIds, completeRoomIds);
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, survivedRoomIds); // 성공한 방들의 entry 불러오기
 
+    // 추가해줄 record들의 속성들 빚어주기
     const insertEntries = ongoingEntries.map((o) => {
-      // 추가해줄 record들의 속성들 빚어주기
       const startDate = dayjs(o.startAt);
       const day = dayjs(today).diff(startDate, 'day') + 1;
       const queryParameter = '(' + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';

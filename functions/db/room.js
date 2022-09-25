@@ -466,6 +466,33 @@ const getFailRecords = async (client, roomIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getFailProfiles = async (client, roomId) => {
+  const now = dayjs().add(9, 'hour');
+  const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
+  const { rows } = await client.query(
+    `
+    SELECT u.profile_img AS profile
+    FROM spark.entry e
+    LEFT JOIN spark.user u
+    ON e.user_id = u.user_id
+    LEFT JOIN spark.record r
+    ON e.entry_id = r.entry_id
+    LEFT JOIN spark.room room
+    ON e.room_id = room.room_id
+    WHERE room.status = 'ONGOING'
+    AND e.is_out = FALSE
+    AND e.is_kicked = FALSE
+    AND e.is_deleted = FALSE
+    AND r.day != 0
+    AND r.status IN ('NONE', 'CONSIDER')
+    AND r.date = $1
+    AND e.room_id = ${roomId}
+    `,
+    [yesterday],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const updateLife = async (client, failCount, roomIds) => {
   const now = dayjs().add(9, 'hour');
   const yesterday = dayjs(now.subtract(1, 'day').format('YYYY-MM-DD'));
@@ -732,6 +759,7 @@ module.exports = {
   getCardsByUserId,
   updateLife,
   getFailRecords,
+  getFailProfiles,
   getEntriesByRoomIds,
   updateThumbnail,
   getOngoingRoomIds,

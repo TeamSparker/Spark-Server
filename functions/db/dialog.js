@@ -32,20 +32,6 @@ const getUserDialogs = async (client, userId, types) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const insertLifeDeductionDialogs = async (client, dialogs) => {
-  const { rows } = await client.query(
-    `
-    INSERT INTO spark.dialog
-    (user_id, room_id, life_deduction_count, type, date)
-    VALUES
-    ${dialogs.join()}
-    RETURNING *
-    `,
-  );
-
-  return convertSnakeToCamel.keysToCamel(rows);
-};
-
 const setDialogRead = async (client, dialogId) => {
   const now = dayjs().add(9, 'h');
   const { rows } = await client.query(
@@ -73,10 +59,10 @@ const setLifeDeductionDialogsRead = async (client, userId, roomId) => {
     AND type = 'LIFE_DEDUCTION'
     RETURNING *
     `,
-    [userId, roomId, now]
-  )
+    [userId, roomId, now],
+  );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
 const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
   const { rows } = await client.query(
@@ -94,7 +80,6 @@ const getUnReadDialogByRoomAndUser = async (client, roomId, userId) => {
 };
 
 module.exports = {
-  insertLifeDeductionDialogs,
   insertDialogs,
   getUserDialogs,
   setDialogRead,
