@@ -1,5 +1,5 @@
 const db = require('../db/db');
-const { userDB, roomDB, recordDB, scheduleDB, remindDB, dialogDB, lifeTimelineDB } = require('../db');
+const { roomDB, recordDB, scheduleDB, remindDB, dialogDB, lifeTimelineDB } = require('../db');
 const _ = require('lodash');
 const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
