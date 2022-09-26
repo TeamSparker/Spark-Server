@@ -11,4 +11,5 @@ module.exports = {
   remindDB: require('./remind'),
   ownershipDB: require('./ownership'),
   versionDB: require('./version'),
+  lifeTimelineDB: require('./lifeTimeline'),
 };
