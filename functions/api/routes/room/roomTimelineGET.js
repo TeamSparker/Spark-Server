@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
 
       let createdAt = dayjs(t.createdAt);
       const passedDay = now.diff(createdAt, 'd');
-      const profiles = [t.profile_1, t.profile_2].filter((profile) => profile !== null);
+      const profiles = [t.profile_1, t.profile_2].filter((profile) => profile !== 'null');
 
       timeline['title'] = title;
       timeline['content'] = content;

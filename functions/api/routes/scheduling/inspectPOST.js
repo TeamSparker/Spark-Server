@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     slackAPI.sendMessageToSlack(timeLog, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
     // 인증체크 및 생명감소
-    checkLife();
+    await checkLife();
 
     const slackMessage = `[🦋CERTIFICATION INSPECTION SUCCESS!🦋] [${req.method.toUpperCase()}]`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);

@@ -66,10 +66,10 @@ const checkLife = async () => {
     }
     const completeRoomIds = completeRooms.map((o) => o.roomId);
     const lifeDeductionRoomIds = _.difference(_.difference(lifeDeductionRooms, completeRoomIds), failRoomIds);
-    const dialogRoomIds = completeRoomIds.concat(failRoomIds).concat(lifeDeductionRoomIds);
+    const completeOrFailRoomIds = completeRoomIds.concat(failRoomIds);
     let dialogUsers = [];
-    if (dialogRoomIds.length) {
-      dialogUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds));
+    if (completeOrFailRoomIds.length) {
+      dialogUsers = await roomDB.getAllUsersByIds(client, completeOrFailRoomIds);
     }
     let insertDialogs = [];
     dialogUsers.map((o) => {
@@ -79,30 +79,28 @@ const checkLife = async () => {
       await dialogDB.insertDialogs(client, insertDialogs);
     }
 
+    let decreaseMessageUsers = [];
+    if (lifeDeductionRoomIds.length) {
+      decreaseMessageUsers = await roomDB.getAllUsersByIds(client, lifeDeductionRoomIds);
+    }
     let failProfiles = {}; // 인증 안한 사용자 프로필 사진, key: roomId, value: profile 배열
-    let decreaseMessageUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds));
     let decreaseMessage = [];
-    console.log('decreaseMessageUsers');
-    console.log(decreaseMessageUsers);
     for (let i = 0; i < decreaseMessageUsers.length; i++) {
       const { userId, roomId } = decreaseMessageUsers[i];
-      console.log(userId, roomId);
       if (!Object.keys(failProfiles).includes(roomId)) {
         let profiles = await roomDB.getFailProfiles(client, roomId);
-        profiles = profiles.sort(() => Math.random() - 0.5);
+        profiles = profiles.map((p) => p.profile).sort(() => Math.random() - 0.5);
         while (profiles.length < 2) {
           profiles.push(null);
         }
         failProfiles[roomId] = profiles;
       }
 
-      console.log(`('${userId}', '${roomId}', true, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
       decreaseMessage.push(`('${userId}', '${roomId}', true, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
     }
 
     // 생명 감소시 Time Line Insert
     if (decreaseMessage.length) {
-      console.log('add timeline');
       await lifeTimelineDB.addLifeTimeline(client, decreaseMessage);
     }
 
@@ -127,6 +125,7 @@ const checkLife = async () => {
     const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
+    console.log(error);
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
