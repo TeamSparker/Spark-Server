@@ -13,10 +13,12 @@ jobs:
 
       # create firebase-sdk file
       - name: Create Firebase SDK File
-        run: |
-          touch ./functions/we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json
-          echo "${{ secrets.FIREBASE_SDK }}" > ./functions/we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json
-        shell: bash
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json"
+          json: ${{ secrets.FIREBASE_SDK }}
+          dir: "functions/"
 
       # create .env file
       - name: Create .env
