@@ -1,0 +1,46 @@
+name: Spark Test Server Deploy
+on:
+  push:
+    branches: [test]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # create firebase-sdk file
+      - name: Create Firebase SDK File
+        run: |
+          touch ./functions/we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json
+          echo "${{ secrets.FIREBASE_SDK }}" > ./functions/we-sopt-spark-firebase-adminsdk-emnjd-30d5170309.json
+        shell: bash
+
+      # create .env file
+      - name: Create .env
+        run: |
+          touch ./functions/.env
+          echo "${{ secrets.DOT_ENV }}" > ./functions/.env
+        shell: bash
+
+      # update .firebaserc file
+      - name: Update .firebaserc
+        run: |
+          rm .firebaserc
+          touch .firebaserc
+          echo "${{ secrets.FIREBASE_RC }}" > .firebaserc
+        shell: bash
+
+      - name: Install npm packages
+        run: |
+          cd functions
+          npm install
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
