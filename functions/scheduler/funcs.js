@@ -82,9 +82,11 @@ const checkLife = async () => {
     let failProfiles = {}; // 인증 안한 사용자 프로필 사진, key: roomId, value: profile 배열
     let decreaseMessageUsers = await roomDB.getAllUsersByIds(client, completeRoomIds.concat(failRoomIds));
     let decreaseMessage = [];
+    console.log('decreaseMessageUsers');
+    console.log(decreaseMessageUsers);
     for (let i = 0; i < decreaseMessageUsers.length; i++) {
       const { userId, roomId } = decreaseMessageUsers[i];
-
+      console.log(userId, roomId);
       if (!Object.keys(failProfiles).includes(roomId)) {
         let profiles = await roomDB.getFailProfiles(client, roomId);
         profiles = profiles.sort(() => Math.random() - 0.5);
@@ -94,11 +96,13 @@ const checkLife = async () => {
         failProfiles[roomId] = profiles;
       }
 
+      console.log(`('${userId}', '${roomId}', true, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
       decreaseMessage.push(`('${userId}', '${roomId}', true, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
     }
 
     // 생명 감소시 Time Line Insert
     if (decreaseMessage.length) {
+      console.log('add timeline');
       await lifeTimelineDB.addLifeTimeline(client, decreaseMessage);
     }
 
