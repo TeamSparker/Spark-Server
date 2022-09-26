@@ -67,6 +67,9 @@ module.exports = {
   HOST_WAITROOM_OUT_FAIL: '방 생성자는 대기방을 나갈 수 없습니다',
   DIALOG_READ_SUCCESS: '성공/실패한 습관방 읽음처리 완료',
 
+  // Life Timeline
+  GET_LIFE_TIMELINE_SUCCESS: '생명 타임라인 조회 성공',
+
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
   RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',

@@ -18,5 +18,6 @@ router.post('/:roomId/record', checkUser, uploadImageIntoSubDir('certification')
 router.delete('/:roomId', checkUser, require('./roomDELETE'));
 router.delete('/:roomId/out', checkUser, require('./roomOutDELETE'));
 router.patch('/:roomId/read', checkUser, require('./roomReadPATCH'));
+router.get('/:roomId/timeline', checkUser, require('./roomTimelineGET'));
 
 module.exports = router;
