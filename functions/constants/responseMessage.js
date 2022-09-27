@@ -69,6 +69,7 @@ module.exports = {
 
   // Life Timeline
   GET_LIFE_TIMELINE_SUCCESS: '생명 타임라인 조회 성공',
+  LIFE_TIMELINE_READ_SUCCESS: '생명 타임라인 읽음처리 완료',
 
   // Feed
   GET_FEED_SUCCES: '피드 조회 성공',
