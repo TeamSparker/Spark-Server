@@ -69,6 +69,8 @@ module.exports = async (req, res) => {
       return timeline;
     });
 
+    await lifeTimelineDB.readLifeTimeline(client, roomId, user.userId);
+
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.GET_LIFE_TIMELINE_SUCCESS, {
         timelines,
