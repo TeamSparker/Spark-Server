@@ -28,7 +28,22 @@ const getLifeTimeline = async (client, roomId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const readLifeTimeline = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE spark.life_timeline
+    SET is_read = TRUE
+    WHERE room_id = $1
+    AND receiver_id = $2
+    RETURNING *
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   addLifeTimeline,
   getLifeTimeline,
+  readLifeTimeline,
 };

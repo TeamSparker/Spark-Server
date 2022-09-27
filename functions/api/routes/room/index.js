@@ -19,5 +19,6 @@ router.delete('/:roomId', checkUser, require('./roomDELETE'));
 router.delete('/:roomId/out', checkUser, require('./roomOutDELETE'));
 router.patch('/:roomId/read', checkUser, require('./roomReadPATCH'));
 router.get('/:roomId/timeline', checkUser, require('./roomTimelineGET'));
+router.patch('/:roomId/timeline', checkUser, require('./roomTimelineReadPATCH'));
 
 module.exports = router;
