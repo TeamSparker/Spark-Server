@@ -6,7 +6,7 @@ const addLifeTimeline = async (client, timelines) => {
   const { rows } = await client.query(
     `
       INSERT INTO spark.life_timeline
-      (receiver_id, room_id, is_decrease, profile_1, profile_2)
+      (receiver_id, room_id, is_decrease, decrease_count, profile_1, profile_2)
       VALUES
       ${timelines.join()}
       RETURNING *
