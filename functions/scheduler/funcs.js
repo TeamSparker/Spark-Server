@@ -193,7 +193,6 @@ const sendRemind = async () => {
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
-    console.log('release');
     client.release();
   }
 };
