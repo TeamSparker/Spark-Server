@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
 
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.ROOM_ID_INVALID));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
     }
 
     const startDate = dayjs(room.startAt);
@@ -38,11 +38,6 @@ module.exports = async (req, res) => {
     const today = dayjs(now.format('YYYY-MM-DD'));
     const leftDay = endDate.diff(today, 'day');
     const day = dayjs(today).diff(startDate, 'day') + 1;
-
-    // @error 1. 존재하지 않는 습관방인 경우
-    if (!room) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
-    }
 
     // @error 2. 진행중인 습관방이 아닌 경우
     if (room.status !== 'ONGOING' || leftDay < 0) {
