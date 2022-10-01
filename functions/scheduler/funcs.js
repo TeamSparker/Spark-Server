@@ -5,6 +5,7 @@ const dayjs = require('dayjs');
 const slackAPI = require('../middlewares/slackAPI');
 const alarmMessage = require('../constants/alarmMessage');
 const pushAlarm = require('../lib/pushAlarm');
+const { termList } = require('../constants/termList');
 
 const checkLife = async () => {
   let client;
@@ -103,7 +104,7 @@ const checkLife = async () => {
 
     // 생명 감소시 Time Line Insert
     if (decreaseMessage.length) {
-      await lifeTimelineDB.addLifeTimeline(client, decreaseMessage);
+      await lifeTimelineDB.addDecreaseTimelines(client, decreaseMessage);
     }
 
     // 살아남은 방 없으면 return
@@ -114,24 +115,41 @@ const checkLife = async () => {
     const survivedRoomIds = _.difference(successRoomIds, completeRoomIds);
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, survivedRoomIds); // 성공한 방들의 entry 불러오기
 
-    // 추가해줄 record들의 속성들 빚어주기
-    const insertEntries = ongoingEntries.map((o) => {
-      const startDate = dayjs(o.startAt);
-      const day = dayjs(today).diff(startDate, 'day') + 1;
-      const queryParameter = '(' + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+    // 추가해줄 records
+    let insertEntries = [];
 
-      return queryParameter;
-    });
+    // 추가해줄 lifeTimelines
+    let insertTimelines = [];
 
-    const resultRecords = await recordDB.insertRecords(client, insertEntries); // record 추가!
-    const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
+    // 생명 충전해줄 RoomIds
+    let fillLifeRoomIds = new Set();
+
+    for (let i = 0; i < ongoingEntries.length; i++) {
+      // insert할 record 값들 생성
+      const entry = ongoingEntries[i];
+      const day = dayjs(today).diff(dayjs(entry.startAt), 'day') + 1;
+      const queryParameter = '(' + entry.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+      insertEntries.push(queryParameter);
+
+      if (termList.includes(day)) {
+        fillLifeRoomIds.add(entry.roomId);
+        insertTimelines.push(`('${entry.userId}', '${entry.roomId}', false, ${day})`);
+      }
+    }
+
+    fillLifeRoomIds = Array.from(fillLifeRoomIds);
+
+    await recordDB.insertRecords(client, insertEntries); // record 추가!
+    await lifeTimelineDB.addFillTimelines(client, insertTimelines); // lifeTimeline 추가!
+    await roomDB.fillLifeByRoomIds(client, fillLifeRoomIds); // 생명 충전
+
+    const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 생명 충전 방 목록: ${fillLifeRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } catch (error) {
     console.log(error);
     const slackMessage = `[ERROR] ${error} ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
-    console.log('relase');
     client.release();
   }
 };

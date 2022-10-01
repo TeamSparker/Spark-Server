@@ -54,20 +54,35 @@ module.exports = async (req, res) => {
     let timelines = await lifeTimelineDB.getLifeTimeline(client, roomId, user.userId);
 
     timelines = timelines.map((t) => {
-      const timeline = {};
-      const { title, content } = timelineMessage.LIFE_DECREASE(t.decreaseCount);
+      if (t.isDecrease) {
+        const timeline = {};
+        const { title, content } = timelineMessage.LIFE_DECREASE(t.decreaseCount);
 
-      let createdAt = dayjs(t.createdAt);
-      const passedDay = now.diff(createdAt, 'd');
-      const profiles = [t.profile_1, t.profile_2].filter((profile) => profile !== 'null');
+        let createdAt = dayjs(t.createdAt);
+        const passedDay = now.diff(createdAt, 'd');
+        const profiles = [t.profile_1, t.profile_2].filter((profile) => profile !== 'null');
 
-      timeline['title'] = title;
-      timeline['content'] = content;
-      timeline['profiles'] = profiles;
-      timeline['day'] = passedDayToStr(passedDay);
-      timeline['isNew'] = !t.isRead;
+        timeline['title'] = title;
+        timeline['content'] = content;
+        timeline['profiles'] = profiles;
+        timeline['day'] = passedDayToStr(passedDay);
+        timeline['isNew'] = !t.isRead;
 
-      return timeline;
+        return timeline;
+      } else {
+        const timeline = {};
+        const { title, content } = timelineMessage.LIFE_FILL(t.termDay);
+
+        let createdAt = dayjs(t.createdAt);
+        const passedDay = now.diff(createdAt, 'd');
+
+        timeline['title'] = title;
+        timeline['content'] = content;
+        timeline['day'] = passedDayToStr(passedDay);
+        timeline['isNew'] = !t.isRead;
+
+        return timeline;
+      }
     });
 
     await lifeTimelineDB.readLifeTimeline(client, roomId, user.userId);
