@@ -734,6 +734,20 @@ const endById = async (client, roomId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const fillLifeByRoomIds = async (client, roomIds) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.room
+      SET life = 3, updated_at = $1
+      WHERE room_id in (${roomIds.join()})
+      RETURNING *
+    `,
+    [now],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -775,4 +789,5 @@ module.exports = {
   getMemberIdsByEntryIds,
   endById,
   outByUserId,
+  fillLifeByRoomIds,
 };

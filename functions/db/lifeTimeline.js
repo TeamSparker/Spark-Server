@@ -1,12 +1,23 @@
-const dayjs = require('dayjs');
-const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
-const addLifeTimeline = async (client, timelines) => {
+const addDecreaseTimelines = async (client, timelines) => {
   const { rows } = await client.query(
     `
       INSERT INTO spark.life_timeline
       (receiver_id, room_id, is_decrease, decrease_count, profile_1, profile_2)
+      VALUES
+      ${timelines.join()}
+      RETURNING *
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addFillTimelines = async (client, timelines) => {
+  const { rows } = await client.query(
+    `
+      INSERT INTO spark.life_timeline
+      (receiver_id, room_id, is_decrease, term_day)
       VALUES
       ${timelines.join()}
       RETURNING *
@@ -43,7 +54,8 @@ const readLifeTimeline = async (client, roomId, userId) => {
 };
 
 module.exports = {
-  addLifeTimeline,
+  addDecreaseTimelines,
+  addFillTimelines,
   getLifeTimeline,
   readLifeTimeline,
 };
