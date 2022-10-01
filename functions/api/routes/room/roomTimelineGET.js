@@ -7,6 +7,7 @@ const { roomDB, lifeTimelineDB } = require('../../../db');
 const timelineMessage = require('../../../constants/lifeTimelineMessage');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
+const { passedDayToStr } = require('../../../lib/passedDayToStr');
 
 /**
  *  @습관방_생명_타임라인_조회
@@ -63,7 +64,7 @@ module.exports = async (req, res) => {
       timeline['title'] = title;
       timeline['content'] = content;
       timeline['profiles'] = profiles;
-      timeline['day'] = passedDay > 0 ? `${passedDay}일전` : `오늘`;
+      timeline['day'] = passedDayToStr(passedDay);
       timeline['isNew'] = !t.isRead;
 
       return timeline;
