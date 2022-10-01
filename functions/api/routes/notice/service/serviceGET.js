@@ -6,6 +6,7 @@ const responseMessage = require('../../../../constants/responseMessage');
 const db = require('../../../../db/db');
 const slackAPI = require('../../../../middlewares/slackAPI');
 const { noticeDB } = require('../../../../db');
+const { passedDayToStr } = require('../../../../lib/passedDayToStr');
 
 /**
  *  @서비스_알림_조회
@@ -43,7 +44,7 @@ module.exports = async (req, res) => {
       notice['noticeId'] = s.notificationId;
       notice['noticeTitle'] = s.title;
       notice['noticeContent'] = s.content;
-      notice['day'] = passedDay > 0 ? `${passedDay}일전` : `오늘`;
+      notice['day'] = passedDayToStr(passedDay);
       notice['isNew'] = !s.isRead;
       return notice;
     });
