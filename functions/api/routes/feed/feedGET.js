@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     const rawRooms = await roomDB.getRoomsIncludingFailByUserId(client, user.userId);
 
     if (!rawRooms.length) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records: [] }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCESS, { records: [] }));
     }
     const roomIds = [...new Set(rawRooms.filter(Boolean).map((room) => room.roomId))];
     const allRecords = await roomDB.getFeedRecordsByRoomIds(client, roomIds);
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
       recordIds = allRecordIds.slice(0, size);
     }
     if (!recordIds.length) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records: [] }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCESS, { records: [] }));
     }
     let likeNums = [];
     let sparkNums = [];
@@ -92,7 +92,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCES, { records }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.GET_FEED_SUCCESS, { records }));
   } catch (error) {
     console.log(error);
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

@@ -72,7 +72,7 @@ module.exports = {
   LIFE_TIMELINE_READ_SUCCESS: '생명 타임라인 읽음처리 완료',
 
   // Feed
-  GET_FEED_SUCCES: '피드 조회 성공',
+  GET_FEED_SUCCESS: '피드 조회 성공',
   RECORD_ID_NOT_VALID: '유효하지 않은 recordId입니다',
   SEND_LIKE_SUCCESS: '좋아요 성공',
   CANCEL_LIKE_SUCCESS: '좋아요 취소 성공',
