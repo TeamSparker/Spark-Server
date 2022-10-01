@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
 
     // @error 2. 존재하지 않는 습관방인 경우
     if (!room) {
-      return res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
     }
 
     // @error 3. 접근 권한이 없는 유저인 경우

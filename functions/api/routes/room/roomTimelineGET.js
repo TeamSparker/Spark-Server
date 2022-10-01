@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
 
     // @error 1. 존재하지 않는 습관방인 경우
     if (!room) {
-      res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.NO_CONTENT, responseMessage.GET_ROOM_DATA_FAIL));
     }
 
     const endDate = dayjs(room.endAt);
@@ -40,14 +40,14 @@ module.exports = async (req, res) => {
 
     // @error 2. 진행중인 습관방이 아닌 경우
     if (room.status !== 'ONGOING' || leftDay < 0) {
-      res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_ONGOING_ROOM));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_ONGOING_ROOM));
     }
 
     const entries = await roomDB.getEntriesByRoomId(client, roomId);
     const userEntry = entries.filter((entry) => entry.userId === user.userId);
     // @error 3. 접근 권한이 없는 유저인 경우
     if (!userEntry.length) {
-      res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
+      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
 
     let timelines = await lifeTimelineDB.getLifeTimeline(client, roomId, user.userId);
