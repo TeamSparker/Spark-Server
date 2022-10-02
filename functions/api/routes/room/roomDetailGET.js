@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, sparkDB, dialogDB } = require('../../../db');
+const { roomDB, sparkDB, dialogDB, lifeTimelineDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 
@@ -52,6 +52,8 @@ module.exports = async (req, res) => {
     }
 
     let isTimelineNew = false;
+    let newTimelineCount = await lifeTimelineDB.getNewTimelineCount(client, roomId, user.userId);
+    newTimelineCount > 0 ? (isTimelineNew = true) : (isTimelineNew = false);
 
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
