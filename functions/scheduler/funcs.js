@@ -116,7 +116,7 @@ const checkLife = async () => {
     const ongoingEntries = await roomDB.getEntriesByRoomIds(client, survivedRoomIds); // 성공한 방들의 entry 불러오기
 
     // 추가해줄 records
-    let insertEntries = [];
+    let insertRecords = [];
 
     // 추가해줄 lifeTimelines
     let insertTimelines = [];
@@ -128,8 +128,8 @@ const checkLife = async () => {
       // insert할 record 값들 생성
       const entry = ongoingEntries[i];
       const day = dayjs(today).diff(dayjs(entry.startAt), 'day') + 1;
-      const queryParameter = '(' + entry.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
-      insertEntries.push(queryParameter);
+      const record = '(' + entry.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+      insertRecords.push(record);
 
       if (termList.includes(day)) {
         fillLifeRoomIds.add(entry.roomId);
@@ -139,7 +139,7 @@ const checkLife = async () => {
 
     fillLifeRoomIds = Array.from(fillLifeRoomIds);
 
-    await recordDB.insertRecords(client, insertEntries); // record 추가!
+    await recordDB.insertRecords(client, insertRecords); // record 추가!
     await lifeTimelineDB.addFillTimelines(client, insertTimelines); // lifeTimeline 추가!
     await roomDB.fillLifeByRoomIds(client, fillLifeRoomIds); // 생명 충전
 

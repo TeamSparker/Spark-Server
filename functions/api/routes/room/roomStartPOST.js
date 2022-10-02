@@ -7,7 +7,7 @@ const db = require('../../../db/db');
 const pushAlarm = require('../../../lib/pushAlarm');
 const dayjs = require('dayjs');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { userDB, roomDB, recordDB, noticeDB } = require('../../../db');
+const { roomDB, recordDB, noticeDB, lifeTimelineDB } = require('../../../db');
 
 /**
  *  @습관방_시작
@@ -68,8 +68,26 @@ module.exports = async (req, res) => {
       return queryParameter;
     });
 
+    let insertRecords = [];
+    let insertTimelines = [];
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      // 추가해줄 record들의 속성들 빚어주기
+      const startDate = dayjs(entry.startAt);
+      const now = dayjs().add(9, 'hour');
+      const today = now.format('YYYY-MM-DD');
+      const day = dayjs(today).diff(startDate, 'day') + 1;
+      const record = '(' + entry.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
+
+      insertRecords.push(record);
+      insertTimelines.push(`('${entry.userId}', '${entry.roomId}', false, 1)`);
+    }
+
     // 참여자들의 1일차 record 생성
-    await recordDB.insertRecords(client, insertEntries);
+    await recordDB.insertRecords(client, insertRecords);
+
+    // 참여자들의 1일차 Life Timeline 생성
+    await lifeTimelineDB.addFillTimelines(client, insertEntries);
 
     const { title, body, isService, category } = alarmMessage.ROOM_NEW(room.roomName);
 
