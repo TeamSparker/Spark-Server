@@ -762,6 +762,20 @@ const updateTermNewByRoomIds = async (client, fillLifeRoomIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const updateTermFalseByEntryId = async (client, entryId) => {
+  const now = dayjs().add(9, 'hour');
+  const { rows } = await client.query(
+    `
+      UPDATE spark.entry
+      SET new_term = FALSE, updated_at = $1
+      WHERE entry_id = $2
+      RETURNING *
+    `,
+    [now, entryId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   addRoom,
   isCodeUnique,
@@ -805,4 +819,5 @@ module.exports = {
   outByUserId,
   fillLifeByRoomIds,
   updateTermNewByRoomIds,
+  updateTermFalseByEntryId,
 };

@@ -115,6 +115,11 @@ module.exports = async (req, res) => {
     const receivedSpark = await sparkDB.countSparkByRecordId(client, myRecord.recordId);
     myRecord.receivedSpark = parseInt(receivedSpark.count);
 
+    // new_term false처리
+    if (userEntry[0].newTerm) {
+      await roomDB.updateTermFalseByEntryId(client, userEntry[0].entryId);
+    }
+
     const data = {
       roomId: room.roomId,
       roomName: room.roomName,
