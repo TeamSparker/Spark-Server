@@ -72,11 +72,15 @@ module.exports = async (req, res) => {
       insertTimelines.push(`('${entry.userId}', '${entry.roomId}', false, 1)`);
     }
 
-    // 참여자들의 1일차 record 생성
-    await recordDB.insertRecords(client, insertRecords);
+    if (insertRecords.length > 0) {
+      // 참여자들의 1일차 record 생성
+      await recordDB.insertRecords(client, insertRecords);
+    }
 
-    // 참여자들의 1일차 Life Timeline 생성
-    await lifeTimelineDB.addFillTimelines(client, insertTimelines);
+    if (insertTimelines.length > 0) {
+      // 참여자들의 1일차 Life Timeline 생성
+      await lifeTimelineDB.addFillTimelines(client, insertTimelines);
+    }
 
     const { title, body, isService, category } = alarmMessage.ROOM_NEW(room.roomName);
 
