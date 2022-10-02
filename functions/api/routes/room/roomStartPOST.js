@@ -57,17 +57,6 @@ module.exports = async (req, res) => {
 
     const entries = await roomDB.getEntriesByRoomIds(client, [roomId]);
 
-    const insertEntries = entries.map((o) => {
-      // 추가해줄 record들의 속성들 빚어주기
-      const startDate = dayjs(o.startAt);
-      const now = dayjs().add(9, 'hour');
-      const today = now.format('YYYY-MM-DD');
-      const day = dayjs(today).diff(startDate, 'day') + 1;
-      const queryParameter = '(' + o.entryId + ",'" + now.format('YYYY-MM-DD') + "'," + day + ')';
-
-      return queryParameter;
-    });
-
     let insertRecords = [];
     let insertTimelines = [];
     for (let i = 0; i < entries.length; i++) {
@@ -87,7 +76,7 @@ module.exports = async (req, res) => {
     await recordDB.insertRecords(client, insertRecords);
 
     // 참여자들의 1일차 Life Timeline 생성
-    await lifeTimelineDB.addFillTimelines(client, insertEntries);
+    await lifeTimelineDB.addFillTimelines(client, insertTimelines);
 
     const { title, body, isService, category } = alarmMessage.ROOM_NEW(room.roomName);
 
