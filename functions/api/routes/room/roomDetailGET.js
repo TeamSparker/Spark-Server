@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { roomDB, sparkDB, dialogDB } = require('../../../db');
+const { roomDB, sparkDB, dialogDB, lifeTimelineDB } = require('../../../db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
 
@@ -47,20 +47,17 @@ module.exports = async (req, res) => {
 
     // @error 3. 접근 권한이 없는 유저인 경우
     const userEntry = entries.filter((entry) => entry.userId === user.userId);
-
     if (!userEntry.length) {
-      res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
+      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
-    let lifeDeductionCount = 0;
-    const dialogs = await dialogDB.setLifeDeductionDialogsRead(client, user.userId, roomId);
-    console.log(dialogs);
-    dialogs.map((dialog) => {
-      lifeDeductionCount += dialog.lifeDeductionCount;
-    });
+
+    let isTimelineNew = false;
+    let newTimelineCount = await lifeTimelineDB.getNewTimelineCount(client, roomId, user.userId);
+    newTimelineCount > 0 ? (isTimelineNew = true) : (isTimelineNew = false);
+
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
     let myRecord = null;
-
     let considerRecords = [];
     let noneRecords = [];
     let restRecords = [];
@@ -118,6 +115,11 @@ module.exports = async (req, res) => {
     const receivedSpark = await sparkDB.countSparkByRecordId(client, myRecord.recordId);
     myRecord.receivedSpark = parseInt(receivedSpark.count);
 
+    // new_term false처리
+    if (userEntry[0].newTerm) {
+      await roomDB.updateTermFalseByEntryId(client, userEntry[0].entryId);
+    }
+
     const data = {
       roomId: room.roomId,
       roomName: room.roomName,
@@ -128,7 +130,8 @@ module.exports = async (req, res) => {
       leftDay,
       life: room.life,
       fromStart: room.fromStart,
-      lifeDeductionCount,
+      isTimelineNew,
+      isTermNew: userEntry[0].newTerm,
       myRecord,
       otherRecords,
     };

@@ -53,9 +53,23 @@ const readLifeTimeline = async (client, roomId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getNewTimelineCount = async (client, roomId, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT count(*) as number FROM spark.life_timeline
+      WHERE room_id = $1
+      AND receiver_id = $2
+      AND is_read = FALSE
+    `,
+    [roomId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0].number);
+};
+
 module.exports = {
   addDecreaseTimelines,
   addFillTimelines,
   getLifeTimeline,
   readLifeTimeline,
+  getNewTimelineCount,
 };

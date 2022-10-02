@@ -86,7 +86,7 @@ const checkLife = async () => {
     }
     let failProfiles = {}; // 인증 안한 사용자 프로필 사진, key: roomId, value: profile 배열
     let decreaseCount = {}; // 인증 안한 사용자 수, key: roomId, value: decreaseCount
-    let decreaseMessage = [];
+    let decreaseTimelines = [];
     for (let i = 0; i < decreaseMessageUsers.length; i++) {
       const { userId, roomId } = decreaseMessageUsers[i];
       if (!Object.keys(failProfiles).includes(roomId)) {
@@ -99,12 +99,12 @@ const checkLife = async () => {
         failProfiles[roomId] = profiles;
       }
 
-      decreaseMessage.push(`('${userId}', '${roomId}', true, ${decreaseCount[roomId]}, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
+      decreaseTimelines.push(`('${userId}', '${roomId}', true, ${decreaseCount[roomId]}, '${failProfiles[roomId][0]}', '${failProfiles[roomId][1]}')`);
     }
 
     // 생명 감소시 Time Line Insert
-    if (decreaseMessage.length) {
-      await lifeTimelineDB.addDecreaseTimelines(client, decreaseMessage);
+    if (decreaseTimelines.length) {
+      await lifeTimelineDB.addDecreaseTimelines(client, decreaseTimelines);
     }
 
     // 살아남은 방 없으면 return
@@ -118,8 +118,8 @@ const checkLife = async () => {
     // 추가해줄 records
     let insertRecords = [];
 
-    // 추가해줄 lifeTimelines
-    let insertTimelines = [];
+    // 생명 충전 lifeTimelines
+    let fillTimelines = [];
 
     // 생명 충전해줄 RoomIds
     let fillLifeRoomIds = new Set();
@@ -133,7 +133,7 @@ const checkLife = async () => {
 
       if (termList.includes(day)) {
         fillLifeRoomIds.add(entry.roomId);
-        insertTimelines.push(`('${entry.userId}', '${entry.roomId}', false, ${day})`);
+        fillTimelines.push(`('${entry.userId}', '${entry.roomId}', false, ${day})`);
       }
     }
 
@@ -142,11 +142,13 @@ const checkLife = async () => {
     if (insertRecords.length > 0) {
       await recordDB.insertRecords(client, insertRecords); // record 추가!
     }
-    if (insertTimelines.length > 0) {
-      await lifeTimelineDB.addFillTimelines(client, insertTimelines); // lifeTimeline 추가!
+    if (fillTimelines.length > 0) {
+      await lifeTimelineDB.addFillTimelines(client, fillTimelines); // lifeTimeline 추가!
     }
     if (fillLifeRoomIds.length > 0) {
       await roomDB.fillLifeByRoomIds(client, fillLifeRoomIds); // 생명 충전
+      // 생명 충전시, 습관 방의 분기가 변한 것이므로, entry 테이블의 term_new 값을 True로 업데이트
+      await roomDB.updateTermNewByRoomIds(client, fillLifeRoomIds);
     }
 
     const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 생명 충전 방 목록: ${fillLifeRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
