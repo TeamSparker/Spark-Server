@@ -47,20 +47,15 @@ module.exports = async (req, res) => {
 
     // @error 3. 접근 권한이 없는 유저인 경우
     const userEntry = entries.filter((entry) => entry.userId === user.userId);
-
     if (!userEntry.length) {
-      res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
+      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NOT_MEMBER));
     }
-    let lifeDeductionCount = 0;
-    const dialogs = await dialogDB.setLifeDeductionDialogsRead(client, user.userId, roomId);
-    console.log(dialogs);
-    dialogs.map((dialog) => {
-      lifeDeductionCount += dialog.lifeDeductionCount;
-    });
+
+    let isTimelineNew = false;
+
     const records = await roomDB.getRecordsByDay(client, roomId, day);
 
     let myRecord = null;
-
     let considerRecords = [];
     let noneRecords = [];
     let restRecords = [];
@@ -128,7 +123,7 @@ module.exports = async (req, res) => {
       leftDay,
       life: room.life,
       fromStart: room.fromStart,
-      lifeDeductionCount,
+      isTimelineNew,
       myRecord,
       otherRecords,
     };
