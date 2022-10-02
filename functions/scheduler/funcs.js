@@ -139,9 +139,15 @@ const checkLife = async () => {
 
     fillLifeRoomIds = Array.from(fillLifeRoomIds);
 
-    await recordDB.insertRecords(client, insertRecords); // record 추가!
-    await lifeTimelineDB.addFillTimelines(client, insertTimelines); // lifeTimeline 추가!
-    await roomDB.fillLifeByRoomIds(client, fillLifeRoomIds); // 생명 충전
+    if (insertRecords.length > 0) {
+      await recordDB.insertRecords(client, insertRecords); // record 추가!
+    }
+    if (insertTimelines.length > 0) {
+      await lifeTimelineDB.addFillTimelines(client, insertTimelines); // lifeTimeline 추가!
+    }
+    if (fillLifeRoomIds.length > 0) {
+      await roomDB.fillLifeByRoomIds(client, fillLifeRoomIds); // 생명 충전
+    }
 
     const slackMessage = `폭파된 방 목록: ${failRoomIds} \n 생명 충전 방 목록: ${fillLifeRoomIds} \n 살아남은 방 목록: ${survivedRoomIds}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
