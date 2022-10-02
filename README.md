@@ -2,7 +2,8 @@
 
 > 👑 WE SOPT 29th APPJAM 대상 👑 <br>
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
-> 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22.
+> 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22. <br>
+> [App Store](https://apps.apple.com/kr/app/spark-%EC%8A%A4%ED%8C%8C%ED%81%AC-%EC%B9%9C%EA%B5%AC%EC%99%80-%EC%8A%B5%EA%B4%80-%EA%B4%80%EB%A6%AC/id1605811861) | [Play Store](https://play.google.com/store/apps/details?id=com.teamsparker.android)
 
 ![banner](https://user-images.githubusercontent.com/39653584/150547366-5ff166d7-874d-4b4d-a507-7a387c348991.png)
 ---
@@ -34,14 +35,14 @@
 ### &nbsp;&nbsp;[Spark API Document ✨](https://www.notion.so/API-94b97e62a8b84769a784d86992287119)
 
 | Function | Description | Developer |
-| --- | --- | --- |
-| auth | Apple, Kakao 로그인 | 🦋 영권 |
+| :---: | --- | --- |
+| Auth | Apple, Kakao 로그인 | 🦋 영권 |
 |  | Apple, Kakao 회원가입 | 🐱 설희 |
 |  | 회원 탈퇴 | 🐱 설희 |
-| feed | 피드 모아보기 | 🐱 설희 |
+| Feed | 피드 모아보기 | 🐱 설희 |
 |  | 피드 좋아요 및 좋아요 취소 | 🐻‍❄️ 정현 / 🦋 영권 |
 |  | 피드 신고하기 | 🐱 설희 |
-| room | 습관방 생성 | 🦋 영권 |
+| Room | 습관방 생성 | 🦋 영권 |
 |  | 방 리스트 조회 | 🐱 설희 |
 |  | 대기방 상세 조회 | 🦋 영권 |
 |  | 습관방 상세 조회 | 🐱 설희 |
@@ -57,22 +58,23 @@
 |  | 습관방 및 대기방 나가기 | 🦋 영권 |
 |  | 대기방 삭제 | 🦋 영권 |
 |  | 홈에서 성공 및 실패한 카드 | 🐱 설희 |
-| user | 유저 프로필 조회 | 🦋 영권 |
+| User | 유저 프로필 조회 | 🦋 영권 |
 |  | 유저 프로필 수정 | 🦋 영권 |
-| myroom | 보관함 리스트 불러오기 | 🐱 설희 |
+| Myroom | 보관함 리스트 불러오기 | 🐱 설희 |
 |  | 특정 습관방 인증사진 모아보기 | 🐱 설희 |
 |  | 보관함 대표 이미지 변경 | 🐱 설희 |
 |  | 보관함 대표 이미지 목록 불러오기 | 🦋 영권 |
-| notice | 서비스 알림 조회 | 🦋 영권 |
+| Notice | 서비스 알림 조회 | 🦋 영권 |
 |  | 서비스 알림 읽음 처리 | 🦋 영권 |
 |  | 활동 알림 조회 | 🦋 영권 |
 |  | 활동 알림 읽음 처리 | 🦋 영권 |
 |  | 알림 삭제 | 🦋 영권 |
 |  | 새로운 알림 빨콩 조회  | 🦋 영권 |
+| Life Timeline | 생명 타임라인 조회 | 🦋 영권 |
 | FCM | 푸시알림 전송 기능 | 🦋 영권 |
 |  | 푸시알림 ON / OFF Toggle  | 🦋 영권 |
 |  | 푸시알림 설정 조회  | 🦋 영권 |
-| version | 최신 버전정보 불러오기 | 🦋 영권 |
+| Version | 최신 버전정보 불러오기 | 🦋 영권 |
 |  | 최신 버전정보 갱신하기 | 🦋 영권 |
 
 
