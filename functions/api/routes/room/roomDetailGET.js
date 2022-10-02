@@ -126,6 +126,7 @@ module.exports = async (req, res) => {
       life: room.life,
       fromStart: room.fromStart,
       isTimelineNew,
+      isTermNew: userEntry[0].newTerm,
       myRecord,
       otherRecords,
     };
