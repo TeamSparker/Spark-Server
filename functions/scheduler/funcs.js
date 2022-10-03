@@ -131,39 +131,26 @@ const sendRemind = async () => {
     const today = now.format('YYYY-MM-DD');
 
     const remindUsers = await recordDB.getPushRemindUsers(client, today);
+    const slackInfo = [];
 
     if (remindUsers.length) {
       const messages = [];
 
-      /**
-       * @임시_로직 (10시 리마인드 중복 알림 방지 / deviceToken DISTINCT 처리)
-       */
-      const userIds = [];
-      const tokenGroups = _.groupBy(remindUsers, 'deviceToken');
-      const tokens = Object.keys(tokenGroups);
-      tokens.map((t) => {
-        const obj = tokenGroups[t][0];
-        userIds.push(obj.userId);
-        const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(obj.roomName);
-        messages.push(pushAlarm.getMessage(title, body, t, category, null, obj.roomId));
+      remindUsers.map((u) => {
+        if (u.status == 'NONE' || u.status == 'CONSIDER') {
+          const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
+          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+          slackInfo.push(`[X]${u.userId}(${u.roomId})`);
+        } else {
+          const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
+          messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+          slackInfo.push(`[O]${u.userId}(${u.roomId})`);
+        }
       });
-
-      /**
-       * @실제_로직
-       */
-      // remindUsers.map((u) => {
-      //   if (u.status == 'NONE' || u.status == 'CONSIDER') {
-      //     const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
-      //     messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-      //   } else {
-      //     const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
-      //     messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-      //   }
-      // });
 
       pushAlarm.sendMessages(null, null, messages);
 
-      const slackMessage = `[REMIND SEND SUCCESS]: To ${tokens.length} users: ${userIds.sort()}`;
+      const slackMessage = `[REMIND SEND SUCCESS]: To ${slackInfo.length} users \n${slackInfo}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
