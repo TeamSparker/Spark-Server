@@ -140,11 +140,11 @@ const sendRemind = async () => {
         if (u.status == 'NONE' || u.status == 'CONSIDER') {
           const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-          slackInfo.push(`${u.userId}(${u.roomId})`);
+          slackInfo.push(`[NONE] ${u.userId} (room ${u.roomId})`);
         } else {
           const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-          slackInfo.push(`${u.userId}(${u.roomId})`);
+          slackInfo.push(`[DONE] ${u.userId} (room ${u.roomId})`);
         }
       });
 
