@@ -140,17 +140,17 @@ const sendRemind = async () => {
         if (u.status == 'NONE' || u.status == 'CONSIDER') {
           const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-          slackInfo.push(`[NONE] ${u.userId} (room ${u.roomId})`);
+          slackInfo.push(`[X]${u.userId}(${u.roomId})`);
         } else {
           const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
-          slackInfo.push(`[DONE] ${u.userId} (room ${u.roomId})`);
+          slackInfo.push(`[O]${u.userId}(${u.roomId})`);
         }
       });
 
       pushAlarm.sendMessages(null, null, messages);
 
-      const slackMessage = `[REMIND SEND SUCCESS]: To ${slackInfo.length} users: ${slackInfo}`;
+      const slackMessage = `[REMIND SEND SUCCESS]: To ${slackInfo.length} users \n${slackInfo}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
