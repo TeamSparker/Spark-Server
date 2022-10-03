@@ -131,6 +131,7 @@ const sendRemind = async () => {
     const today = now.format('YYYY-MM-DD');
 
     const remindUsers = await recordDB.getPushRemindUsers(client, today);
+    const slackInfo = [];
 
     if (remindUsers.length) {
       const messages = [];
@@ -139,15 +140,17 @@ const sendRemind = async () => {
         if (u.status == 'NONE' || u.status == 'CONSIDER') {
           const { title, body, category } = alarmMessage.REMIND_ALERT_NONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+          slackInfo.push(`${u.userId}(${u.roomId})`);
         } else {
           const { title, body, category } = alarmMessage.REMIND_ALERT_DONE(u.roomName);
           messages.push(pushAlarm.getMessage(title, body, u.deviceToken, category, null, u.roomId));
+          slackInfo.push(`${u.userId}(${u.roomId})`);
         }
       });
 
       pushAlarm.sendMessages(null, null, messages);
 
-      const slackMessage = `[REMIND SEND SUCCESS]: To ${tokens.length} users: ${userIds.sort()}`;
+      const slackMessage = `[REMIND SEND SUCCESS]: To ${slackInfo.length} users: ${slackInfo}`;
       slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
       return;
     }
