@@ -11,7 +11,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # create firebase-sdk file
+      # Create firebase-sdk file
       - name: Create Firebase SDK File
         id: create-json
         uses: jsdaniell/create-json@1.1.2
@@ -20,19 +20,27 @@ jobs:
           json: ${{ secrets.FIREBASE_SDK }}
           dir: "functions/"
 
-      # create .env file
+      # Create .env file
       - name: Create .env
         run: |
           touch ./functions/.env
           echo "${{ secrets.DOT_ENV }}" > ./functions/.env
         shell: bash
 
-      # update .firebaserc file
+      # Update .firebaserc file
       - name: Update .firebaserc
         run: |
           rm .firebaserc
           touch .firebaserc
           echo "${{ secrets.FIREBASE_RC }}" > .firebaserc
+        shell: bash
+
+      # Replace firebaseClient Config file
+      - name: Replace FirebaseClient Config file
+        run: |
+          rm ./functions/config/firebaseClient.js
+          touch ./functions/config/firebaseClient.js
+          echo "${{ secrets.TEST_SERVER_FIREBASE_CLIENT }}" > ./functions/config/firebaseClient.js
         shell: bash
 
       - name: Install npm packages
