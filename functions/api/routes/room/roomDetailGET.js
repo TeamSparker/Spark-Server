@@ -130,6 +130,7 @@ module.exports = async (req, res) => {
       leftDay,
       life: room.life,
       fromStart: room.fromStart,
+      lifeDeductionCount: 0,
       isTimelineNew,
       isTermNew: userEntry[0].newTerm,
       myRecord,
