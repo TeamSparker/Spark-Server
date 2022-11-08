@@ -3,23 +3,11 @@
 > 👑 WE SOPT 29th APPJAM 대상 👑 <br>
 > 친구와 함께하는 66일간의 습관 형성 서비스! <br>
 > 프로젝트 기간 : 2022. 01. 03. ~ 2022. 01. 22. <br>
-> [App Store](https://apps.apple.com/kr/app/spark-%EC%8A%A4%ED%8C%8C%ED%81%AC-%EC%B9%9C%EA%B5%AC%EC%99%80-%EC%8A%B5%EA%B4%80-%EA%B4%80%EB%A6%AC/id1605811861) | [Play Store](https://play.google.com/store/apps/details?id=com.teamsparker.android)
-
-![banner](https://user-images.githubusercontent.com/39653584/150547366-5ff166d7-874d-4b4d-a507-7a387c348991.png)
----
-
-
-## ❤️‍🔥 Server Sparkers
-
-| 정설희 | 김영권 | 박정현 |
-| :---: | :---: | :---: | 
-|<img src="https://user-images.githubusercontent.com/39653584/150314775-cf8ad96d-3bf8-4a76-a9a0-1d39baac179f.png" width="200px" height="200px">| <img src="https://user-images.githubusercontent.com/39653584/150314721-214a6633-a627-4f4f-80d2-1c1dfdbf4c3f.png" width="200px" height="200px"> | <img src="https://user-images.githubusercontent.com/39653584/150314852-1d15d37c-42b4-40ba-9f81-d96b4ee7e759.png" width="200px" height="200px"> |
-|[xxeol2](https://github.com/xxeol2)| [youngkwon02](https://github.com/youngkwon02)| [junghyun-jacky](https://github.com/junghyun-jacky)| |
-
-
----
+> 📲 [App Store](https://apps.apple.com/kr/app/spark-%EC%8A%A4%ED%8C%8C%ED%81%AC-%EC%B9%9C%EA%B5%AC%EC%99%80-%EC%8A%B5%EA%B4%80-%EA%B4%80%EB%A6%AC/id1605811861) | [Play Store](https://play.google.com/store/apps/details?id=com.teamsparker.android)
 
 ## 🔥 Branding
+
+![banner](https://user-images.githubusercontent.com/39653584/150547366-5ff166d7-874d-4b4d-a507-7a387c348991.png)
 
 ![영권쌤 거](https://user-images.githubusercontent.com/39653584/150317112-aa048eba-ee94-4711-99dd-89dcb3c2746e.png)
 
